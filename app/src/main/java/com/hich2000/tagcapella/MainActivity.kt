@@ -11,6 +11,8 @@ import kotlin.io.path.listDirectoryEntries
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,9 +44,18 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.READ_MEDIA_AUDIO)
         }
 
+    }
 
-        var path = Path("/storage/emulated/0/Music").listDirectoryEntries()
+    override fun onStart() {
+        super.onStart()
+
+        val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
         path.listIterator().forEach { println(it) }
 
+        val player = ExoPlayer.Builder(this).build()
+
+        player.setMediaItem(MediaItem.fromUri("/storage/emulated/0/Music/1992.mp3"))
+        player.prepare()
+        player.play()
     }
 }
