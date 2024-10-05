@@ -9,12 +9,21 @@ import androidx.core.view.WindowInsetsCompat
 import kotlin.io.path.Path
 import kotlin.io.path.listDirectoryEntries
 import android.Manifest
+import android.content.ComponentName
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.google.common.util.concurrent.MoreExecutors
+import java.util.concurrent.ExecutionException
+import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var mediaController: MediaController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,13 +58,31 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
-        path.listIterator().forEach { println(it) }
+        val sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
+        val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
+        controllerFuture.addListener(
+            {
+                try {
+                    mediaController = controllerFuture.get()
 
-        val player = ExoPlayer.Builder(this).build()
+                    val playlist = mutableListOf<MediaItem>()
 
-        player.setMediaItem(MediaItem.fromUri("/storage/emulated/0/Music/1992.mp3"))
-        player.prepare()
-        player.play()
+                    val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
+                    path.listIterator().forEach {
+                        if (!it.isDirectory() && it.isRegularFile()) {
+                            playlist.add(MediaItem.fromUri(it.toString()))
+                        }
+                    }
+
+                    mediaController.addMediaItems(playlist)
+                    mediaController.prepare()
+                    mediaController.play()
+
+                } catch (e: ExecutionException) {
+                    finish()
+                }
+            },
+            MoreExecutors.directExecutor()
+        )
     }
 }
