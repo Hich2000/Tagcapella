@@ -13,12 +13,14 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
 import java.util.concurrent.ExecutionException
 import kotlin.io.path.isDirectory
 import kotlin.io.path.isRegularFile
+import kotlin.io.path.nameWithoutExtension
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,7 +72,19 @@ class MainActivity : AppCompatActivity() {
                     val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
                     path.listIterator().forEach {
                         if (!it.isDirectory() && it.isRegularFile()) {
-                            playlist.add(MediaItem.fromUri(it.toString()))
+
+                            val mediaItem = MediaItem.Builder()
+                                .setMediaId(it.toString())
+                                .setUri(it.toString())
+                                .setMediaMetadata(
+                                    MediaMetadata.Builder()
+                                        .setTitle(it.nameWithoutExtension)
+                                        .setDisplayTitle(it.nameWithoutExtension)
+                                        .build()
+                                )
+                                .build()
+
+                            playlist.add(mediaItem)
                         }
                     }
 
