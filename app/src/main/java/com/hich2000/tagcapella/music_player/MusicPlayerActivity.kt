@@ -15,10 +15,8 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
-import com.hich2000.tagcapella.PermissionRequestActivity
 import com.hich2000.tagcapella.R
 import com.hich2000.tagcapella.music_list.ui.MusicListActivity
-import java.util.Dictionary
 import java.util.concurrent.ExecutionException
 import kotlin.io.path.Path
 import kotlin.io.path.isDirectory
@@ -28,7 +26,7 @@ import kotlin.io.path.nameWithoutExtension
 
 class MusicPlayerActivity : AppCompatActivity() {
 
-    lateinit var mediaController: MediaController
+    private lateinit var mediaController: MediaController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

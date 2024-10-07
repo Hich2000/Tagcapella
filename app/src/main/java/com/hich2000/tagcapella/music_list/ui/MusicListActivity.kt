@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,22 +21,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.media3.session.MediaController
-import com.hich2000.tagcapella.music_list.ui.ui.theme.TagcapellaTheme
-import androidx.compose.material3.Icon
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
+import com.hich2000.tagcapella.music_list.ui.ui.theme.TagcapellaTheme
 import com.hich2000.tagcapella.music_player.PlaybackService
 import java.util.concurrent.ExecutionException
 import kotlin.io.path.Path
@@ -125,7 +123,9 @@ class MusicListActivity : ComponentActivity() {
             Row {
                 Icon(Icons.Rounded.PlayArrow, contentDescription = null)
                 Text(
-                    mediaItem.mediaMetadata.title.toString(), textAlign = TextAlign.Center, modifier = Modifier
+                    mediaItem.mediaMetadata.title.toString(),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(scroll)
                         .fillMaxHeight()
