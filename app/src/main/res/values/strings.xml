@@ -7,4 +7,5 @@
     <string name="skip_to_next_button">skip to next button</string>
     <string name="shuffle_button">shuffle button</string>
     <string name="loop_mode_button">loop mode button</string>
+    <string name="title_activity_music_list">MusicListActivity</string>
 </resources>

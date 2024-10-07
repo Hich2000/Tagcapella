@@ -1,7 +1,9 @@
 package com.hich2000.tagcapella.music_player
 
 import android.content.ComponentName
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +15,10 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
+import com.hich2000.tagcapella.PermissionRequestActivity
 import com.hich2000.tagcapella.R
+import com.hich2000.tagcapella.music_list.ui.MusicListActivity
+import java.util.Dictionary
 import java.util.concurrent.ExecutionException
 import kotlin.io.path.Path
 import kotlin.io.path.isDirectory
@@ -73,7 +78,6 @@ class MusicPlayerActivity : AppCompatActivity() {
                     val loopModeButton = findViewById<ImageButton>(R.id.loopModeButton)
                     val shuffleButton = findViewById<ImageButton>(R.id.shuffleButton)
 
-
                     playButton.setOnClickListener {
                         if (mediaController.isPlaying) {
                             mediaController.pause()
@@ -115,6 +119,13 @@ class MusicPlayerActivity : AppCompatActivity() {
                         }
                     }
 
+
+                    val button = findViewById<Button>(R.id.button)
+
+                    button.setOnClickListener {
+                        val intent = Intent(this, MusicListActivity::class.java)
+                        startActivity(intent)
+                    }
 
 
                 } catch (e: ExecutionException) {
