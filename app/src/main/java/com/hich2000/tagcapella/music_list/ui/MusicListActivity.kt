@@ -96,8 +96,8 @@ class MusicListActivity : ComponentActivity() {
                             .padding(innerPadding)
                             .verticalScroll(rememberScrollState(0))
                     ) {
-                        for (song in playlist) {
-                            SongCard(song, playlist.indexOf(song))
+                        for ((index, song) in playlist.withIndex()) {
+                            SongCard(song, index)
                         }
                     }
                 }
