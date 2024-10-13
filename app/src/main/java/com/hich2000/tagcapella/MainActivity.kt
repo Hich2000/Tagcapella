@@ -10,18 +10,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.music_list.ui.ui.theme.TagcapellaTheme
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 
@@ -82,18 +87,40 @@ class MainActivity : ComponentActivity() {
 
         val context = LocalContext.current
         val mediaViewModel = MusicPlayerViewModel(context.applicationContext as Application)
-        var mediaController: MediaController? = null
 
         // Use the state variable to determine if the MediaController is initialized
         val isMediaControllerInitialized by mediaViewModel.isMediaControllerInitialized
 
-        Surface(modifier = Modifier.fillMaxSize()) {
-            if (isMediaControllerInitialized) {
-                mediaController = mediaViewModel.mediaController
-                Text(text = "Media Controller Initialized!")
-            } else {
-                CircularProgressIndicator()
+        CompositionLocalProvider(LocalMusicPlayerViewModel provides mediaViewModel) {
+            Surface(modifier = Modifier.fillMaxSize()) {
+                if (isMediaControllerInitialized) {
+                    Text(text = "Media Controller Initialized!")
+                    MusicControls(
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    CircularProgressIndicator()
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun MusicControls(
+    modifier: Modifier = Modifier,
+) {
+    val MusicPlayer = LocalMusicPlayerViewModel.current
+    Box(
+        modifier = modifier
+    ) {
+        IconButton(
+            onClick = { MusicPlayer.mediaController.play() }
+        ) {
+            Icon(
+                Icons.Default.PlayArrow,
+                contentDescription = "Play button"
+            )
         }
     }
 }

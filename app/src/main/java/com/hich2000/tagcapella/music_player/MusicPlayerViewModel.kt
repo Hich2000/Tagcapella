@@ -18,6 +18,7 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 import androidx.compose.runtime.State
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 
 class MusicPlayerViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,6 +27,7 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
     val mediaController: MediaController
         get() = _mediaController
 
+
     // State to indicate if the MediaController is initialized
     private val _isMediaControllerInitialized = mutableStateOf(false)
     val isMediaControllerInitialized: State<Boolean> get() = _isMediaControllerInitialized
@@ -33,7 +35,6 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
     init {
         initializeMediaController()
     }
-
 
     fun initializeMediaController() {
         viewModelScope.launch {
@@ -82,8 +83,6 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
                 playlist.add(mediaItem)
             }
         }
-
         return playlist
     }
-
 }
