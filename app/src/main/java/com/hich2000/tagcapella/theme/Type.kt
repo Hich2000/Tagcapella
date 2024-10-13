@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music_list.ui.ui.theme
+package com.hich2000.tagcapella.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

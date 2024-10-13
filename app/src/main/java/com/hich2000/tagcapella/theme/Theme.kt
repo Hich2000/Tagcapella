@@ -1,5 +1,6 @@
-package com.hich2000.tagcapella.music_list.ui.ui.theme
+package com.hich2000.tagcapella.theme
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

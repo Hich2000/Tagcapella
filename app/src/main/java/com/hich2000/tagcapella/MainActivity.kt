@@ -27,7 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import com.hich2000.tagcapella.music_list.ui.ui.theme.TagcapellaTheme
+import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 
 class MainActivity : ComponentActivity() {
@@ -40,7 +40,9 @@ class MainActivity : ComponentActivity() {
         requestPermissions()
 
         setContent {
-            TagcapellaTheme {
+            TagcapellaTheme (
+                darkTheme = false
+            ) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Surface(
                         modifier = Modifier.padding(innerPadding)
@@ -92,11 +94,15 @@ class MainActivity : ComponentActivity() {
         val isMediaControllerInitialized by mediaViewModel.isMediaControllerInitialized
 
         CompositionLocalProvider(LocalMusicPlayerViewModel provides mediaViewModel) {
-            Surface(modifier = Modifier.fillMaxSize()) {
+            Scaffold(
+                modifier = Modifier.fillMaxSize()
+            ) { innerPadding ->
                 if (isMediaControllerInitialized) {
                     Text(text = "Media Controller Initialized!")
                     MusicControls(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
                     )
                 } else {
                     CircularProgressIndicator()

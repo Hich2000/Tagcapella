@@ -35,7 +35,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
-import com.hich2000.tagcapella.music_list.ui.ui.theme.TagcapellaTheme
+import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.music_player.PlaybackService
 import java.util.concurrent.ExecutionException
 import kotlin.io.path.Path

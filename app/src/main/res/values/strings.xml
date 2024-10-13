@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Tagcapella</string>
-    <string name="permission_request">This app requires audio permissions to function.
-        Please grant them through the permission request popup or in the app settings</string>
     <string name="play_button">play button</string>
     <string name="skip_to_previous_button">skip to previous button</string>
     <string name="skip_to_next_button">skip to next button</string>
