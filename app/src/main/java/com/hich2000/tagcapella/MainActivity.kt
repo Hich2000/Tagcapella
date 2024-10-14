@@ -12,11 +12,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -127,31 +132,51 @@ fun MusicControls() {
     //observe the isPlaying state for ui changes
     val isPlaying by LocalMusicPlayerViewModel.current.isPlaying
 
-    BottomAppBar (
+
+    BottomAppBar(
         modifier = Modifier
             .border(2.dp, Color.Gray)
     ) {
-        IconButton(
-            onClick = {
-
-                if (isPlaying) {
-                    mediaController.pause()
-                } else {
-                    mediaController.play()
-                }
-            }
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .border(2.dp, Color.Gray),
+            horizontalArrangement = Arrangement.Center
         ) {
-            if (isPlaying) {
+            IconButton(
+                onClick = {
+                    mediaController.seekToPrevious()
+                }
+            ) {
                 Icon(
-                    Icons.Default.Home,
-                    contentDescription = "Pause button"
-                )
-            } else {
-                Icon(
-                    Icons.Default.PlayArrow,
-                    contentDescription = "Play button"
+                    Icons.Default.SkipPrevious,
+                    contentDescription = "Skip to previous button"
                 )
             }
+            IconButton(
+                onClick = {
+                    if (isPlaying) mediaController.pause() else mediaController.play()
+                }
+            ) {
+                val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                val contentDescription = if (isPlaying) "Pause" else "Play"
+                Icon(
+                    icon,
+                    contentDescription = contentDescription
+                )
+            }
+            IconButton(
+                onClick = {
+                    mediaController.seekToNext()
+                }
+            ) {
+                Icon(
+                    Icons.Default.SkipNext,
+                    contentDescription = "Skip to next button"
+                )
+            }
+
         }
+
     }
 }
