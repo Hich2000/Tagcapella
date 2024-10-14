@@ -11,11 +11,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,10 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
+import com.hich2000.tagcapella.theme.TagcapellaTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -94,39 +98,60 @@ class MainActivity : ComponentActivity() {
         val isMediaControllerInitialized by mediaViewModel.isMediaControllerInitialized
 
         CompositionLocalProvider(LocalMusicPlayerViewModel provides mediaViewModel) {
-            Scaffold(
-                modifier = Modifier.fillMaxSize()
-            ) { innerPadding ->
-                if (isMediaControllerInitialized) {
-                    Text(text = "Media Controller Initialized!")
-                    MusicControls(
+            if (isMediaControllerInitialized) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        MusicControls()
+                    }
+                ) { innerPadding ->
+                    Text(
+                        text = "Media Controller Initialized!",
                         modifier = Modifier
                             .padding(innerPadding)
-                            .fillMaxSize()
                     )
-                } else {
-                    CircularProgressIndicator()
                 }
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
 }
 
 @Composable
-fun MusicControls(
-    modifier: Modifier = Modifier,
-) {
-    val MusicPlayer = LocalMusicPlayerViewModel.current
-    Box(
-        modifier = modifier
+fun MusicControls() {
+    //get the mediaController for controls
+    val mediaController = LocalMusicPlayerViewModel.current.mediaController
+    //observe the isPlaying state for ui changes
+    val isPlaying by LocalMusicPlayerViewModel.current.isPlaying
+
+    BottomAppBar (
+        modifier = Modifier
+            .border(2.dp, Color.Gray)
     ) {
         IconButton(
-            onClick = { MusicPlayer.mediaController.play() }
+            onClick = {
+
+                if (isPlaying) {
+                    mediaController.pause()
+                } else {
+                    mediaController.play()
+                }
+            }
         ) {
-            Icon(
-                Icons.Default.PlayArrow,
-                contentDescription = "Play button"
-            )
+            if (isPlaying) {
+                Icon(
+                    Icons.Default.Home,
+                    contentDescription = "Pause button"
+                )
+            } else {
+                Icon(
+                    Icons.Default.PlayArrow,
+                    contentDescription = "Play button"
+                )
+            }
         }
     }
 }

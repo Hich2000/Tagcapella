@@ -18,15 +18,19 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 import androidx.compose.runtime.State
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 
 class MusicPlayerViewModel(application: Application) : AndroidViewModel(application) {
 
-    private lateinit var _mediaController: MediaController // Nullable MediaController
+    // Hold MediaController in a mutable state
+    private lateinit var _mediaController : MediaController
     val mediaController: MediaController
         get() = _mediaController
 
+
+    // State to indicate if the MediaController is initialized
+    private val _isPlaying = mutableStateOf(false)
+    val isPlaying: State<Boolean> get() = _isPlaying
 
     // State to indicate if the MediaController is initialized
     private val _isMediaControllerInitialized = mutableStateOf(false)
@@ -36,7 +40,7 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
         initializeMediaController()
     }
 
-    fun initializeMediaController() {
+    private fun initializeMediaController() {
         viewModelScope.launch {
             val sessionToken =
                 SessionToken(
@@ -53,6 +57,14 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
                         _mediaController.addMediaItems(getInitialPlaylist())
                         _mediaController.prepare()
                         _isMediaControllerInitialized.value = true // Update the loading state
+
+                        // Listen for playback state changes
+                        _mediaController.addListener(object : Player.Listener {
+                            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                                _isPlaying.value = isPlaying
+                            }
+                        })
+
                     } catch (e: ExecutionException) {
 
                     }
