@@ -17,9 +17,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.RepeatOne
+import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.BottomAppBar
@@ -37,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.media3.common.Player
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 
@@ -131,6 +136,10 @@ fun MusicControls() {
     val mediaController = LocalMusicPlayerViewModel.current.mediaController
     //observe the isPlaying state for ui changes
     val isPlaying by LocalMusicPlayerViewModel.current.isPlaying
+    //observe the shuffleModeEnabled state for ui changes
+    val shuffleModeEnabled by LocalMusicPlayerViewModel.current.shuffleModeEnabled
+    //observe the loopMode state for ui changes
+    val repeatMode by LocalMusicPlayerViewModel.current.repeatMode
 
 
     BottomAppBar(
@@ -143,6 +152,23 @@ fun MusicControls() {
                 .border(2.dp, Color.Gray),
             horizontalArrangement = Arrangement.Center
         ) {
+            //shuffle mode
+            IconButton(
+                onClick = {
+                    if (shuffleModeEnabled) {
+                        mediaController.shuffleModeEnabled = false
+                    } else {
+                        mediaController.shuffleModeEnabled = true
+                    }
+                }
+            ) {
+                val icon = if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
+                Icon(
+                    icon,
+                    contentDescription = "Shuffle button"
+                )
+            }
+            //skip previous
             IconButton(
                 onClick = {
                     mediaController.seekToPrevious()
@@ -153,6 +179,7 @@ fun MusicControls() {
                     contentDescription = "Skip to previous button"
                 )
             }
+            //play/pause
             IconButton(
                 onClick = {
                     if (isPlaying) mediaController.pause() else mediaController.play()
@@ -165,6 +192,7 @@ fun MusicControls() {
                     contentDescription = contentDescription
                 )
             }
+            //skip next
             IconButton(
                 onClick = {
                     mediaController.seekToNext()
@@ -173,6 +201,33 @@ fun MusicControls() {
                 Icon(
                     Icons.Default.SkipNext,
                     contentDescription = "Skip to next button"
+                )
+            }
+            //loop mode
+            IconButton(
+                onClick = {
+                    if (repeatMode == Player.REPEAT_MODE_OFF) {
+                        mediaController.repeatMode = Player.REPEAT_MODE_ALL
+                    } else if (repeatMode == Player.REPEAT_MODE_ALL) {
+                        mediaController.repeatMode = Player.REPEAT_MODE_ONE
+                    } else if (repeatMode == Player.REPEAT_MODE_ONE) {
+                        mediaController.repeatMode = Player.REPEAT_MODE_OFF
+                    }
+                }
+            ) {
+                var icon = Icons.Default.Repeat
+
+                if (repeatMode == Player.REPEAT_MODE_OFF) {
+                    icon = Icons.AutoMirrored.Filled.ArrowRightAlt
+                } else if (repeatMode == Player.REPEAT_MODE_ALL) {
+                    icon = Icons.Default.Repeat
+                } else if (repeatMode == Player.REPEAT_MODE_ONE) {
+                    icon = Icons.Default.RepeatOne
+                }
+
+                Icon(
+                    icon,
+                    contentDescription = "Shuffle button"
                 )
             }
 
