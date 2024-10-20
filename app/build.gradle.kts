@@ -79,4 +79,7 @@ dependencies {
 
     //material icons extended
     implementation(libs.androidx.material.icons.extended)
+
+    //coroutines for async, await, etc.
+    implementation(libs.kotlinx.coroutines.android)
 }
