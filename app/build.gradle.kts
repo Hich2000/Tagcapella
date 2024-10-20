@@ -82,4 +82,7 @@ dependencies {
 
     //coroutines for async, await, etc.
     implementation(libs.kotlinx.coroutines.android)
+
+    //implementation of viewmodels for compose
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

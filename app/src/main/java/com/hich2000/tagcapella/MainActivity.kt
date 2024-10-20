@@ -1,7 +1,6 @@
 package com.hich2000.tagcapella
 
 import android.Manifest
-import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -12,37 +11,32 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongCard
+import com.hich2000.tagcapella.music_player.SongListViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
-import kotlin.io.path.Path
-import kotlin.io.path.isDirectory
-import kotlin.io.path.isRegularFile
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.nameWithoutExtension
 
 class MainActivity : ComponentActivity() {
 
@@ -55,6 +49,8 @@ class MainActivity : ComponentActivity() {
         requestPermissions()
 
         setContent {
+
+
             TagcapellaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Surface(
@@ -64,6 +60,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
         }
     }
 
@@ -99,69 +96,65 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun TagcapellaApp() {
+        // Use viewModel() to instantiate the ViewModels
+        val playerViewModel: MusicPlayerViewModel = viewModel()
+        val songListViewModel: SongListViewModel = viewModel()
 
-        val context = LocalContext.current
-        val mediaViewModel = MusicPlayerViewModel(context.applicationContext as Application)
-
-        // Use the state variable to determine if the MediaController is initialized
-        val isMediaControllerInitialized by mediaViewModel.isMediaControllerInitialized
-
-
-        val playlist = mutableListOf<MediaItem>()
-        val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
-        path.listIterator().forEach {
-            if (!it.isDirectory() && it.isRegularFile()) {
-
-                val mediaItem = MediaItem.Builder()
-                    .setMediaId(it.toString())
-                    .setUri(it.toString())
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(it.nameWithoutExtension)
-                            .setDisplayTitle(it.nameWithoutExtension)
-                            .build()
-                    )
-                    .build()
-
-                playlist.add(mediaItem)
-            }
+        // LaunchedEffect to trigger async initialization logic
+        LaunchedEffect(Unit) {
+            playerViewModel.initializeMediaController()
+            songListViewModel.initializeSongList()
         }
 
+        // Use the state variable to determine if the MediaController and songlist are initialized
+        val isMediaControllerInitialized by playerViewModel.isMediaControllerInitialized
+        val isSongListInitialized by songListViewModel.isInitialized
 
-        CompositionLocalProvider(LocalMusicPlayerViewModel provides mediaViewModel) {
-            if (isMediaControllerInitialized) {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = {
+        //get the songlist from the view model
+        val songList = remember { songListViewModel.songList }
+
+        CompositionLocalProvider(
+            LocalSongListViewModel provides songListViewModel,
+            LocalMusicPlayerViewModel provides playerViewModel
+        ) {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                bottomBar = {
+                    if (isMediaControllerInitialized) {
                         MusicControls()
-                    },
-                    topBar = {
-                        Text(
-                            "ayylmao",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(2.dp, Color.Gray),
-                            textAlign = TextAlign.Center
-                        )
                     }
-                ) { innerPadding ->
-                    Column(
+                },
+                topBar = {
+                    Text(
+                        "ayylmao",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight()
-                            .padding(innerPadding)
-                            .verticalScroll(rememberScrollState(0))
-                    ) {
-                        for ((index, song) in playlist.withIndex()) {
+                            .border(2.dp, Color.Gray),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            ) { innerPadding ->
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(innerPadding)
+                ) {
+
+                    if (!isMediaControllerInitialized || !isSongListInitialized) {
+                        item {
+                            CircularProgressIndicator(
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    } else {
+                        itemsIndexed(songList) { index, song ->
                             SongCard(song, index)
                         }
                     }
                 }
-            } else {
-                CircularProgressIndicator(
-                    modifier = Modifier.fillMaxSize()
-                )
             }
         }
     }
 }
+
