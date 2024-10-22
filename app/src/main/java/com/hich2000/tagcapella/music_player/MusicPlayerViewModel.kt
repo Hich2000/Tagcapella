@@ -8,12 +8,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
+import kotlin.io.path.Path
+import kotlin.io.path.isDirectory
+import kotlin.io.path.isRegularFile
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.nameWithoutExtension
 
 class MusicPlayerViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -84,24 +90,24 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
     private fun getInitialPlaylist(): MutableList<MediaItem> {
         val playlist = mutableListOf<MediaItem>()
 
-//        val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
-//        path.listIterator().forEach {
-//            if (!it.isDirectory() && it.isRegularFile()) {
-//
-//                val mediaItem = MediaItem.Builder()
-//                    .setMediaId(it.toString())
-//                    .setUri(it.toString())
-//                    .setMediaMetadata(
-//                        MediaMetadata.Builder()
-//                            .setTitle(it.nameWithoutExtension)
-//                            .setDisplayTitle(it.nameWithoutExtension)
-//                            .build()
-//                    )
-//                    .build()
-//
-//                playlist.add(mediaItem)
-//            }
-//        }
+        val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
+        path.listIterator().forEach {
+            if (!it.isDirectory() && it.isRegularFile()) {
+
+                val mediaItem = MediaItem.Builder()
+                    .setMediaId(it.toString())
+                    .setUri(it.toString())
+                    .setMediaMetadata(
+                        MediaMetadata.Builder()
+                            .setTitle(it.nameWithoutExtension)
+                            .setDisplayTitle(it.nameWithoutExtension)
+                            .build()
+                    )
+                    .build()
+
+                playlist.add(mediaItem)
+            }
+        }
         return playlist
     }
 }
