@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,11 +26,13 @@ import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +41,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.LocalMusicPlayerViewModel
+import com.hich2000.tagcapella.LocalSongListViewModel
 
 
 @Composable
@@ -146,6 +151,35 @@ fun MusicControls() {
     }
 }
 
+@Composable
+fun SongList(modifier: Modifier = Modifier) {
+
+    val mediaController = LocalMusicPlayerViewModel.current
+    val songListViewModel = LocalSongListViewModel.current
+
+
+    // Use the state variable to determine if the MediaController and songlist are initialized
+    val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
+    val isSongListInitialized by songListViewModel.isInitialized
+
+    val songList = remember { songListViewModel.songList }
+
+    LazyColumn(
+        modifier = modifier
+    ) {
+        if (!isMediaControllerInitialized || !isSongListInitialized) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        } else {
+            itemsIndexed(songList) { index, song ->
+                SongCard(song, index)
+            }
+        }
+    }
+}
 
 @Composable
 fun SongCard(mediaItem: MediaItem, mediaItemIndex: Int) {
