@@ -16,12 +16,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -110,8 +116,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TagcapellaApp(playerViewModel: MusicPlayerViewModel, songListViewModel: SongListViewModel) {
 
-        // Use the state variable to determine if the MediaController and songlist are initialized
-        val isMediaControllerInitialized by playerViewModel.isMediaControllerInitialized
+        var selectedScreen by remember { mutableStateOf(NavItems.Player) }
 
         CompositionLocalProvider(
             LocalSongListViewModel provides songListViewModel,
@@ -120,8 +125,16 @@ class MainActivity : ComponentActivity() {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
-                    if (isMediaControllerInitialized) {
-                        MusicControls()
+                    NavigationBar (
+                        containerColor = Color.Red
+                    ) {
+                        NavItems.entries.forEach {
+                            NavigationBarItem(
+                                selected = selectedScreen == it,
+                                icon = { Icon(it.icon, it.title) },
+                                onClick = {selectedScreen = it}
+                            )
+                        }
                     }
                 },
                 topBar = {
@@ -139,7 +152,11 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
-                    SongList()
+                    if (selectedScreen == NavItems.SongList) {
+                        SongList()
+                    } else {
+                        MusicControls()
+                    }
                 }
             }
         }
