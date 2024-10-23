@@ -85,4 +85,7 @@ dependencies {
 
     //implementation of viewmodels for compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    //splashscreen
+    implementation(libs.androidx.core.splashscreen)
 }
