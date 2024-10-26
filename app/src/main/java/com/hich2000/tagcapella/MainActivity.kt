@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -126,7 +127,8 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
                     NavigationBar (
-                        containerColor = Color.Red
+                        modifier = Modifier
+                            .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
                     ) {
                         NavItems.entries.forEach {
                             NavigationBarItem(

@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -33,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -61,97 +61,91 @@ fun MusicControls() {
 
         //get the mediaController itself
         val mediaController = mediaControllerViewModel.mediaController
-
-        BottomAppBar(
+        Row(
             modifier = Modifier
-                .border(2.dp, Color.Gray)
+                .fillMaxSize()
+                .border(2.dp, Color.Gray),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .border(2.dp, Color.Gray),
-                horizontalArrangement = Arrangement.Center
+            //shuffle mode
+            IconButton(
+                onClick = {
+                    if (shuffleModeEnabled) {
+                        mediaController.shuffleModeEnabled = false
+                    } else {
+                        mediaController.shuffleModeEnabled = true
+                    }
+                }
             ) {
-                //shuffle mode
-                IconButton(
-                    onClick = {
-                        if (shuffleModeEnabled) {
-                            mediaController.shuffleModeEnabled = false
-                        } else {
-                            mediaController.shuffleModeEnabled = true
-                        }
-                    }
-                ) {
-                    val icon =
-                        if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
-                    Icon(
-                        icon,
-                        contentDescription = "Shuffle button"
-                    )
+                val icon =
+                    if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
+                Icon(
+                    icon,
+                    contentDescription = "Shuffle button"
+                )
+            }
+            //skip previous
+            IconButton(
+                onClick = {
+                    mediaController.seekToPrevious()
                 }
-                //skip previous
-                IconButton(
-                    onClick = {
-                        mediaController.seekToPrevious()
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.SkipPrevious,
-                        contentDescription = "Skip to previous button"
-                    )
+            ) {
+                Icon(
+                    Icons.Default.SkipPrevious,
+                    contentDescription = "Skip to previous button"
+                )
+            }
+            //play/pause
+            IconButton(
+                onClick = {
+                    if (isPlaying) mediaController.pause() else mediaController.play()
                 }
-                //play/pause
-                IconButton(
-                    onClick = {
-                        if (isPlaying) mediaController.pause() else mediaController.play()
-                    }
-                ) {
-                    val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
-                    val contentDescription = if (isPlaying) "Pause" else "Play"
-                    Icon(
-                        icon,
-                        contentDescription = contentDescription
-                    )
+            ) {
+                val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                val contentDescription = if (isPlaying) "Pause" else "Play"
+                Icon(
+                    icon,
+                    contentDescription = contentDescription
+                )
+            }
+            //skip next
+            IconButton(
+                onClick = {
+                    mediaController.seekToNext()
                 }
-                //skip next
-                IconButton(
-                    onClick = {
-                        mediaController.seekToNext()
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.SkipNext,
-                        contentDescription = "Skip to next button"
-                    )
-                }
-                //loop mode
-                IconButton(
-                    onClick = {
-                        if (repeatMode == Player.REPEAT_MODE_OFF) {
-                            mediaController.repeatMode = Player.REPEAT_MODE_ALL
-                        } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                            mediaController.repeatMode = Player.REPEAT_MODE_ONE
-                        } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                            mediaController.repeatMode = Player.REPEAT_MODE_OFF
-                        }
-                    }
-                ) {
-                    var icon = Icons.Default.Repeat
-
+            ) {
+                Icon(
+                    Icons.Default.SkipNext,
+                    contentDescription = "Skip to next button"
+                )
+            }
+            //loop mode
+            IconButton(
+                onClick = {
                     if (repeatMode == Player.REPEAT_MODE_OFF) {
-                        icon = Icons.AutoMirrored.Filled.ArrowRightAlt
+                        mediaController.repeatMode = Player.REPEAT_MODE_ALL
                     } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                        icon = Icons.Default.Repeat
+                        mediaController.repeatMode = Player.REPEAT_MODE_ONE
                     } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                        icon = Icons.Default.RepeatOne
+                        mediaController.repeatMode = Player.REPEAT_MODE_OFF
                     }
+                }
+            ) {
+                var icon = Icons.Default.Repeat
 
-                    Icon(
-                        icon,
-                        contentDescription = "Shuffle button"
-                    )
+                if (repeatMode == Player.REPEAT_MODE_OFF) {
+                    icon = Icons.AutoMirrored.Filled.ArrowRightAlt
+                } else if (repeatMode == Player.REPEAT_MODE_ALL) {
+                    icon = Icons.Default.Repeat
+                } else if (repeatMode == Player.REPEAT_MODE_ONE) {
+                    icon = Icons.Default.RepeatOne
                 }
 
+                Icon(
+                    icon,
+                    contentDescription = "Shuffle button"
+                )
             }
 
         }
