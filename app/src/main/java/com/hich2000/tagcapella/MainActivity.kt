@@ -36,9 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import app.cash.sqldelight.db.SqlDriver
-import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongList
@@ -59,14 +56,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestPermissions()
-
-        val driver: SqlDriver = AndroidSqliteDriver(TagcapellaDb.Schema, this.applicationContext, "tagcapella.db")
-        val db = TagcapellaDb(driver)
-
-        println("I am here")
-        println(db.tagsQueries.selectAll().executeAsList())
-
-
 
         lifecycleScope.launch {
             playerViewModel.initializeMediaController()
