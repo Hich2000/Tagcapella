@@ -98,5 +98,6 @@ sqldelight {
     database("TagcapellaDb") { // Replace "AppDatabase" with your database name
         packageName = "com.hich2000.tagcapella.data" // Replace with your package name
         schemaOutputDirectory = file("src/main/sqldelight/databases")
+        migrationOutputDirectory = file("src/main/sqldelight/migrations")
     }
 }
