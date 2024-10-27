@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.squareup.sqldelight") version "1.5.5"
 }
 
 android {
@@ -88,4 +89,14 @@ dependencies {
 
     //splashscreen
     implementation(libs.androidx.core.splashscreen)
+
+    //sqldelight
+    implementation(libs.android.driver)
+}
+
+sqldelight {
+    database("TagcapellaDb") { // Replace "AppDatabase" with your database name
+        packageName = "com.hich2000.tagcapella.data" // Replace with your package name
+        schemaOutputDirectory = file("src/main/sqldelight/databases")
+    }
 }
