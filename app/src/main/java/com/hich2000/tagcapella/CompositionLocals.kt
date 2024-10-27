@@ -7,4 +7,4 @@ import com.hich2000.tagcapella.tags.TagViewModel
 
 val LocalMusicPlayerViewModel = compositionLocalOf<MusicPlayerViewModel> { error("MusicPlayerViewModel not provided") }
 val LocalSongListViewModel = compositionLocalOf<SongListViewModel> { error("SongListViewModel not provided") }
-val localTagViewModel = compositionLocalOf<TagViewModel> { error("TagViewMdoel not provided") }
+val LocalTagViewModel = compositionLocalOf<TagViewModel> { error("TagViewMdoel not provided") }
