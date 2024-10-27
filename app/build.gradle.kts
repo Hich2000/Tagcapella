@@ -91,7 +91,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     //sqldelight
-    implementation(libs.android.driver)
+    implementation(libs.sqldelight.android.driver)
 }
 
 sqldelight {
