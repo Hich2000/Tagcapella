@@ -40,6 +40,8 @@ import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.music_player.SongListViewModel
+import com.hich2000.tagcapella.tags.TagList
+import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import kotlinx.coroutines.launch
 
@@ -49,6 +51,7 @@ class MainActivity : ComponentActivity() {
 
     private val playerViewModel: MusicPlayerViewModel by viewModels()
     private val songListViewModel: SongListViewModel by viewModels()
+    private val tagViewModel: TagViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -120,7 +123,8 @@ class MainActivity : ComponentActivity() {
 
         CompositionLocalProvider(
             LocalSongListViewModel provides songListViewModel,
-            LocalMusicPlayerViewModel provides playerViewModel
+            LocalMusicPlayerViewModel provides playerViewModel,
+            LocalTagViewModel provides tagViewModel
         ) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -155,6 +159,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     if (selectedScreen == NavItems.SongList) {
                         SongList()
+                    } else if (selectedScreen == NavItems.Tags) {
+                        TagList()
                     } else {
                         MusicControls()
                     }
