@@ -20,11 +20,10 @@ import kotlin.io.path.nameWithoutExtension
 
 class SongListViewModel(application: Application) : AndroidViewModel(application) {
 
-    // State to indicate if the shuffle mode is enabled
     private var _songList = mutableStateListOf<MediaItem>()
     val songList: SnapshotStateList<MediaItem> get() = _songList
 
-    // State to indicate if the songList initializing has completed
+    // State to indicate if initializing has completed
     private val _isInitialized = mutableStateOf(false)
     val isInitialized: State<Boolean> get() = _isInitialized
 
