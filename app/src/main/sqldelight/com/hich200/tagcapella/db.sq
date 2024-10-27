@@ -1,0 +1,8 @@
+CREATE TABLE tags (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    tag TEXT NOT NULL UNIQUE
+);
+
+CREATE INDEX tags_id ON tags (id);
+
+INSERT INTO tags (id, tag) VALUES (0, 'All');

@@ -1,0 +1,8 @@
+selectAll:
+SELECT * FROM tags;
+
+insert:
+INSERT INTO tags (id, tag) VALUES (?, ?);
+
+update:
+UPDATE tags SET tag = ? WHERE id = ?;
