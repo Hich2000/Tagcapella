@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("app.cash.sqldelight") version "2.0.2"
 }
 
 android {
@@ -88,4 +89,15 @@ dependencies {
 
     //splashscreen
     implementation(libs.androidx.core.splashscreen)
+
+    //sqldelight
+    implementation(libs.sqldelight.android.driver)
+}
+
+sqldelight {
+    databases {
+        create("TagcapellaDb") {
+            packageName.set("com.hich200.tagcapella")
+        }
+    }
 }
