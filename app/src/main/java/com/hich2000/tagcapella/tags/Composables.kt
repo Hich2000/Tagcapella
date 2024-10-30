@@ -128,23 +128,26 @@ fun TagCard(tag: Tags, tagViewModel: TagViewModel, editCallBack: () -> Unit = {}
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             )
-            IconButton(
-                onClick = {
-                    tagViewModel.deleteTag(tag.id)
-                },
-            ) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete"
-                )
-            }
-            IconButton(
-                onClick = editCallBack
-            ) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = "Edit"
-                )
+
+            if (tag.id.toInt() != 0) {
+                IconButton(
+                    onClick = {
+                        tagViewModel.deleteTag(tag.id)
+                    },
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete"
+                    )
+                }
+                IconButton(
+                    onClick = editCallBack
+                ) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Edit"
+                    )
+                }
             }
         }
     }
