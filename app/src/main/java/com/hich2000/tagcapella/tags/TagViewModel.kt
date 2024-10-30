@@ -27,4 +27,20 @@ class TagViewModel(application: Application) : AndroidViewModel(application) {
     fun selectAllTags(): SnapshotStateList<Tags> {
         return db.tagsQueries.selectAll().executeAsList().toMutableStateList()
     }
+
+    fun insertTag(tag: String) {
+        db.tagsQueries.insertTag(null, tag)
+        val newTag = db.tagsQueries.lastInsertedTag().executeAsOne()
+        _tags.add(newTag)
+    }
+
+    fun updateTag(id: Long, tag: String) {
+        db.tagsQueries.updateTag(tag, id)
+    }
+
+    fun deleteTag(id: Long) {
+        val deleteIndex = _tags.indexOfFirst { it.id == id }
+        db.tagsQueries.deleteTag(_tags[deleteIndex].id)
+        _tags.removeAt(deleteIndex)
+    }
 }
