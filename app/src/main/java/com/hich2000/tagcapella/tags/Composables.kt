@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,13 +19,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -46,10 +53,22 @@ fun TagList() {
     val tagViewModel = LocalTagViewModel.current
     val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
+    val showDialog = remember { mutableStateOf(false) }
+
+    if (showDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = { showDialog.value = false },
+        ) {
+            TagForm(tagViewModel = tagViewModel)
+        }
+    }
+
 
     Scaffold(
         floatingActionButton = {
-            SmallFloatingActionButton(onClick = {}) {
+            SmallFloatingActionButton(onClick = {
+                showDialog.value = true
+            }) {
                 Icon(
                     Icons.Default.Add, contentDescription = "Add label"
                 )
@@ -62,8 +81,6 @@ fun TagList() {
                 .border(2.dp, Color.Blue, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
-            TagForm(tagViewModel = tagViewModel)
-
             tags.forEach {
                 TagCard(it, tagViewModel)
             }
@@ -115,16 +132,24 @@ fun TagForm(tag: Tags? = null, tagViewModel: TagViewModel) {
 
     var textState by remember { mutableStateOf(if (tag is Tags) tag.tag else "") }
 
-    TextField(
-        value = textState,
-        onValueChange = { textState = it },
-        label = { Text("Tag") }
-    )
-    Button(
-        onClick = {
-            tagViewModel.insertTag(textState)
-        }
+    Surface (
+        modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = AlertDialogDefaults.TonalElevation
     ) {
-        Text("add")
+        Column(modifier = Modifier.padding(16.dp)) {
+            TextField(
+                value = textState,
+                onValueChange = { textState = it },
+                label = { Text("Tag") },
+            )
+            Button(
+                onClick = {
+                    tagViewModel.insertTag(textState)
+                },
+            ) {
+                Text("add")
+            }
+        }
     }
 }
