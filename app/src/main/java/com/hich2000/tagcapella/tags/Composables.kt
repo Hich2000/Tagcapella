@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -54,12 +55,19 @@ fun TagList() {
     val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
     val showDialog = remember { mutableStateOf(false) }
+    val editDialogTag = remember { mutableStateOf<Tags?>(null) }
 
     if (showDialog.value) {
         BasicAlertDialog(
-            onDismissRequest = { showDialog.value = false },
+            onDismissRequest = {
+                showDialog.value = false
+                editDialogTag.value = null
+            },
         ) {
-            TagForm(tagViewModel = tagViewModel)
+            TagForm(
+                tag = editDialogTag.value,
+                tagViewModel = tagViewModel
+            )
         }
     }
 
@@ -82,14 +90,21 @@ fun TagList() {
                 .verticalScroll(columnScroll)
         ) {
             tags.forEach {
-                TagCard(it, tagViewModel)
+                TagCard(
+                    tag = it,
+                    tagViewModel = tagViewModel,
+                    editCallBack = {
+                        editDialogTag.value = it
+                        showDialog.value = true
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun TagCard(tag: Tags, tagViewModel: TagViewModel) {
+fun TagCard(tag: Tags, tagViewModel: TagViewModel, editCallBack: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
@@ -123,17 +138,26 @@ fun TagCard(tag: Tags, tagViewModel: TagViewModel) {
                     contentDescription = "Delete"
                 )
             }
+            IconButton(
+                onClick = editCallBack
+            ) {
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = "Edit"
+                )
+            }
         }
     }
 }
 
 @Composable
 fun TagForm(tag: Tags? = null, tagViewModel: TagViewModel) {
-
     var textState by remember { mutableStateOf(if (tag is Tags) tag.tag else "") }
 
-    Surface (
-        modifier = Modifier.wrapContentWidth().wrapContentHeight(),
+    Surface(
+        modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight(),
         shape = MaterialTheme.shapes.large,
         tonalElevation = AlertDialogDefaults.TonalElevation
     ) {
@@ -143,12 +167,26 @@ fun TagForm(tag: Tags? = null, tagViewModel: TagViewModel) {
                 onValueChange = { textState = it },
                 label = { Text("Tag") },
             )
-            Button(
-                onClick = {
-                    tagViewModel.insertTag(textState)
-                },
-            ) {
-                Text("add")
+
+            if (tag === null) {
+                Button(
+                    onClick = {
+                        tagViewModel.insertTag(textState)
+                    },
+                ) {
+                    Text("add")
+                }
+            } else {
+                Button(
+                    onClick = {
+                        tagViewModel.updateTag(
+                            id = tag.id,
+                            tag = textState
+                        )
+                    },
+                ) {
+                    Text("update")
+                }
             }
         }
     }

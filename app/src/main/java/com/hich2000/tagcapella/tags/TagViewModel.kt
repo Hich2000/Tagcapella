@@ -36,6 +36,10 @@ class TagViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateTag(id: Long, tag: String) {
         db.tagsQueries.updateTag(tag, id)
+        val updatedIndex = _tags.indexOfFirst { it.id == id }
+        if (updatedIndex >= 0) {
+            _tags[updatedIndex] = _tags[updatedIndex].copy(tag = tag)
+        }
     }
 
     fun deleteTag(id: Long) {
