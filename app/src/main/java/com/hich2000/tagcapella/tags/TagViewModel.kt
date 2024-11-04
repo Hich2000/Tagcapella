@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.AndroidViewModel
+import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.hich200.tagcapella.TagcapellaDb
@@ -18,7 +19,15 @@ class TagViewModel(application: Application) : AndroidViewModel(application) {
     private var db: TagcapellaDb
 
     init {
-        val driver: SqlDriver = AndroidSqliteDriver(TagcapellaDb.Schema, getApplication(), "tagcapella.db")
+        val driver: SqlDriver = AndroidSqliteDriver(
+            TagcapellaDb.Schema,
+            getApplication(),
+            "tagcapella.db",
+            callback = object : AndroidSqliteDriver.Callback(TagcapellaDb.Schema) {
+                override fun onOpen(db: SupportSQLiteDatabase) {
+                    db.setForeignKeyConstraintsEnabled(true)
+                }
+            })
         db = TagcapellaDb(driver)
 
         _tags = selectAllTags()
