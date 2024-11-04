@@ -12,3 +12,6 @@ DELETE FROM tag WHERE id = ?;
 
 lastInsertedTag:
 SELECT * FROM tag ORDER BY id DESC LIMIT 1;
+
+selectTaggedSongs:
+SELECT title FROM song_tag JOIN song ON song_tag.song = song.id WHERE tag = ?;
