@@ -1,8 +1,29 @@
-CREATE TABLE tags (
+
+CREATE TABLE tag (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     tag TEXT NOT NULL UNIQUE
 );
 
-CREATE INDEX tags_id ON tags (id);
+CREATE INDEX tag_id ON tag (id);
 
-INSERT INTO tags (id, tag) VALUES (0, 'All');
+INSERT INTO tag (id, tag) VALUES (0, 'All');
+
+
+
+CREATE TABLE song (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL
+);
+
+CREATE INDEX song_id ON song (id);
+
+
+CREATE TABLE song_tag (
+    id TEXT NOT NULL PRIMARY KEY AUTOINCREMENT,
+    song TEXT NOT NULL,
+    tag INTEGER NOT NULL,
+    FOREIGN KEY (song) REFERENCES song(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag) REFERENCES tag(id) ON DELETE CASCADE
+);
+
+CREATE INDEX song_tag_id ON song_tag (id);
