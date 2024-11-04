@@ -1,0 +1,14 @@
+selectAll:
+SELECT * FROM tag;
+
+insertTag:
+INSERT INTO tag (id, tag) VALUES (?, ?);
+
+updateTag:
+UPDATE tag SET tag = ? WHERE id = ?;
+
+deleteTag:
+DELETE FROM tag WHERE id = ?;
+
+lastInsertedTag:
+SELECT * FROM tag ORDER BY id DESC LIMIT 1;
