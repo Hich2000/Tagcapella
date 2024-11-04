@@ -6,3 +6,6 @@ INSERT INTO song (id, title) VALUES (?, ?);
 
 deleteSong:
 DELETE FROM song WHERE id = ?;
+
+selectSongTags:
+SELECT tag.tag FROM song_tag JOIN tag ON song_tag.tag = tag.id WHERE song = ?;
