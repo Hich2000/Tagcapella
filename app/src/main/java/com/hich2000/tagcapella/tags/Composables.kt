@@ -43,7 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hich200.tagcapella.Tags
+import com.hich200.tagcapella.Tag
 import com.hich2000.tagcapella.LocalTagViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +55,7 @@ fun TagList() {
     val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
     val showDialog = remember { mutableStateOf(false) }
-    val editDialogTag = remember { mutableStateOf<Tags?>(null) }
+    val editDialogTag = remember { mutableStateOf<Tag?>(null) }
 
     if (showDialog.value) {
         BasicAlertDialog(
@@ -104,7 +104,7 @@ fun TagList() {
 }
 
 @Composable
-fun TagCard(tag: Tags, tagViewModel: TagViewModel, editCallBack: () -> Unit = {}) {
+fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallBack: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
@@ -154,8 +154,8 @@ fun TagCard(tag: Tags, tagViewModel: TagViewModel, editCallBack: () -> Unit = {}
 }
 
 @Composable
-fun TagForm(tag: Tags? = null, tagViewModel: TagViewModel) {
-    var textState by remember { mutableStateOf(if (tag is Tags) tag.tag else "") }
+fun TagForm(tag: Tag? = null, tagViewModel: TagViewModel) {
+    var textState by remember { mutableStateOf(if (tag is Tag) tag.tag else "") }
 
     Surface(
         modifier = Modifier

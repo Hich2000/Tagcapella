@@ -8,12 +8,12 @@ import androidx.lifecycle.AndroidViewModel
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.hich200.tagcapella.TagcapellaDb
-import com.hich200.tagcapella.Tags
+import com.hich200.tagcapella.Tag
 
 class TagViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var _tags = mutableStateListOf<Tags>()
-    val tags: SnapshotStateList<Tags> get() = _tags
+    private var _tags = mutableStateListOf<Tag>()
+    val tags: SnapshotStateList<Tag> get() = _tags
 
     private var db: TagcapellaDb
 
@@ -24,18 +24,18 @@ class TagViewModel(application: Application) : AndroidViewModel(application) {
         _tags = selectAllTags()
     }
 
-    fun selectAllTags(): SnapshotStateList<Tags> {
-        return db.tagsQueries.selectAll().executeAsList().toMutableStateList()
+    fun selectAllTags(): SnapshotStateList<Tag> {
+        return db.tagQueries.selectAll().executeAsList().toMutableStateList()
     }
 
     fun insertTag(tag: String) {
-        db.tagsQueries.insertTag(null, tag)
-        val newTag = db.tagsQueries.lastInsertedTag().executeAsOne()
+        db.tagQueries.insertTag(null, tag)
+        val newTag = db.tagQueries.lastInsertedTag().executeAsOne()
         _tags.add(newTag)
     }
 
     fun updateTag(id: Long, tag: String) {
-        db.tagsQueries.updateTag(tag, id)
+        db.tagQueries.updateTag(tag, id)
         val updatedIndex = _tags.indexOfFirst { it.id == id }
         if (updatedIndex >= 0) {
             _tags[updatedIndex] = _tags[updatedIndex].copy(tag = tag)
@@ -44,7 +44,7 @@ class TagViewModel(application: Application) : AndroidViewModel(application) {
 
     fun deleteTag(id: Long) {
         val deleteIndex = _tags.indexOfFirst { it.id == id }
-        db.tagsQueries.deleteTag(_tags[deleteIndex].id)
+        db.tagQueries.deleteTag(_tags[deleteIndex].id)
         _tags.removeAt(deleteIndex)
     }
 }
