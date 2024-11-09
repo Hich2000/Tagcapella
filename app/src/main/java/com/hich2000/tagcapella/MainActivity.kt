@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella
 
 import android.Manifest
+import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +36,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
@@ -43,8 +47,16 @@ import com.hich2000.tagcapella.music_player.SongListViewModel
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltAndroidApp
+class MyApp: Application()
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -52,6 +64,8 @@ class MainActivity : ComponentActivity() {
     private val playerViewModel: MusicPlayerViewModel by viewModels()
     private val songListViewModel: SongListViewModel by viewModels()
     private val tagViewModel: TagViewModel by viewModels()
+
+    private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -64,6 +78,8 @@ class MainActivity : ComponentActivity() {
             playerViewModel.initializeMediaController()
             songListViewModel.initializeSongList()
         }
+
+        println("I am here: "+userViewModel.user.value)
 
         // Use the state variable to determine if the MediaController and songlist are initialized
         val isMediaControllerInitialized by playerViewModel.isMediaControllerInitialized
@@ -170,3 +186,30 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//below is an example for myself. remove later.
+data class User(val name: String)
+
+class UserRepository @Inject constructor() {
+    private val userData = User("John Doe")
+
+    fun getUser(): User {
+        return userData
+    }
+}
+
+@HiltViewModel
+class UserViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
+
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User> get() = _user
+
+    init {
+        fetchUser()
+    }
+
+    private fun fetchUser() {
+        _user.value = userRepository.getUser()
+    }
+}

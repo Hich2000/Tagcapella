@@ -2,6 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("app.cash.sqldelight") version "2.0.2"
+    id("kotlin-kapt") // For Kotlin annotation processing
+    id("dagger.hilt.android.plugin") // Apply Hilt plugin
+}
+
+kapt {
+    //this block is to suppress some warnings.
+    correctErrorTypes = true // Helps Hilt work with other libraries like Room
+    arguments {
+        // Enable Dagger's fastInit
+        arg("dagger.fastInit", "enabled")
+    }
 }
 
 android {
@@ -92,6 +103,10 @@ dependencies {
 
     //sqldelight
     implementation(libs.sqldelight.android.driver)
+
+    // Hilt dependencies
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }
 
 sqldelight {
