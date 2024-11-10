@@ -34,21 +34,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.tags.TagList
-import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltAndroidApp
 class MyApp : Application()
@@ -59,8 +53,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     private val playerViewModel: MusicPlayerViewModel by viewModels()
-
-    private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -161,33 +153,5 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    }
-}
-
-//below is an example for myself. remove later.
-data class User(val name: String)
-
-class UserRepository @Inject constructor() {
-    private val userData = User("John Doe")
-
-    fun getUser(): User {
-        return userData
-    }
-}
-
-@HiltViewModel
-class UserViewModel @Inject constructor(
-    private val userRepository: UserRepository
-) : ViewModel() {
-
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User> get() = _user
-
-    init {
-        fetchUser()
-    }
-
-    private fun fetchUser() {
-        _user.value = userRepository.getUser()
     }
 }
