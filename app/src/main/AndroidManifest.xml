@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,14 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Tagcapella"
         tools:targetApi="31">
-        <activity
-            android:name=".music_list.ui.MusicListActivity"
-            android:exported="false"
-            android:label="@string/title_activity_music_list"
-            android:theme="@style/Theme.Tagcapella" />
-        <activity
-            android:name=".music_player.MusicPlayerActivity"
-            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

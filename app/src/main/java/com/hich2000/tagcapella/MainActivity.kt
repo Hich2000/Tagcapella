@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella
 
 import android.Manifest
+import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -12,7 +13,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,43 +38,49 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.music_player.SongListViewModel
 import com.hich2000.tagcapella.tags.TagList
-import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+@HiltAndroidApp
+class MyApp : Application()
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    private val playerViewModel: MusicPlayerViewModel by viewModels()
-    private val songListViewModel: SongListViewModel by viewModels()
-    private val tagViewModel: TagViewModel by viewModels()
+    private val _mediaPermissionGranted: MutableStateFlow<Int> =
+        MutableStateFlow(PackageManager.PERMISSION_DENIED)
+    private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
+
+    private val mediaPlayerViewModel: MusicPlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        val splashscreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        _mediaPermissionGranted.value = ContextCompat.checkSelfPermission(
+            this,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_AUDIO
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+        )
         requestPermissions()
 
         lifecycleScope.launch {
-            playerViewModel.initializeMediaController()
-            songListViewModel.initializeSongList()
+            mediaPlayerViewModel.initializeMediaController()
         }
-
-        // Use the state variable to determine if the MediaController and songlist are initialized
-        val isMediaControllerInitialized by playerViewModel.isMediaControllerInitialized
-        val isSongListInitialized by songListViewModel.isInitialized
-
-        splashscreen.setKeepOnScreenCondition{isMediaControllerInitialized && isSongListInitialized}
-
 
         setContent {
             TagcapellaTheme {
@@ -78,7 +88,7 @@ class MainActivity : ComponentActivity() {
                     Surface(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        TagcapellaApp(playerViewModel, songListViewModel)
+                        TagcapellaApp()
                     }
                 }
             }
@@ -94,6 +104,13 @@ class MainActivity : ComponentActivity() {
         ) { isGranted: Boolean ->
             if (!isGranted) {
                 Toast.makeText(this, "App required media permissions.", Toast.LENGTH_SHORT).show()
+            } else {
+                _mediaPermissionGranted.value = PackageManager.PERMISSION_GRANTED
+
+                lifecycleScope.launch {
+                    val songRepository = mediaPlayerViewModel.songRepository
+                    songRepository.setSongList(songRepository.scanMusicFolder())
+                }
             }
         }
 
@@ -117,19 +134,15 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun TagcapellaApp(playerViewModel: MusicPlayerViewModel, songListViewModel: SongListViewModel) {
-
+    fun TagcapellaApp() {
         var selectedScreen by remember { mutableStateOf(NavItems.Player) }
+        val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
 
-        CompositionLocalProvider(
-            LocalSongListViewModel provides songListViewModel,
-            LocalMusicPlayerViewModel provides playerViewModel,
-            LocalTagViewModel provides tagViewModel
-        ) {
+        if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
-                    NavigationBar (
+                    NavigationBar(
                         modifier = Modifier
                             .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
                     ) {
@@ -137,7 +150,7 @@ class MainActivity : ComponentActivity() {
                             NavigationBarItem(
                                 selected = selectedScreen == it,
                                 icon = { Icon(it.icon, it.title) },
-                                onClick = {selectedScreen = it}
+                                onClick = { selectedScreen = it }
                             )
                         }
                     }
@@ -166,7 +179,26 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        } else {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text("Media permissions are necessary to use this application")
+                        }
+                    }
+                }
+            }
         }
     }
 }
-

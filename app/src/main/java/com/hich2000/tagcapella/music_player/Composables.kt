@@ -37,18 +37,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import com.hich2000.tagcapella.LocalMusicPlayerViewModel
-import com.hich2000.tagcapella.LocalSongListViewModel
-
 
 @Composable
-fun MusicControls() {
-    //get the mediaController for controls
-    val mediaControllerViewModel = LocalMusicPlayerViewModel.current
-
+fun MusicControls(
+    mediaControllerViewModel: MusicPlayerViewModel = hiltViewModel()
+) {
     // Use the state variable to determine if the MediaController and songlist are initialized
     val isMediaControllerInitialized by mediaControllerViewModel.isMediaControllerInitialized
     if (isMediaControllerInitialized) {
@@ -154,17 +152,17 @@ fun MusicControls() {
 }
 
 @Composable
-fun SongList(modifier: Modifier = Modifier) {
-
-    val mediaController = LocalMusicPlayerViewModel.current
-    val songListViewModel = LocalSongListViewModel.current
-
+fun SongList(
+    modifier: Modifier = Modifier,
+    mediaController: MusicPlayerViewModel = hiltViewModel(),
+) {
+    val songRepository = mediaController.songRepository
 
     // Use the state variable to determine if the MediaController and songlist are initialized
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
-    val isSongListInitialized by songListViewModel.isInitialized
+    val isSongListInitialized by songRepository.isInitialized
 
-    val songList = remember { songListViewModel.songList }
+    val songList = remember { songRepository.songList }
 
     LazyColumn(
         modifier = modifier
@@ -177,17 +175,32 @@ fun SongList(modifier: Modifier = Modifier) {
             }
         } else {
             itemsIndexed(songList) { index, song ->
-                SongCard(song, index)
+
+                val mediaItem = MediaItem.Builder()
+                    .setMediaId(song.path)
+                    .setUri(song.path)
+                    .setMediaMetadata(
+                        MediaMetadata.Builder()
+                            .setTitle(song.title)
+                            .setDisplayTitle(song.title)
+                            .build()
+                    )
+                    .build()
+
+                SongCard(mediaItem, index)
             }
         }
     }
 }
 
 @Composable
-fun SongCard(mediaItem: MediaItem, mediaItemIndex: Int) {
+fun SongCard(
+    mediaItem: MediaItem,
+    mediaItemIndex: Int,
+    mediaController: MusicPlayerViewModel = hiltViewModel()
+) {
     val scroll = rememberScrollState(0)
-    //get the mediaController for controls
-    val mediaController = LocalMusicPlayerViewModel.current.mediaController
+
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
@@ -195,7 +208,7 @@ fun SongCard(mediaItem: MediaItem, mediaItemIndex: Int) {
             .background(Color.Gray)
             .height(75.dp),
         onClick = {
-            mediaController.seekTo(mediaItemIndex, C.TIME_UNSET)
+            mediaController.mediaController.seekTo(mediaItemIndex, C.TIME_UNSET)
         }
     ) {
         Row {

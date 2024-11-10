@@ -43,15 +43,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich200.tagcapella.Tag
-import com.hich2000.tagcapella.LocalTagViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun TagList() {
+fun TagList(
+    tagViewModel: TagViewModel = hiltViewModel()
+) {
 
-    val tagViewModel = LocalTagViewModel.current
     val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
     val showDialog = remember { mutableStateOf(false) }
@@ -70,7 +71,6 @@ fun TagList() {
             )
         }
     }
-
 
     Scaffold(
         floatingActionButton = {

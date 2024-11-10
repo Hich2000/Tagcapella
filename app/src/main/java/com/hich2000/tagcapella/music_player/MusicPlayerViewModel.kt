@@ -5,7 +5,7 @@ import android.content.ComponentName
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -13,21 +13,22 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
-import kotlin.io.path.Path
-import kotlin.io.path.isDirectory
-import kotlin.io.path.isRegularFile
-import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.nameWithoutExtension
+import javax.inject.Inject
 
-class MusicPlayerViewModel(application: Application) : AndroidViewModel(application) {
+
+@HiltViewModel
+class MusicPlayerViewModel @Inject constructor(
+    private val application: Application,
+    val songRepository: SongRepository
+) : ViewModel() {
 
     // Hold MediaController in a mutable state
     private lateinit var _mediaController: MediaController
     val mediaController: MediaController
         get() = _mediaController
-
 
     // State to indicate if the shuffle mode is enabled
     private val _shuffleModeEnabled = mutableStateOf(false)
@@ -49,11 +50,11 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             val sessionToken =
                 SessionToken(
-                    getApplication(),
-                    ComponentName(getApplication(), PlaybackService::class.java)
+                    application,
+                    ComponentName(application, PlaybackService::class.java)
                 )
             val controllerFuture =
-                MediaController.Builder(getApplication(), sessionToken).buildAsync()
+                MediaController.Builder(application, sessionToken).buildAsync()
             controllerFuture.addListener(
                 {
                     try {
@@ -90,23 +91,19 @@ class MusicPlayerViewModel(application: Application) : AndroidViewModel(applicat
     private fun getInitialPlaylist(): MutableList<MediaItem> {
         val playlist = mutableListOf<MediaItem>()
 
-        val path = Path("/storage/emulated/0/Music").listDirectoryEntries()
-        path.listIterator().forEach {
-            if (!it.isDirectory() && it.isRegularFile()) {
+        songRepository.songList.listIterator().forEach {
+            val mediaItem = MediaItem.Builder()
+                .setMediaId(it.path)
+                .setUri(it.path)
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(it.title)
+                        .setDisplayTitle(it.title)
+                        .build()
+                )
+                .build()
 
-                val mediaItem = MediaItem.Builder()
-                    .setMediaId(it.toString())
-                    .setUri(it.toString())
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(it.nameWithoutExtension)
-                            .setDisplayTitle(it.nameWithoutExtension)
-                            .build()
-                    )
-                    .build()
-
-                playlist.add(mediaItem)
-            }
+            playlist.add(mediaItem)
         }
         return playlist
     }
