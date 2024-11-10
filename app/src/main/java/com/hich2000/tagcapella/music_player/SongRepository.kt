@@ -34,13 +34,18 @@ class SongRepository @Inject constructor() {
 
     init {
         repositoryScope.launch {
-            _songList.addAll(scanMusicFolder())
+            setSongList(scanMusicFolder())
             _isInitialized.value = true
         }
     }
 
+    fun setSongList(songList: List<Song>) {
+        _songList.clear()
+        _songList.addAll(songList)
+    }
+
     // Suspend function to fetch the list of songs from the directory asynchronously
-    private suspend fun scanMusicFolder(): List<Song> {
+    suspend fun scanMusicFolder(): List<Song> {
         // Perform file IO operations on a background thread using withContext(Dispatchers.IO)
         return withContext(Dispatchers.IO) {
             val songList = mutableListOf<Song>()

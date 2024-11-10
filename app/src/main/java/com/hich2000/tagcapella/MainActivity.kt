@@ -13,7 +13,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +46,8 @@ import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @HiltAndroidApp
@@ -52,16 +58,27 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    private val playerViewModel: MusicPlayerViewModel by viewModels()
+    private val _mediaPermissionGranted: MutableStateFlow<Int> = MutableStateFlow(PackageManager.PERMISSION_DENIED)
+    private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
+
+    private val mediaPlayerViewModel: MusicPlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        _mediaPermissionGranted.value = ContextCompat.checkSelfPermission(
+            this,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_AUDIO
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+        )
         requestPermissions()
 
         lifecycleScope.launch {
-            playerViewModel.initializeMediaController()
+            mediaPlayerViewModel.initializeMediaController()
         }
 
         setContent {
@@ -86,6 +103,13 @@ class MainActivity : ComponentActivity() {
         ) { isGranted: Boolean ->
             if (!isGranted) {
                 Toast.makeText(this, "App required media permissions.", Toast.LENGTH_SHORT).show()
+            } else {
+                _mediaPermissionGranted.value = PackageManager.PERMISSION_GRANTED
+
+                lifecycleScope.launch {
+                    val songRepository = mediaPlayerViewModel.songRepository
+                    songRepository.setSongList(songRepository.scanMusicFolder())
+                }
             }
         }
 
@@ -111,47 +135,71 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TagcapellaApp() {
         var selectedScreen by remember { mutableStateOf(NavItems.Player) }
+        val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
 
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            bottomBar = {
-                NavigationBar(
+        if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                bottomBar = {
+                    NavigationBar(
+                        modifier = Modifier
+                            .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    ) {
+                        NavItems.entries.forEach {
+                            NavigationBarItem(
+                                selected = selectedScreen == it,
+                                icon = { Icon(it.icon, it.title) },
+                                onClick = { selectedScreen = it }
+                            )
+                        }
+                    }
+                },
+                topBar = {
+                    Text(
+                        "ayylmao",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(2.dp, Color.Gray),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            ) { innerPadding ->
+
+                Box(
                     modifier = Modifier
-                        .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+                        .padding(innerPadding)
+                        .fillMaxSize()
                 ) {
-                    NavItems.entries.forEach {
-                        NavigationBarItem(
-                            selected = selectedScreen == it,
-                            icon = { Icon(it.icon, it.title) },
-                            onClick = { selectedScreen = it }
-                        )
+                    if (selectedScreen == NavItems.SongList) {
+                        SongList()
+                    } else if (selectedScreen == NavItems.Tags) {
+                        TagList()
+                    } else {
+                        MusicControls()
                     }
                 }
-            },
-            topBar = {
-                Text(
-                    "ayylmao",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(2.dp, Color.Gray),
-                    textAlign = TextAlign.Center
-                )
             }
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-                if (selectedScreen == NavItems.SongList) {
-                    SongList()
-                } else if (selectedScreen == NavItems.Tags) {
-                    TagList()
-                } else {
-                    MusicControls()
+        } else {
+
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text("Media permissions are necessary to use this application")
+                        }
+                    }
                 }
             }
         }
-
     }
 }

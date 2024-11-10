@@ -200,7 +200,7 @@ fun SongCard(
     mediaController: MusicPlayerViewModel = hiltViewModel()
 ) {
     val scroll = rememberScrollState(0)
-    //get the mediaController for controls
+
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
