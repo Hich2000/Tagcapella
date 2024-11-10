@@ -40,9 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import com.hich2000.tagcapella.LocalSongListViewModel
-
 
 @Composable
 fun MusicControls(
@@ -157,13 +156,13 @@ fun SongList(
     modifier: Modifier = Modifier,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
-    val songListViewModel = LocalSongListViewModel.current
+    val songRepository = mediaController.songRepository
 
     // Use the state variable to determine if the MediaController and songlist are initialized
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
-    val isSongListInitialized by songListViewModel.isInitialized
+    val isSongListInitialized by songRepository.isInitialized
 
-    val songList = remember { songListViewModel.songList }
+    val songList = remember { songRepository.songList }
 
     LazyColumn(
         modifier = modifier
@@ -176,7 +175,19 @@ fun SongList(
             }
         } else {
             itemsIndexed(songList) { index, song ->
-                SongCard(song, index)
+
+                val mediaItem = MediaItem.Builder()
+                    .setMediaId(song.path)
+                    .setUri(song.path)
+                    .setMediaMetadata(
+                        MediaMetadata.Builder()
+                            .setTitle(song.title)
+                            .setDisplayTitle(song.title)
+                            .build()
+                    )
+                    .build()
+
+                SongCard(mediaItem, index)
             }
         }
     }

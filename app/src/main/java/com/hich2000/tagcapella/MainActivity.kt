@@ -41,6 +41,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
+import com.hich2000.tagcapella.music_player.SongList
+import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -156,9 +158,9 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     if (selectedScreen == NavItems.SongList) {
-//                        SongList()
+                        SongList()
                     } else if (selectedScreen == NavItems.Tags) {
-//                        TagList()
+                        TagList()
                     } else {
                         MusicControls()
                     }

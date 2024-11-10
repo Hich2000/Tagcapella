@@ -22,14 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
     private val application: Application,
-    private val songRepository: SongRepository
+    val songRepository: SongRepository
 ) : ViewModel() {
 
     // Hold MediaController in a mutable state
     private lateinit var _mediaController: MediaController
     val mediaController: MediaController
         get() = _mediaController
-
 
     // State to indicate if the shuffle mode is enabled
     private val _shuffleModeEnabled = mutableStateOf(false)
