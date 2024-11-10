@@ -58,7 +58,8 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    private val _mediaPermissionGranted: MutableStateFlow<Int> = MutableStateFlow(PackageManager.PERMISSION_DENIED)
+    private val _mediaPermissionGranted: MutableStateFlow<Int> =
+        MutableStateFlow(PackageManager.PERMISSION_DENIED)
     private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
 
     private val mediaPlayerViewModel: MusicPlayerViewModel by viewModels()
@@ -164,7 +165,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             ) { innerPadding ->
-
                 Box(
                     modifier = Modifier
                         .padding(innerPadding)
@@ -180,7 +180,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } else {
-
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
             ) { innerPadding ->
