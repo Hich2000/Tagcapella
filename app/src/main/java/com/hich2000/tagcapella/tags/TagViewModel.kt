@@ -4,14 +4,19 @@ import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich200.tagcapella.Tag
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class TagViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class TagViewModel @Inject constructor(
+    application: Application
+) : ViewModel() {
 
     private var _tags = mutableStateListOf<Tag>()
     val tags: SnapshotStateList<Tag> get() = _tags
@@ -21,7 +26,7 @@ class TagViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val driver: SqlDriver = AndroidSqliteDriver(
             TagcapellaDb.Schema,
-            getApplication(),
+            application,
             "tagcapella.db",
             callback = object : AndroidSqliteDriver.Callback(TagcapellaDb.Schema) {
                 override fun onOpen(db: SupportSQLiteDatabase) {

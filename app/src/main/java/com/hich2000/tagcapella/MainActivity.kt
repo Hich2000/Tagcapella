@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +51,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
-class MyApp: Application()
+class MyApp : Application()
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -60,7 +59,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     private val playerViewModel: MusicPlayerViewModel by viewModels()
-    private val tagViewModel: TagViewModel by viewModels()
 
     private val userViewModel: UserViewModel by viewModels()
 
@@ -120,53 +118,49 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun TagcapellaApp() {
-
         var selectedScreen by remember { mutableStateOf(NavItems.Player) }
 
-        CompositionLocalProvider(
-            LocalTagViewModel provides tagViewModel
-        ) {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                bottomBar = {
-                    NavigationBar (
-                        modifier = Modifier
-                            .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
-                    ) {
-                        NavItems.entries.forEach {
-                            NavigationBarItem(
-                                selected = selectedScreen == it,
-                                icon = { Icon(it.icon, it.title) },
-                                onClick = {selectedScreen = it}
-                            )
-                        }
-                    }
-                },
-                topBar = {
-                    Text(
-                        "ayylmao",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(2.dp, Color.Gray),
-                        textAlign = TextAlign.Center
-                    )
-                }
-            ) { innerPadding ->
-                Box(
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            bottomBar = {
+                NavigationBar(
                     modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
+                        .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
                 ) {
-                    if (selectedScreen == NavItems.SongList) {
-                        SongList()
-                    } else if (selectedScreen == NavItems.Tags) {
-                        TagList()
-                    } else {
-                        MusicControls()
+                    NavItems.entries.forEach {
+                        NavigationBarItem(
+                            selected = selectedScreen == it,
+                            icon = { Icon(it.icon, it.title) },
+                            onClick = { selectedScreen = it }
+                        )
                     }
+                }
+            },
+            topBar = {
+                Text(
+                    "ayylmao",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(2.dp, Color.Gray),
+                    textAlign = TextAlign.Center
+                )
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                if (selectedScreen == NavItems.SongList) {
+                    SongList()
+                } else if (selectedScreen == NavItems.Tags) {
+                    TagList()
+                } else {
+                    MusicControls()
                 }
             }
         }
+
     }
 }
 
