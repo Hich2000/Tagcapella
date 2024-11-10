@@ -35,16 +35,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
-import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.music_player.SongListViewModel
-import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,31 +58,19 @@ class MainActivity : ComponentActivity() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     private val playerViewModel: MusicPlayerViewModel by viewModels()
-    private val songListViewModel: SongListViewModel by viewModels()
     private val tagViewModel: TagViewModel by viewModels()
 
     private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-        val splashscreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
         requestPermissions()
 
         lifecycleScope.launch {
             playerViewModel.initializeMediaController()
-            songListViewModel.initializeSongList()
         }
-
-        println("I am here: "+userViewModel.user.value)
-
-        // Use the state variable to determine if the MediaController and songlist are initialized
-        val isMediaControllerInitialized by playerViewModel.isMediaControllerInitialized
-        val isSongListInitialized by songListViewModel.isInitialized
-
-        splashscreen.setKeepOnScreenCondition{isMediaControllerInitialized && isSongListInitialized}
-
 
         setContent {
             TagcapellaTheme {
@@ -94,7 +78,7 @@ class MainActivity : ComponentActivity() {
                     Surface(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        TagcapellaApp(playerViewModel, songListViewModel)
+                        TagcapellaApp()
                     }
                 }
             }
@@ -133,13 +117,11 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun TagcapellaApp(playerViewModel: MusicPlayerViewModel, songListViewModel: SongListViewModel) {
+    fun TagcapellaApp() {
 
         var selectedScreen by remember { mutableStateOf(NavItems.Player) }
 
         CompositionLocalProvider(
-            LocalSongListViewModel provides songListViewModel,
-            LocalMusicPlayerViewModel provides playerViewModel,
             LocalTagViewModel provides tagViewModel
         ) {
             Scaffold(
@@ -174,9 +156,9 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     if (selectedScreen == NavItems.SongList) {
-                        SongList()
+//                        SongList()
                     } else if (selectedScreen == NavItems.Tags) {
-                        TagList()
+//                        TagList()
                     } else {
                         MusicControls()
                     }

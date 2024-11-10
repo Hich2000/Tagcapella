@@ -6,6 +6,7 @@ plugins {
     id("dagger.hilt.android.plugin") // Apply Hilt plugin
 }
 
+
 kapt {
     //this block is to suppress some warnings.
     correctErrorTypes = true // Helps Hilt work with other libraries like Room
@@ -107,6 +108,8 @@ dependencies {
     // Hilt dependencies
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    // Hilt Compose Navigation dependency for hiltViewModel() in Composables
+    implementation(libs.androidx.hilt.navigation.compose)
 }
 
 sqldelight {
