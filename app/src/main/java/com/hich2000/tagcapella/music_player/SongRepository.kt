@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.hich2000.tagcapella.Database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,7 +21,11 @@ import kotlin.io.path.nameWithoutExtension
 data class Song(val path: String, val title: String)
 
 @Singleton
-class SongRepository @Inject constructor() {
+class SongRepository @Inject constructor(
+    database: Database
+) {
+
+    private val db = database.db
 
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -63,7 +68,38 @@ class SongRepository @Inject constructor() {
                 // Handle any potential exceptions here (e.g., permission issues, invalid paths)
                 e.printStackTrace()
             }
-            return@withContext songList  // Return the list of songs
+
+            //return the song list after they have been saved in the database
+            return@withContext saveSongList(songList)
         }
+    }
+
+    private suspend fun saveSongList(songList: MutableList<Song>): MutableList<Song> {
+        return withContext(Dispatchers.IO) {
+            val toRemove: MutableList<Int> = mutableListOf()
+
+            songList.forEachIndexed { index, song ->
+                try {
+                    if (!songRecordExists(song)) {
+                        db.songQueries.insertSong(song.path, song.title)
+                    }
+                    if (song.title == "Distortion!!") {
+                        toRemove.add(index)
+                    }
+                } catch (e: Exception) {
+                    toRemove.add(index)
+                }
+            }
+
+            toRemove.forEach {
+                songList.removeAt(it)
+            }
+
+            return@withContext songList
+        }
+    }
+
+    private fun songRecordExists(song: Song): Boolean {
+        return db.songQueries.selectSong(song.path).executeAsOneOrNull() !== null
     }
 }

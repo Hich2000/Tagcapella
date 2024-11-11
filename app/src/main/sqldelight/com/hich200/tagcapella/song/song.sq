@@ -1,6 +1,9 @@
 selectAll:
 SELECT * FROM song;
 
+selectSong:
+SELECT * FROM song WHERE path = ?;
+
 insertSong:
 INSERT INTO song (path, title) VALUES (?, ?);
 
