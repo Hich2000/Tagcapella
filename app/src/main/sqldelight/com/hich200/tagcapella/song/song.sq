@@ -2,7 +2,7 @@ selectAll:
 SELECT * FROM song;
 
 insertSong:
-INSERT INTO song (id, title) VALUES (?, ?);
+INSERT INTO song (path, title) VALUES (?, ?);
 
 deleteSong:
 DELETE FROM song WHERE id = ?;
