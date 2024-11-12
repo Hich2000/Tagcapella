@@ -83,9 +83,6 @@ class SongRepository @Inject constructor(
                     if (!songRecordExists(song)) {
                         db.songQueries.insertSong(song.path, song.title)
                     }
-                    if (song.title == "Distortion!!") {
-                        toRemove.add(index)
-                    }
                 } catch (e: Exception) {
                     toRemove.add(index)
                 }
