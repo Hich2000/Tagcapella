@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import com.hich200.tagcapella.Song
 import com.hich200.tagcapella.Tag
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.Database
@@ -46,5 +47,22 @@ class TagViewModel @Inject constructor(
         val deleteIndex = _tags.indexOfFirst { it.id == id }
         db.tagQueries.deleteTag(_tags[deleteIndex].id)
         _tags.removeAt(deleteIndex)
+    }
+
+    fun addSongTag(tagId: Long, songId: Long) {
+        db.tagQueries.addSongTag(tagId, songId)
+    }
+
+    fun deleteSongTag(songTagId: Long) {
+        db.tagQueries.deleteSongTag(songTagId)
+    }
+
+    fun selectTaggedSongs(tagId: Long): SnapshotStateList<Song> {
+        val taggedSongs = mutableStateListOf<Song>()
+        val queryResult = db.tagQueries.selectTaggedSongs(tagId).executeAsList().toMutableStateList()
+        queryResult.forEach {
+            taggedSongs.add(Song(it.id, it.path, it.title))
+        }
+        return taggedSongs
     }
 }
