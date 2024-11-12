@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich200.tagcapella.Tag
+import com.hich2000.tagcapella.music_player.SongList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -55,13 +57,15 @@ fun TagList(
 
     val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
-    val showDialog = remember { mutableStateOf(false) }
+    val showEditDialog = remember { mutableStateOf(false) }
     val editDialogTag = remember { mutableStateOf<Tag?>(null) }
 
-    if (showDialog.value) {
+    val showSongDialog = remember { mutableStateOf(false) }
+
+    if (showEditDialog.value) {
         BasicAlertDialog(
             onDismissRequest = {
-                showDialog.value = false
+                showEditDialog.value = false
                 editDialogTag.value = null
             },
         ) {
@@ -72,10 +76,20 @@ fun TagList(
         }
     }
 
+    if (showSongDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showSongDialog.value = false
+            },
+        ) {
+            SongList()
+        }
+    }
+
     Scaffold(
         floatingActionButton = {
             SmallFloatingActionButton(onClick = {
-                showDialog.value = true
+                showEditDialog.value = true
             }) {
                 Icon(
                     Icons.Default.Add, contentDescription = "Add label"
@@ -93,9 +107,12 @@ fun TagList(
                 TagCard(
                     tag = it,
                     tagViewModel = tagViewModel,
-                    editCallBack = {
+                    editCallback = {
                         editDialogTag.value = it
-                        showDialog.value = true
+                        showEditDialog.value = true
+                    },
+                    songCallback = {
+                        showSongDialog.value = true
                     }
                 )
             }
@@ -104,7 +121,7 @@ fun TagList(
 }
 
 @Composable
-fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallBack: () -> Unit = {}) {
+fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallback: () -> Unit = {}, songCallback: () -> Unit = {}) {
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
@@ -141,11 +158,19 @@ fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallBack: () -> Unit = {})
                     )
                 }
                 IconButton(
-                    onClick = editCallBack
+                    onClick = editCallback
                 ) {
                     Icon(
                         Icons.Default.Edit,
                         contentDescription = "Edit"
+                    )
+                }
+                IconButton(
+                    onClick = songCallback
+                ) {
+                    Icon(
+                        Icons.Default.MusicNote,
+                        contentDescription = "Tag songs"
                     )
                 }
             }
