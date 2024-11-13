@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -154,11 +153,12 @@ fun MusicControls(
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
+    onSongClick: (song: Song) -> Unit = {},
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
     val songRepository = mediaController.songRepository
 
-    // Use the state variable to determine if the MediaController and songlist are initialized
+    // Use the state variable to determine if the MediaController and song list are initialized
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
     val isSongListInitialized by songRepository.isInitialized
 
@@ -187,7 +187,7 @@ fun SongList(
                     )
                     .build()
 
-                SongCard(mediaItem, index)
+                SongCard(mediaItem, onClick = { onSongClick(song) })
             }
         }
     }
@@ -196,8 +196,7 @@ fun SongList(
 @Composable
 fun SongCard(
     mediaItem: MediaItem,
-    mediaItemIndex: Int,
-    mediaController: MusicPlayerViewModel = hiltViewModel()
+    onClick: () -> Unit = {}
 ) {
     val scroll = rememberScrollState(0)
 
@@ -208,7 +207,8 @@ fun SongCard(
             .background(Color.Gray)
             .height(75.dp),
         onClick = {
-            mediaController.mediaController.seekTo(mediaItemIndex, C.TIME_UNSET)
+            onClick()
+//            mediaController.mediaController.seekTo(mediaItemIndex, C.TIME_UNSET)
         }
     ) {
         Row {

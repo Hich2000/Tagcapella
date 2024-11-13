@@ -58,7 +58,7 @@ fun TagList(
     val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
     val showEditDialog = remember { mutableStateOf(false) }
-    val editDialogTag = remember { mutableStateOf<Tag?>(null) }
+    val clickedTag = remember { mutableStateOf<Tag?>(null) }
 
     val showSongDialog = remember { mutableStateOf(false) }
 
@@ -66,11 +66,11 @@ fun TagList(
         BasicAlertDialog(
             onDismissRequest = {
                 showEditDialog.value = false
-                editDialogTag.value = null
+                clickedTag.value = null
             },
         ) {
             TagForm(
-                tag = editDialogTag.value,
+                tag = clickedTag.value,
                 tagViewModel = tagViewModel
             )
         }
@@ -80,6 +80,7 @@ fun TagList(
         BasicAlertDialog(
             onDismissRequest = {
                 showSongDialog.value = false
+                clickedTag.value = null
             },
         ) {
             SongList()
@@ -108,10 +109,11 @@ fun TagList(
                     tag = it,
                     tagViewModel = tagViewModel,
                     editCallback = {
-                        editDialogTag.value = it
+                        clickedTag.value = it
                         showEditDialog.value = true
                     },
                     songCallback = {
+                        clickedTag.value = it
                         showSongDialog.value = true
                     }
                 )
