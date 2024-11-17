@@ -18,7 +18,7 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
-data class Song(val id: Long?, val path: String, val title: String)
+data class SongDTO(val id: Long?, val path: String, val title: String)
 
 @Singleton
 class SongRepository @Inject constructor(
@@ -30,8 +30,8 @@ class SongRepository @Inject constructor(
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private var _songList = mutableStateListOf<Song>()
-    val songList: SnapshotStateList<Song> get() = _songList
+    private var _songList = mutableStateListOf<SongDTO>()
+    val songList: SnapshotStateList<SongDTO> get() = _songList
 
     // State to indicate if initializing has completed
     private val _isInitialized = mutableStateOf(false)
@@ -39,23 +39,23 @@ class SongRepository @Inject constructor(
 
     init {
         repositoryScope.launch {
-            val scannedSongs: MutableList<Song> = scanMusicFolder()
+            val scannedSongs: MutableList<SongDTO> = scanMusicFolder()
             saveSongList(scannedSongs)
             setSongList(getSongList())
             _isInitialized.value = true
         }
     }
 
-    fun setSongList(songList: List<Song>) {
+    fun setSongList(songList: List<SongDTO>) {
         _songList.clear()
         _songList.addAll(songList)
     }
 
     // Suspend function to fetch the list of songs from the directory asynchronously
-    suspend fun scanMusicFolder(): MutableList<Song> {
+    suspend fun scanMusicFolder(): MutableList<SongDTO> {
         // Perform file IO operations on a background thread using withContext(Dispatchers.IO)
         return withContext(Dispatchers.IO) {
-            val songList = mutableListOf<Song>()
+            val songList = mutableListOf<SongDTO>()
             val path = Path("/storage/emulated/0/Music")
 
             // List directory entries asynchronously and add valid music files
@@ -63,7 +63,7 @@ class SongRepository @Inject constructor(
                 path.listDirectoryEntries().forEach {
                     if (it.isRegularFile() && !it.isDirectory()) {
                         // Add the song to the list
-                        songList.add(Song(null, it.toString(), it.nameWithoutExtension))
+                        songList.add(SongDTO(null, it.toString(), it.nameWithoutExtension))
                     }
                 }
             } catch (e: Exception) {
@@ -76,7 +76,7 @@ class SongRepository @Inject constructor(
         }
     }
 
-    private suspend fun saveSongList(songList: MutableList<Song>): MutableList<Song> {
+    private suspend fun saveSongList(songList: MutableList<SongDTO>): MutableList<SongDTO> {
         return withContext(Dispatchers.IO) {
             val toRemove: MutableList<Int> = mutableListOf()
 
@@ -98,11 +98,17 @@ class SongRepository @Inject constructor(
         }
     }
 
-    private fun getSongList(): List<Song> {
-        return db.songQueries.selectAll {id, path, title -> Song(id=id, path=path, title=title)}.executeAsList()
+    private fun getSongList(): List<SongDTO> {
+        return db.songQueries.selectAll { id, path, title ->
+            SongDTO(
+                id = id,
+                path = path,
+                title = title
+            )
+        }.executeAsList()
     }
 
-    private fun songRecordExists(song: Song): Boolean {
+    private fun songRecordExists(song: SongDTO): Boolean {
         return db.songQueries.selectSong(song.path).executeAsOneOrNull() !== null
     }
 }

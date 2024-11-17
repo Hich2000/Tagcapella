@@ -45,8 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich200.tagcapella.Tag
-import com.hich2000.tagcapella.music_player.Song
+import com.hich2000.tagcapella.music_player.SongDTO
 import com.hich2000.tagcapella.music_player.SongList
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +58,7 @@ fun TagList(
     val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
     val showEditDialog = remember { mutableStateOf(false) }
-    val clickedTag = remember { mutableStateOf<Tag?>(null) }
+    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
 
     val showSongDialog = remember { mutableStateOf(false) }
 
@@ -85,11 +84,9 @@ fun TagList(
             },
         ) {
             SongList(
-                onSongClick = { song: Song ->
-                    clickedTag.value?.let {
-                        song.id?.let { it1 ->
-                            tagViewModel.addSongTag(it.id, it1)
-                        }
+                onSongClick = { song: SongDTO ->
+                    song.id?.let {
+                        tagViewModel.addSongTag(clickedTag.value!!, song)
                     }
                 }
             )
@@ -133,11 +130,14 @@ fun TagList(
 
 @Composable
 fun TagCard(
-    tag: Tag,
+    tag: TagDTO,
     tagViewModel: TagViewModel,
     editCallback: () -> Unit = {},
     songCallback: () -> Unit = {}
 ) {
+
+    val taggedSongCount by tag.taggedSongCount
+
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
@@ -189,14 +189,15 @@ fun TagCard(
                         contentDescription = "Tag songs"
                     )
                 }
+                Text("($taggedSongCount)")
             }
         }
     }
 }
 
 @Composable
-fun TagForm(tag: Tag? = null, tagViewModel: TagViewModel) {
-    var textState by remember { mutableStateOf(if (tag is Tag) tag.tag else "") }
+fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
+    var textState by remember { mutableStateOf(if (tag is TagDTO) tag.tag else "") }
 
     Surface(
         modifier = Modifier
