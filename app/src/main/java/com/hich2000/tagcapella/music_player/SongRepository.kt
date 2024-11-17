@@ -18,12 +18,11 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
-data class Song(val path: String, val title: String)
-
 @Singleton
 class SongRepository @Inject constructor(
     database: Database
 ) {
+    data class Song(val id: Long?, val path: String, val title: String)
 
     private val db = database.db
 
@@ -39,7 +38,9 @@ class SongRepository @Inject constructor(
 
     init {
         repositoryScope.launch {
-            setSongList(scanMusicFolder())
+            val scannedSongs: MutableList<Song> = scanMusicFolder()
+            saveSongList(scannedSongs)
+            setSongList(getSongList())
             _isInitialized.value = true
         }
     }
@@ -50,7 +51,7 @@ class SongRepository @Inject constructor(
     }
 
     // Suspend function to fetch the list of songs from the directory asynchronously
-    suspend fun scanMusicFolder(): List<Song> {
+    suspend fun scanMusicFolder(): MutableList<Song> {
         // Perform file IO operations on a background thread using withContext(Dispatchers.IO)
         return withContext(Dispatchers.IO) {
             val songList = mutableListOf<Song>()
@@ -61,7 +62,7 @@ class SongRepository @Inject constructor(
                 path.listDirectoryEntries().forEach {
                     if (it.isRegularFile() && !it.isDirectory()) {
                         // Add the song to the list
-                        songList.add(Song(it.toString(), it.nameWithoutExtension))
+                        songList.add(Song(null, it.toString(), it.nameWithoutExtension))
                     }
                 }
             } catch (e: Exception) {
@@ -70,7 +71,7 @@ class SongRepository @Inject constructor(
             }
 
             //return the song list after they have been saved in the database
-            return@withContext saveSongList(songList)
+            return@withContext songList
         }
     }
 
@@ -94,6 +95,10 @@ class SongRepository @Inject constructor(
 
             return@withContext songList
         }
+    }
+
+    private fun getSongList(): List<Song> {
+        return db.songQueries.selectAll {id, path, title -> Song(id=id, path=path, title=title)}.executeAsList()
     }
 
     private fun songRecordExists(song: Song): Boolean {

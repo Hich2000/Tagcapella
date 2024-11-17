@@ -43,6 +43,7 @@ import androidx.media3.common.C
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongList
+import com.hich2000.tagcapella.music_player.SongRepository
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -174,7 +175,7 @@ class MainActivity : ComponentActivity() {
                     if (selectedScreen == NavItems.SongList) {
                         SongList(
                             mediaController = mediaPlayerViewModel,
-                            onSongClick = { song ->
+                            onSongClick = { song: SongRepository.Song ->
                                 val index = mediaPlayerViewModel.songRepository.songList.indexOf(song)
                                 if (index >= 0) {
                                     mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
