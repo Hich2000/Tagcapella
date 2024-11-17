@@ -83,7 +83,15 @@ fun TagList(
                 clickedTag.value = null
             },
         ) {
-            SongList()
+            SongList(
+                onSongClick = { song ->
+                    clickedTag.value?.let {
+                        song.id?.let { it1 ->
+                            tagViewModel.addSongTag(it.id, it1)
+                        }
+                    }
+                }
+            )
         }
     }
 
@@ -123,7 +131,12 @@ fun TagList(
 }
 
 @Composable
-fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallback: () -> Unit = {}, songCallback: () -> Unit = {}) {
+fun TagCard(
+    tag: Tag,
+    tagViewModel: TagViewModel,
+    editCallback: () -> Unit = {},
+    songCallback: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))

@@ -50,7 +50,7 @@ class TagViewModel @Inject constructor(
     }
 
     fun addSongTag(tagId: Long, songId: Long) {
-        db.tagQueries.addSongTag(tagId, songId)
+        db.tagQueries.addSongTag(songId, tagId)
     }
 
     fun deleteSongTag(songTagId: Long) {
