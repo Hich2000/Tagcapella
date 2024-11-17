@@ -18,11 +18,12 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
+data class Song(val id: Long?, val path: String, val title: String)
+
 @Singleton
 class SongRepository @Inject constructor(
     database: Database
 ) {
-    data class Song(val id: Long?, val path: String, val title: String)
 
     private val db = database.db
 

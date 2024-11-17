@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich200.tagcapella.Tag
+import com.hich2000.tagcapella.music_player.Song
 import com.hich2000.tagcapella.music_player.SongList
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +85,7 @@ fun TagList(
             },
         ) {
             SongList(
-                onSongClick = { song ->
+                onSongClick = { song: Song ->
                     clickedTag.value?.let {
                         song.id?.let { it1 ->
                             tagViewModel.addSongTag(it.id, it1)

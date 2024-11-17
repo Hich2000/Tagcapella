@@ -153,7 +153,7 @@ fun MusicControls(
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
-    onSongClick: (song: SongRepository.Song) -> Unit = {},
+    onSongClick: (song: Song) -> Unit = {},
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
     val songRepository = mediaController.songRepository
