@@ -45,7 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.music_player.SongDTO
+import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,19 +84,42 @@ fun TagList(
             },
         ) {
             SongList(
-                onSongClick = { song: SongDTO ->
-                    if (clickedTag.value!!.taggedSongList.contains(song)) {
-                        song.id?.let {
-                            tagViewModel.deleteSongTag(clickedTag.value!!, song)
+                songCard = { song ->
+                    SongCard(
+                        song = song,
+                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
+                            Color.hsl(112f, 0.5f, 0.3f)
+                        } else {
+                            Color.Black
+                        },
+                        onClick = {
+                            if (clickedTag.value!!.taggedSongList.contains(song)) {
+                                song.id?.let {
+                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
+                                }
+                            } else {
+                                song.id?.let {
+                                    tagViewModel.addSongTag(clickedTag.value!!, song)
+                                }
+                            }
                         }
-                    } else {
-                        song.id?.let {
-                            tagViewModel.addSongTag(clickedTag.value!!, song)
-                        }
-                    }
-                    println("testing here: "+clickedTag.value!!.taggedSongList)
+                    )
                 }
             )
+
+//            SongList(
+//                onSongClick = { song: SongDTO ->
+//                    if (clickedTag.value!!.taggedSongList.contains(song)) {
+//                        song.id?.let {
+//                            tagViewModel.deleteSongTag(clickedTag.value!!, song)
+//                        }
+//                    } else {
+//                        song.id?.let {
+//                            tagViewModel.addSongTag(clickedTag.value!!, song)
+//                        }
+//                    }
+//                }
+//            )
         }
     }
 

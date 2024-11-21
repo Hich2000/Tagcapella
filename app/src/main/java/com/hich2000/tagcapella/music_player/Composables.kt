@@ -153,7 +153,7 @@ fun MusicControls(
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
-    onSongClick: (song: SongDTO) -> Unit = {},
+    songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
     val songRepository = mediaController.songRepository
@@ -174,20 +174,8 @@ fun SongList(
                 )
             }
         } else {
-
             items(songList) { song ->
-                val mediaItem = MediaItem.Builder()
-                    .setMediaId(song.path)
-                    .setUri(song.path)
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(song.title)
-                            .setDisplayTitle(song.title)
-                            .build()
-                    )
-                    .build()
-
-                SongCard(mediaItem, onClick = { onSongClick(song) })
+                songCard(song)
             }
         }
     }
@@ -195,10 +183,22 @@ fun SongList(
 
 @Composable
 fun SongCard(
-    mediaItem: MediaItem,
-    onClick: () -> Unit = {}
+    song: SongDTO,
+    onClick: () -> Unit = {},
+    backgroundColor: Color = Color.Black
 ) {
     val scroll = rememberScrollState(0)
+
+    val mediaItem = MediaItem.Builder()
+        .setMediaId(song.path)
+        .setUri(song.path)
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle(song.title)
+                .setDisplayTitle(song.title)
+                .build()
+        )
+        .build()
 
     Card(
         modifier = Modifier
@@ -206,12 +206,11 @@ fun SongCard(
             .fillMaxWidth()
             .background(Color.Gray)
             .height(75.dp),
-        onClick = {
-            onClick()
-//            mediaController.mediaController.seekTo(mediaItemIndex, C.TIME_UNSET)
-        }
+        onClick = onClick
     ) {
-        Row {
+        Row (
+            modifier = Modifier.background(backgroundColor)
+        ) {
             Icon(Icons.Rounded.PlayArrow, contentDescription = null)
             Text(
                 mediaItem.mediaMetadata.title.toString(),
