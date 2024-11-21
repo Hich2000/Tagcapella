@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import com.hich200.tagcapella.Song
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.Database
 import com.hich2000.tagcapella.music_player.SongDTO
@@ -17,31 +16,31 @@ data class TagDTO @Inject constructor(val id: Long, val tag: String, val databas
 
     private var db = database.db
 
-    private var _taggedSongList = mutableListOf<SongDTO>()
-    val taggedSongList get() = _taggedSongList
+    private var _taggedSongList = mutableStateListOf<SongDTO>()
+    val taggedSongList: SnapshotStateList<SongDTO> get() = _taggedSongList
 
     private var _taggedSongCount = mutableIntStateOf(getSongCount())
     val taggedSongCount: State<Int> get() = _taggedSongCount
 
     init {
+        reloadSongList()
+    }
+
+    fun reloadSongList() {
+        _taggedSongList.clear()
         _taggedSongList.addAll(getTaggedSongs())
         _taggedSongCount.intValue = getSongCount()
     }
 
     private fun getTaggedSongs(): MutableList<SongDTO> {
-        return db.tagQueries.selectTaggedSongs(id){id, title, path -> SongDTO(id, path, title)}.executeAsList().toMutableList()
+        val songs = db.tagQueries.selectTaggedSongs(id) { id, title, path ->
+            SongDTO(id, path, title)
+        }.executeAsList()
+        return songs.toMutableStateList()
     }
 
     private fun getSongCount(): Int {
         return taggedSongList.size
-    }
-
-    fun incrementSongCount() {
-        _taggedSongCount.intValue += 1
-    }
-
-    fun decrementSongCount() {
-        _taggedSongCount.intValue -= 1
     }
 }
 
@@ -60,7 +59,8 @@ class TagViewModel @Inject constructor(
     }
 
     private fun selectAllTags(): SnapshotStateList<TagDTO> {
-        return db.tagQueries.selectAll{id, tag -> TagDTO(id, tag, database) }.executeAsList().toMutableStateList()
+        return db.tagQueries.selectAll { id, tag -> TagDTO(id, tag, database) }.executeAsList()
+            .toMutableStateList()
     }
 
     fun insertTag(tag: String) {
@@ -84,20 +84,16 @@ class TagViewModel @Inject constructor(
     }
 
     fun addSongTag(tag: TagDTO, song: SongDTO) {
-        song.id?.let { db.tagQueries.addSongTag(it, tag.id) }
-        tag.incrementSongCount()
-    }
-
-    fun deleteSongTag(songTagId: Long) {
-        db.tagQueries.deleteSongTag(songTagId)
-    }
-
-    fun selectTaggedSongs(tagId: Long): SnapshotStateList<Song> {
-        val taggedSongs = mutableStateListOf<Song>()
-        val queryResult = db.tagQueries.selectTaggedSongs(tagId).executeAsList().toMutableStateList()
-        queryResult.forEach {
-            taggedSongs.add(Song(it.id, it.path, it.title))
+        if (!tag.taggedSongList.contains(song)) {
+            song.id?.let { db.tagQueries.addSongTag(it, tag.id) }
+            tag.reloadSongList()
         }
-        return taggedSongs
+    }
+
+    fun deleteSongTag(tag: TagDTO, song: SongDTO) {
+        song.id?.let {
+            db.tagQueries.deleteSongTag(tag.id, it)
+            tag.reloadSongList()
+        }
     }
 }

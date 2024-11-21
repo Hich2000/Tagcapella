@@ -85,9 +85,16 @@ fun TagList(
         ) {
             SongList(
                 onSongClick = { song: SongDTO ->
-                    song.id?.let {
-                        tagViewModel.addSongTag(clickedTag.value!!, song)
+                    if (clickedTag.value!!.taggedSongList.contains(song)) {
+                        song.id?.let {
+                            tagViewModel.deleteSongTag(clickedTag.value!!, song)
+                        }
+                    } else {
+                        song.id?.let {
+                            tagViewModel.addSongTag(clickedTag.value!!, song)
+                        }
                     }
+                    println("testing here: "+clickedTag.value!!.taggedSongList)
                 }
             )
         }

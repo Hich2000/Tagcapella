@@ -20,7 +20,4 @@ addSongTag:
 INSERT INTO song_tag (song, tag) VALUES (?, ?);
 
 deleteSongTag:
-DELETE FROM song_tag WHERE id = ?;
-
-selectTaggedSongsCount:
-SELECT COUNT(*) FROM song_tag WHERE tag = ?;
+DELETE FROM song_tag WHERE tag = ? AND song = ?;
