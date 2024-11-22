@@ -126,16 +126,15 @@ fun TagList(
                 .border(2.dp, Color.Blue, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
-            tags.forEach {
+            tags.forEach { tag ->
                 TagCard(
-                    tag = it,
-                    tagViewModel = tagViewModel,
+                    tag = tag,
                     editCallback = {
-                        clickedTag.value = it
+                        clickedTag.value = tag
                         showEditDialog.value = true
                     },
                     songCallback = {
-                        clickedTag.value = it
+                        clickedTag.value = tag
                         showSongDialog.value = true
                     }
                 )
@@ -147,10 +146,10 @@ fun TagList(
 @Composable
 fun TagCard(
     tag: TagDTO,
-    tagViewModel: TagViewModel,
     editCallback: () -> Unit = {},
-    songCallback: () -> Unit = {}
-) {
+    songCallback: () -> Unit = {},
+    tagViewModel: TagViewModel = hiltViewModel(),
+    ) {
 
     val taggedSongCount by tag.taggedSongCount
 
