@@ -106,20 +106,6 @@ fun TagList(
                     )
                 }
             )
-
-//            SongList(
-//                onSongClick = { song: SongDTO ->
-//                    if (clickedTag.value!!.taggedSongList.contains(song)) {
-//                        song.id?.let {
-//                            tagViewModel.deleteSongTag(clickedTag.value!!, song)
-//                        }
-//                    } else {
-//                        song.id?.let {
-//                            tagViewModel.addSongTag(clickedTag.value!!, song)
-//                        }
-//                    }
-//                }
-//            )
         }
     }
 

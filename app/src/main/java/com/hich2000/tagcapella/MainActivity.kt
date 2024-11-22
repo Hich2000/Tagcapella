@@ -173,7 +173,6 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     if (selectedScreen == NavItems.SongList) {
-
                         SongList(songCard = { song ->
                             SongCard(
                                 song = song,
@@ -185,17 +184,6 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         })
-
-//                        SongList(
-//                            mediaController = mediaPlayerViewModel,
-//                            onSongClick = { song: SongDTO ->
-//                                val index =
-//                                    mediaPlayerViewModel.songRepository.songList.indexOf(song)
-//                                if (index >= 0) {
-//                                    mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
-//                                }
-//                            }
-//                        )
                     } else if (selectedScreen == NavItems.Tags) {
                         TagList()
                     } else {
