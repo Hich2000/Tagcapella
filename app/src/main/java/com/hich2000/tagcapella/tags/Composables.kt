@@ -48,14 +48,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TagList(
+    composables: List<@Composable () -> Unit>,
+    floatingActionButton: @Composable () -> Unit,
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
-
-    val tags = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
     val showEditDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
@@ -110,15 +111,7 @@ fun TagList(
     }
 
     Scaffold(
-        floatingActionButton = {
-            SmallFloatingActionButton(onClick = {
-                showEditDialog.value = true
-            }) {
-                Icon(
-                    Icons.Default.Add, contentDescription = "Add label"
-                )
-            }
-        },
+        floatingActionButton = floatingActionButton
     ) {
         Column(
             modifier = Modifier
@@ -126,18 +119,8 @@ fun TagList(
                 .border(2.dp, Color.Blue, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
-            tags.forEach { tag ->
-                TagCard(
-                    tag = tag,
-                    editCallback = {
-                        clickedTag.value = tag
-                        showEditDialog.value = true
-                    },
-                    songCallback = {
-                        clickedTag.value = tag
-                        showSongDialog.value = true
-                    }
-                )
+            composables.forEach { composable ->
+                composable()
             }
         }
     }
@@ -146,10 +129,10 @@ fun TagList(
 @Composable
 fun TagCard(
     tag: TagDTO,
-    editCallback: () -> Unit = {},
-    songCallback: () -> Unit = {},
-    tagViewModel: TagViewModel = hiltViewModel(),
-    ) {
+    editCallback: (() -> Unit)? = null,
+    songCallback: (() -> Unit)? = null,
+    deleteCallback: (() -> Unit)? = null,
+) {
 
     val taggedSongCount by tag.taggedSongCount
 
@@ -177,17 +160,17 @@ fun TagCard(
                     .align(Alignment.CenterVertically)
             )
 
-            if (tag.id.toInt() != 0) {
+            if (deleteCallback != null) {
                 IconButton(
-                    onClick = {
-                        tagViewModel.deleteTag(tag.id)
-                    },
+                    onClick = deleteCallback
                 ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Delete"
                     )
                 }
+            }
+            if (editCallback != null) {
                 IconButton(
                     onClick = editCallback
                 ) {
@@ -196,6 +179,8 @@ fun TagCard(
                         contentDescription = "Edit"
                     )
                 }
+            }
+            if (songCallback != null) {
                 IconButton(
                     onClick = songCallback
                 ) {
@@ -209,6 +194,7 @@ fun TagCard(
         }
     }
 }
+
 
 @Composable
 fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
@@ -250,4 +236,100 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TagScreen(
+    tagViewModel: TagViewModel = hiltViewModel()
+) {
+    val tags = remember { tagViewModel.tags }
+    val showEditDialog = remember { mutableStateOf(false) }
+    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
+
+    val showSongDialog = remember { mutableStateOf(false) }
+
+    if (showEditDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showEditDialog.value = false
+                clickedTag.value = null
+            },
+        ) {
+            TagForm(
+                tag = clickedTag.value,
+                tagViewModel = tagViewModel
+            )
+        }
+    }
+
+    if (showSongDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showSongDialog.value = false
+                clickedTag.value = null
+            },
+        ) {
+            SongList(
+                songCard = { song ->
+                    SongCard(
+                        song = song,
+                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
+                            Color.hsl(112f, 0.5f, 0.3f)
+                        } else {
+                            Color.Black
+                        },
+                        onClick = {
+                            if (clickedTag.value!!.taggedSongList.contains(song)) {
+                                song.id?.let {
+                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
+                                }
+                            } else {
+                                song.id?.let {
+                                    tagViewModel.addSongTag(clickedTag.value!!, song)
+                                }
+                            }
+                        }
+                    )
+                }
+            )
+        }
+    }
+
+    TagList(
+        composables = tags.map { tag ->
+            {
+                var editCallback: (() -> Unit)? = null
+                var songCallback: (() -> Unit)? = null
+                var deleteCallback: (() -> Unit)? = null
+
+                if (tag.tag != "All") {
+                    editCallback = {
+                        clickedTag.value = tag
+                        showEditDialog.value = true
+                    }
+                    songCallback = {
+                        clickedTag.value = tag
+                        showSongDialog.value = true
+                    }
+                    deleteCallback = {
+                        tagViewModel.deleteTag(tag.id)
+                    }
+                }
+                TagCard(
+                    tag = tag,
+                    editCallback = editCallback,
+                    songCallback = songCallback,
+                    deleteCallback = deleteCallback
+                )
+            }
+        },
+        floatingActionButton = {
+            SmallFloatingActionButton(onClick = {
+                showEditDialog.value = true
+            }) {
+                Icon(Icons.Default.Add, contentDescription = "Add label")
+            }
+        }
+    )
 }

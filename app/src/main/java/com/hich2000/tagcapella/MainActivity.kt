@@ -44,7 +44,7 @@ import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.tags.TagList
+import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
@@ -185,8 +185,8 @@ class MainActivity : ComponentActivity() {
                             )
                         })
                     } else if (selectedScreen == NavItems.Tags) {
-                        TagList()
-                    } else {
+                        TagScreen()
+                    } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
                     }
                 }
