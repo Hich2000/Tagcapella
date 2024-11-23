@@ -78,10 +78,6 @@ class MainActivity : ComponentActivity() {
         )
         requestPermissions()
 
-        lifecycleScope.launch {
-            mediaPlayerViewModel.initializeMediaController()
-        }
-
         setContent {
             TagcapellaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -139,6 +135,8 @@ class MainActivity : ComponentActivity() {
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
+            mediaPlayerViewModel.initializeMediaController()
+
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {

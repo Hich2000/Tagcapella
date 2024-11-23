@@ -18,11 +18,11 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 
-data class SongDTO(val id: Long?, val path: String, val title: String)
+data class SongDTO(val id: Long?, val path: String, val title: String, val database: Database)
 
 @Singleton
 class SongRepository @Inject constructor(
-    database: Database
+    private val database: Database
 ) {
 
     private val db = database.db
@@ -41,9 +41,9 @@ class SongRepository @Inject constructor(
         repositoryScope.launch {
             val scannedSongs: MutableList<SongDTO> = scanMusicFolder()
             saveSongList(scannedSongs)
-            setSongList(getSongList())
-            _isInitialized.value = true
         }
+        setSongList(getSongList())
+        _isInitialized.value = true
     }
 
     fun setSongList(songList: List<SongDTO>) {
@@ -63,7 +63,7 @@ class SongRepository @Inject constructor(
                 path.listDirectoryEntries().forEach {
                     if (it.isRegularFile() && !it.isDirectory()) {
                         // Add the song to the list
-                        songList.add(SongDTO(null, it.toString(), it.nameWithoutExtension))
+                        songList.add(SongDTO(null, it.toString(), it.nameWithoutExtension, database))
                     }
                 }
             } catch (e: Exception) {
@@ -103,7 +103,8 @@ class SongRepository @Inject constructor(
             SongDTO(
                 id = id,
                 path = path,
-                title = title
+                title = title,
+                database =  database
             )
         }.executeAsList()
     }

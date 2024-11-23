@@ -34,7 +34,7 @@ data class TagDTO @Inject constructor(val id: Long, val tag: String, val databas
 
     private fun getTaggedSongs(): MutableList<SongDTO> {
         val songs = db.tagQueries.selectTaggedSongs(id) { id, title, path ->
-            SongDTO(id, path, title)
+            SongDTO(id, path, title, database)
         }.executeAsList()
         return songs.toMutableStateList()
     }
