@@ -40,7 +40,7 @@ data class TagDTO @Inject constructor(val id: Long, val tag: String, val databas
     }
 
     private fun getSongCount(): Int {
-        return taggedSongList.size
+        return _taggedSongList.size
     }
 }
 

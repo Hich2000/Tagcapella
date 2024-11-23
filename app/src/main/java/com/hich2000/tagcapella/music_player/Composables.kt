@@ -24,13 +24,16 @@ import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -148,6 +152,38 @@ fun MusicControls(
         }
     }
 
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SongScreen(
+    mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel()
+) {
+
+    val showTagDialog = remember { mutableStateOf(false) }
+
+    if (showTagDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showTagDialog.value = false
+            }
+        ) {
+
+        }
+    }
+
+    SongList(songCard = { song ->
+        SongCard(
+            song = song,
+            onClick = {
+                val index = mediaPlayerViewModel.songRepository.songList.indexOf(song)
+                if (index >= 0) {
+                    mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
+                }
+            }
+        )
+    })
 }
 
 @Composable

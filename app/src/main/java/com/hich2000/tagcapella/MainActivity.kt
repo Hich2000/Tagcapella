@@ -39,11 +39,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.C
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
-import com.hich2000.tagcapella.music_player.SongCard
-import com.hich2000.tagcapella.music_player.SongList
+import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -173,17 +171,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     if (selectedScreen == NavItems.SongList) {
-                        SongList(songCard = { song ->
-                            SongCard(
-                                song = song,
-                                onClick = {
-                                    val index = mediaPlayerViewModel.songRepository.songList.indexOf(song)
-                                    if (index >= 0) {
-                                        mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
-                                    }
-                                }
-                            )
-                        })
+                        SongScreen()
                     } else if (selectedScreen == NavItems.Tags) {
                         TagScreen()
                     } else if (selectedScreen == NavItems.Player) {
