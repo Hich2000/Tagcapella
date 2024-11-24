@@ -17,14 +17,18 @@ data class TagDTO @Inject constructor(val id: Long, val tag: String, val databas
     private var db = database.db
 
     private var _taggedSongList = mutableStateListOf<SongDTO>()
-    val taggedSongList: SnapshotStateList<SongDTO> get() = _taggedSongList
+    val taggedSongList: SnapshotStateList<SongDTO>
+        get() {
+            if (_taggedSongList.isEmpty()) reloadSongList()
+            return _taggedSongList
+        }
 
     private var _taggedSongCount = mutableIntStateOf(getSongCount())
-    val taggedSongCount: State<Int> get() = _taggedSongCount
-
-    init {
-        reloadSongList()
-    }
+    val taggedSongCount: State<Int>
+        get() {
+            if (_taggedSongList.isEmpty()) reloadSongList()
+            return _taggedSongCount
+        }
 
     fun reloadSongList() {
         _taggedSongList.clear()
