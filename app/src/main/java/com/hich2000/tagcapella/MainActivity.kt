@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongScreen
@@ -48,7 +47,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class MyApp : Application()
@@ -102,11 +100,6 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(this, "App required media permissions.", Toast.LENGTH_SHORT).show()
             } else {
                 _mediaPermissionGranted.value = PackageManager.PERMISSION_GRANTED
-
-                lifecycleScope.launch {
-                    val songRepository = mediaPlayerViewModel.songRepository
-                    songRepository.setSongList(songRepository.scanMusicFolder())
-                }
             }
         }
 
@@ -136,6 +129,8 @@ class MainActivity : ComponentActivity() {
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
             mediaPlayerViewModel.initializeMediaController()
+
+            println("I am here 1")
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),

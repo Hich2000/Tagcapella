@@ -14,6 +14,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutionException
 import javax.inject.Inject
@@ -49,12 +50,9 @@ class MusicPlayerViewModel @Inject constructor(
     fun initializeMediaController() {
         viewModelScope.launch {
             val sessionToken =
-                SessionToken(
-                    application,
-                    ComponentName(application, PlaybackService::class.java)
-                )
-            val controllerFuture =
-                MediaController.Builder(application, sessionToken).buildAsync()
+                SessionToken(application, ComponentName(application, PlaybackService::class.java))
+            val controllerFuture = MediaController.Builder(application, sessionToken).buildAsync()
+
             controllerFuture.addListener(
                 {
                     try {
@@ -76,9 +74,15 @@ class MusicPlayerViewModel @Inject constructor(
                         })
 
                         _mediaController.repeatMode = Player.REPEAT_MODE_ALL
-                        _mediaController.addMediaItems(getInitialPlaylist())
-                        _mediaController.prepare()
-                        _isMediaControllerInitialized.value = true // Update the loading state
+
+                        // Suspend and wait for playlist initialization
+                        viewModelScope.launch {
+                            val playlist = getInitialPlaylist()
+                            _mediaController.addMediaItems(playlist)
+                            _mediaController.prepare()
+
+                            _isMediaControllerInitialized.value = true
+                        }
                     } catch (e: ExecutionException) {
                         e.printStackTrace()
                     }
@@ -88,9 +92,11 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    private fun getInitialPlaylist(): MutableList<MediaItem> {
-        val playlist = mutableListOf<MediaItem>()
+    private suspend fun getInitialPlaylist(): MutableList<MediaItem> {
+        // Wait until isInitialized becomes true
+        songRepository.isInitialized.first { it }
 
+        val playlist = mutableListOf<MediaItem>()
         songRepository.songList.listIterator().forEach {
             val mediaItem = MediaItem.Builder()
                 .setMediaId(it.path)

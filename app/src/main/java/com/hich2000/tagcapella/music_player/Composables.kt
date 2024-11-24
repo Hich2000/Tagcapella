@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -196,7 +197,7 @@ fun SongList(
 
     // Use the state variable to determine if the MediaController and song list are initialized
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
-    val isSongListInitialized by songRepository.isInitialized
+    val isSongListInitialized by songRepository.isInitialized.collectAsState()
 
     val songList = remember { songRepository.songList }
 

@@ -1,13 +1,13 @@
 package com.hich2000.tagcapella.music_player
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hich2000.tagcapella.Database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -34,16 +34,19 @@ class SongRepository @Inject constructor(
     val songList: SnapshotStateList<SongDTO> get() = _songList
 
     // State to indicate if initializing has completed
-    private val _isInitialized = mutableStateOf(false)
-    val isInitialized: State<Boolean> get() = _isInitialized
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized: StateFlow<Boolean> get() = _isInitialized
 
     init {
         repositoryScope.launch {
             val scannedSongs: MutableList<SongDTO> = scanMusicFolder()
             saveSongList(scannedSongs)
+            setSongList(getSongList())
+            _isInitialized.value = true
+
+            println("songlist at end of songrepository init")
+            println(songList)
         }
-        setSongList(getSongList())
-        _isInitialized.value = true
     }
 
     fun setSongList(songList: List<SongDTO>) {
