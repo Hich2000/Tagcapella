@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -44,73 +45,107 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich200.tagcapella.Tag
+import com.hich2000.tagcapella.music_player.SongCard
+import com.hich2000.tagcapella.music_player.SongList
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TagList(
+    tagCard: @Composable (tag: TagDTO) -> Unit,
+    floatingActionButton: @Composable () -> Unit,
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
-
-    val tags = remember { tagViewModel.tags }
+    val tagList = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
-    val showDialog = remember { mutableStateOf(false) }
-    val editDialogTag = remember { mutableStateOf<Tag?>(null) }
+    val showEditDialog = remember { mutableStateOf(false) }
+    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
 
-    if (showDialog.value) {
+    val showSongDialog = remember { mutableStateOf(false) }
+
+    if (showEditDialog.value) {
         BasicAlertDialog(
             onDismissRequest = {
-                showDialog.value = false
-                editDialogTag.value = null
+                showEditDialog.value = false
+                clickedTag.value = null
             },
         ) {
             TagForm(
-                tag = editDialogTag.value,
+                tag = clickedTag.value,
                 tagViewModel = tagViewModel
             )
         }
     }
 
+    if (showSongDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showSongDialog.value = false
+                clickedTag.value = null
+            },
+        ) {
+            SongList(
+                songCard = { song ->
+                    SongCard(
+                        song = song,
+                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
+                            Color.hsl(112f, 0.5f, 0.3f)
+                        } else {
+                            Color.Black
+                        },
+                        onClick = {
+                            if (clickedTag.value!!.taggedSongList.contains(song)) {
+                                song.id?.let {
+                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
+                                }
+                            } else {
+                                song.id?.let {
+                                    tagViewModel.addSongTag(clickedTag.value!!, song)
+                                }
+                            }
+                        }
+                    )
+                }
+            )
+        }
+    }
+
     Scaffold(
-        floatingActionButton = {
-            SmallFloatingActionButton(onClick = {
-                showDialog.value = true
-            }) {
-                Icon(
-                    Icons.Default.Add, contentDescription = "Add label"
-                )
-            }
-        },
+        floatingActionButton = floatingActionButton
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .border(2.dp, Color.Blue, shape = RoundedCornerShape(8.dp))
+                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
-            tags.forEach {
-                TagCard(
-                    tag = it,
-                    tagViewModel = tagViewModel,
-                    editCallBack = {
-                        editDialogTag.value = it
-                        showDialog.value = true
-                    }
-                )
+            tagList.forEach { tag ->
+                tagCard(tag)
             }
         }
     }
 }
 
 @Composable
-fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallBack: () -> Unit = {}) {
+fun TagCard(
+    tag: TagDTO,
+    editCallback: (() -> Unit)? = null,
+    songCallback: (() -> Unit)? = null,
+    deleteCallback: (() -> Unit)? = null,
+    onClick: () -> Unit = {},
+    backgroundColor: Color = Color.Black
+) {
+
+    val taggedSongCount by tag.taggedSongCount
+
     Card(
         modifier = Modifier
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(Color.Gray)
-            .height(75.dp)
+            .height(75.dp),
+        onClick = onClick
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -118,6 +153,7 @@ fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallBack: () -> Unit = {})
             modifier = Modifier
                 .fillMaxSize()
                 .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
+                .background(backgroundColor)
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.Label, contentDescription = "Label"
@@ -129,19 +165,19 @@ fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallBack: () -> Unit = {})
                     .align(Alignment.CenterVertically)
             )
 
-            if (tag.id.toInt() != 0) {
+            if (deleteCallback != null) {
                 IconButton(
-                    onClick = {
-                        tagViewModel.deleteTag(tag.id)
-                    },
+                    onClick = deleteCallback
                 ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Delete"
                     )
                 }
+            }
+            if (editCallback != null) {
                 IconButton(
-                    onClick = editCallBack
+                    onClick = editCallback
                 ) {
                     Icon(
                         Icons.Default.Edit,
@@ -149,13 +185,25 @@ fun TagCard(tag: Tag, tagViewModel: TagViewModel, editCallBack: () -> Unit = {})
                     )
                 }
             }
+            if (songCallback != null) {
+                IconButton(
+                    onClick = songCallback
+                ) {
+                    Icon(
+                        Icons.Default.MusicNote,
+                        contentDescription = "Tag songs"
+                    )
+                }
+                Text("($taggedSongCount)")
+            }
         }
     }
 }
 
+
 @Composable
-fun TagForm(tag: Tag? = null, tagViewModel: TagViewModel) {
-    var textState by remember { mutableStateOf(if (tag is Tag) tag.tag else "") }
+fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
+    var textState by remember { mutableStateOf(if (tag is TagDTO) tag.tag else "") }
 
     Surface(
         modifier = Modifier
@@ -193,4 +241,98 @@ fun TagForm(tag: Tag? = null, tagViewModel: TagViewModel) {
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TagScreen(
+    tagViewModel: TagViewModel = hiltViewModel()
+) {
+    val showEditDialog = remember { mutableStateOf(false) }
+    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
+
+    val showSongDialog = remember { mutableStateOf(false) }
+
+    if (showEditDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showEditDialog.value = false
+                clickedTag.value = null
+            },
+        ) {
+            TagForm(
+                tag = clickedTag.value,
+                tagViewModel = tagViewModel
+            )
+        }
+    }
+
+    if (showSongDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showSongDialog.value = false
+                clickedTag.value = null
+            },
+        ) {
+            SongList(
+                songCard = { song ->
+                    SongCard(
+                        song = song,
+                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
+                            Color.hsl(112f, 0.5f, 0.3f)
+                        } else {
+                            Color.Black
+                        },
+                        onClick = {
+                            if (clickedTag.value!!.taggedSongList.contains(song)) {
+                                song.id?.let {
+                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
+                                }
+                            } else {
+                                song.id?.let {
+                                    tagViewModel.addSongTag(clickedTag.value!!, song)
+                                }
+                            }
+                        }
+                    )
+                }
+            )
+        }
+    }
+
+    TagList(
+        tagCard = { tag ->
+            var editCallback: (() -> Unit)? = null
+            var songCallback: (() -> Unit)? = null
+            var deleteCallback: (() -> Unit)? = null
+
+            if (tag.tag != "All") {
+                editCallback = {
+                    clickedTag.value = tag
+                    showEditDialog.value = true
+                }
+                songCallback = {
+                    clickedTag.value = tag
+                    showSongDialog.value = true
+                }
+                deleteCallback = {
+                    tagViewModel.deleteTag(tag.id)
+                }
+            }
+
+            TagCard(
+                tag = tag,
+                editCallback = editCallback,
+                songCallback = songCallback,
+                deleteCallback = deleteCallback
+            )
+        },
+        floatingActionButton = {
+            SmallFloatingActionButton(onClick = {
+                showEditDialog.value = true
+            }) {
+                Icon(Icons.Default.Add, contentDescription = "Add label")
+            }
+        }
+    )
 }

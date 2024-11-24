@@ -5,16 +5,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Repeat
@@ -24,13 +25,17 @@ import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +47,9 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import com.hich2000.tagcapella.tags.TagCard
+import com.hich2000.tagcapella.tags.TagList
+import com.hich2000.tagcapella.tags.TagViewModel
 
 @Composable
 fun MusicControls(
@@ -151,16 +159,80 @@ fun MusicControls(
 
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SongScreen(
+    mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
+    tagViewModel: TagViewModel = hiltViewModel()
+) {
+
+    val showTagDialog = remember { mutableStateOf(false) }
+    val songToTag = remember { mutableStateOf<SongDTO?>(null) }
+
+    if (showTagDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showTagDialog.value = false
+            }
+        ) {
+            TagList(
+                tagCard = { tag ->
+                    if (tag.tag != "All") {
+                        TagCard(
+                            tag = tag,
+                            onClick = {
+                                if (songToTag.value!!.songTagList.contains(tag)) {
+                                    songToTag.value!!.id?.let {
+                                        tagViewModel.deleteSongTag(tag, songToTag.value!!)
+                                    }
+                                } else {
+                                    songToTag.value!!.id?.let {
+                                        tagViewModel.addSongTag(tag, songToTag.value!!)
+                                    }
+                                }
+                            },
+                            backgroundColor = if (songToTag.value!!.songTagList.contains(tag)) {
+                                Color.hsl(112f, 0.5f, 0.3f)
+                            } else {
+                                Color.Black
+                            },
+                        )
+                    }
+                },
+                floatingActionButton = {}
+            )
+        }
+    }
+
+    SongList(songCard = { song ->
+        SongCard(
+            song = song,
+            tagCallBack = {
+                showTagDialog.value = true
+                songToTag.value = song
+            },
+            onClick = {
+                val index = mediaPlayerViewModel.songRepository.songList.indexOf(song)
+                if (index >= 0) {
+                    mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
+                }
+            }
+        )
+    })
+}
+
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
+    songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
     val songRepository = mediaController.songRepository
 
-    // Use the state variable to determine if the MediaController and songlist are initialized
+    // Use the state variable to determine if the MediaController and song list are initialized
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
-    val isSongListInitialized by songRepository.isInitialized
+    val isSongListInitialized by songRepository.isInitialized.collectAsState()
 
     val songList = remember { songRepository.songList }
 
@@ -174,20 +246,8 @@ fun SongList(
                 )
             }
         } else {
-            itemsIndexed(songList) { index, song ->
-
-                val mediaItem = MediaItem.Builder()
-                    .setMediaId(song.path)
-                    .setUri(song.path)
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(song.title)
-                            .setDisplayTitle(song.title)
-                            .build()
-                    )
-                    .build()
-
-                SongCard(mediaItem, index)
+            items(songList) { song ->
+                songCard(song)
             }
         }
     }
@@ -195,11 +255,24 @@ fun SongList(
 
 @Composable
 fun SongCard(
-    mediaItem: MediaItem,
-    mediaItemIndex: Int,
-    mediaController: MusicPlayerViewModel = hiltViewModel()
+    song: SongDTO,
+    tagCallBack: (() -> Unit)? = null,
+    onClick: () -> Unit = {},
+    backgroundColor: Color = Color.Black
 ) {
     val scroll = rememberScrollState(0)
+    val songTagCount by song.songTagCount
+
+    val mediaItem = MediaItem.Builder()
+        .setMediaId(song.path)
+        .setUri(song.path)
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle(song.title)
+                .setDisplayTitle(song.title)
+                .build()
+        )
+        .build()
 
     Card(
         modifier = Modifier
@@ -207,19 +280,44 @@ fun SongCard(
             .fillMaxWidth()
             .background(Color.Gray)
             .height(75.dp),
-        onClick = {
-            mediaController.mediaController.seekTo(mediaItemIndex, C.TIME_UNSET)
-        }
+        onClick = onClick
     ) {
-        Row {
-            Icon(Icons.Rounded.PlayArrow, contentDescription = null)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
+                .background(backgroundColor)
+                .padding(horizontal = 8.dp)
+        ) {
+            Icon(
+                Icons.Rounded.PlayArrow,
+                contentDescription = null
+            )
+
+            if (tagCallBack != null) {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(
+                        onClick = tagCallBack
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Label,
+                            contentDescription = "Add tags",
+                        )
+                    }
+                    Text(
+                        "($songTagCount)",
+                    )
+                }
+            }
             Text(
                 mediaItem.mediaMetadata.title.toString(),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(scroll)
-                    .fillMaxHeight()
             )
         }
     }

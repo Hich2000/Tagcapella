@@ -1,11 +1,14 @@
 selectAll:
-SELECT * FROM song;
+SELECT song.id, song.path, song.title FROM song;
+
+selectSong:
+SELECT song.id, song.path, song.title FROM song WHERE path = ?;
 
 insertSong:
-INSERT INTO song (id, title) VALUES (?, ?);
+INSERT INTO song (path, title) VALUES (?, ?);
 
 deleteSong:
 DELETE FROM song WHERE id = ?;
 
 selectSongTags:
-SELECT tag.tag FROM song_tag JOIN tag ON song_tag.tag = tag.id WHERE song = ?;
+SELECT tag.id, tag.tag FROM song_tag JOIN tag ON song_tag.tag = tag.id WHERE song = ?;
