@@ -5,16 +5,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Repeat
@@ -46,6 +47,9 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import com.hich2000.tagcapella.tags.TagCard
+import com.hich2000.tagcapella.tags.TagList
+import com.hich2000.tagcapella.tags.TagViewModel
 
 @Composable
 fun MusicControls(
@@ -159,10 +163,12 @@ fun MusicControls(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
-    mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel()
+    mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
+    tagViewModel: TagViewModel = hiltViewModel()
 ) {
 
     val showTagDialog = remember { mutableStateOf(false) }
+    val songToTag = remember { mutableStateOf<SongDTO?>(null) }
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -170,13 +176,42 @@ fun SongScreen(
                 showTagDialog.value = false
             }
         ) {
-
+            TagList(
+                tagCard = { tag ->
+                    if (tag.tag != "All") {
+                        TagCard(
+                            tag = tag,
+                            onClick = {
+                                if (songToTag.value!!.songTagList.contains(tag)) {
+                                    songToTag.value!!.id?.let {
+                                        tagViewModel.deleteSongTag(tag, songToTag.value!!)
+                                    }
+                                } else {
+                                    songToTag.value!!.id?.let {
+                                        tagViewModel.addSongTag(tag, songToTag.value!!)
+                                    }
+                                }
+                            },
+                            backgroundColor = if (songToTag.value!!.songTagList.contains(tag)) {
+                                Color.hsl(112f, 0.5f, 0.3f)
+                            } else {
+                                Color.Black
+                            },
+                        )
+                    }
+                },
+                floatingActionButton = {}
+            )
         }
     }
 
     SongList(songCard = { song ->
         SongCard(
             song = song,
+            tagCallBack = {
+                showTagDialog.value = true
+                songToTag.value = song
+            },
             onClick = {
                 val index = mediaPlayerViewModel.songRepository.songList.indexOf(song)
                 if (index >= 0) {
@@ -221,10 +256,12 @@ fun SongList(
 @Composable
 fun SongCard(
     song: SongDTO,
+    tagCallBack: (() -> Unit)? = null,
     onClick: () -> Unit = {},
     backgroundColor: Color = Color.Black
 ) {
     val scroll = rememberScrollState(0)
+    val songTagCount by song.songTagCount
 
     val mediaItem = MediaItem.Builder()
         .setMediaId(song.path)
@@ -245,17 +282,42 @@ fun SongCard(
             .height(75.dp),
         onClick = onClick
     ) {
-        Row (
-            modifier = Modifier.background(backgroundColor)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
+                .background(backgroundColor)
+                .padding(horizontal = 8.dp)
         ) {
-            Icon(Icons.Rounded.PlayArrow, contentDescription = null)
+            Icon(
+                Icons.Rounded.PlayArrow,
+                contentDescription = null
+            )
+
+            if (tagCallBack != null) {
+                Row (
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(
+                        onClick = tagCallBack
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Label,
+                            contentDescription = "Add tags",
+                        )
+                    }
+                    Text(
+                        "($songTagCount)",
+                    )
+                }
+            }
             Text(
                 mediaItem.mediaMetadata.title.toString(),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(scroll)
-                    .fillMaxHeight()
             )
         }
     }

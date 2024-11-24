@@ -91,6 +91,7 @@ class TagViewModel @Inject constructor(
         if (!tag.taggedSongList.contains(song)) {
             song.id?.let { db.tagQueries.addSongTag(it, tag.id) }
             tag.reloadSongList()
+            song.reloadTagList()
         }
     }
 
@@ -98,6 +99,7 @@ class TagViewModel @Inject constructor(
         song.id?.let {
             db.tagQueries.deleteSongTag(tag.id, it)
             tag.reloadSongList()
+            song.reloadTagList()
         }
     }
 }

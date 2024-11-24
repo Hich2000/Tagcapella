@@ -53,10 +53,11 @@ import com.hich2000.tagcapella.music_player.SongList
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TagList(
-    composables: List<@Composable () -> Unit>,
+    tagCard: @Composable (tag: TagDTO) -> Unit,
     floatingActionButton: @Composable () -> Unit,
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
+    val tagList = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
     val showEditDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
@@ -116,11 +117,11 @@ fun TagList(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .border(2.dp, Color.Blue, shape = RoundedCornerShape(8.dp))
+                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
-            composables.forEach { composable ->
-                composable()
+            tagList.forEach { tag ->
+                tagCard(tag)
             }
         }
     }
@@ -132,6 +133,8 @@ fun TagCard(
     editCallback: (() -> Unit)? = null,
     songCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
+    onClick: () -> Unit = {},
+    backgroundColor: Color = Color.Black
 ) {
 
     val taggedSongCount by tag.taggedSongCount
@@ -141,7 +144,8 @@ fun TagCard(
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(Color.Gray)
-            .height(75.dp)
+            .height(75.dp),
+        onClick = onClick
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -149,6 +153,7 @@ fun TagCard(
             modifier = Modifier
                 .fillMaxSize()
                 .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
+                .background(backgroundColor)
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.Label, contentDescription = "Label"
@@ -243,7 +248,6 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
 fun TagScreen(
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
-    val tags = remember { tagViewModel.tags }
     val showEditDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
 
@@ -297,32 +301,31 @@ fun TagScreen(
     }
 
     TagList(
-        composables = tags.map { tag ->
-            {
-                var editCallback: (() -> Unit)? = null
-                var songCallback: (() -> Unit)? = null
-                var deleteCallback: (() -> Unit)? = null
+        tagCard = { tag ->
+            var editCallback: (() -> Unit)? = null
+            var songCallback: (() -> Unit)? = null
+            var deleteCallback: (() -> Unit)? = null
 
-                if (tag.tag != "All") {
-                    editCallback = {
-                        clickedTag.value = tag
-                        showEditDialog.value = true
-                    }
-                    songCallback = {
-                        clickedTag.value = tag
-                        showSongDialog.value = true
-                    }
-                    deleteCallback = {
-                        tagViewModel.deleteTag(tag.id)
-                    }
+            if (tag.tag != "All") {
+                editCallback = {
+                    clickedTag.value = tag
+                    showEditDialog.value = true
                 }
-                TagCard(
-                    tag = tag,
-                    editCallback = editCallback,
-                    songCallback = songCallback,
-                    deleteCallback = deleteCallback
-                )
+                songCallback = {
+                    clickedTag.value = tag
+                    showSongDialog.value = true
+                }
+                deleteCallback = {
+                    tagViewModel.deleteTag(tag.id)
+                }
             }
+
+            TagCard(
+                tag = tag,
+                editCallback = editCallback,
+                songCallback = songCallback,
+                deleteCallback = deleteCallback
+            )
         },
         floatingActionButton = {
             SmallFloatingActionButton(onClick = {
