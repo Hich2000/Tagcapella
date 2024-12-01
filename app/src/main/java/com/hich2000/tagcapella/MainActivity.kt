@@ -169,7 +169,8 @@ class MainActivity : ComponentActivity() {
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
                     } else if (selectedScreen == NavItems.Queue) {
-                        SongScreen(mediaPlayerViewModel.currentPlaylist, selectedScreen)
+                        val currentPlaylist = remember { mediaPlayerViewModel.currentPlaylist }
+                        SongScreen(currentPlaylist, selectedScreen)
                     }
                 }
             }

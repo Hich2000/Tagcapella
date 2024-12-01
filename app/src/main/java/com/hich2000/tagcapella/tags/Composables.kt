@@ -83,7 +83,7 @@ fun TagCard(
     editCallback: (() -> Unit)? = null,
     songCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
-    onClick: () -> Unit = {},
+    onClick: (tag: TagDTO) -> Unit = {},
     backgroundColor: Color = Color.Black
 ) {
 
@@ -95,7 +95,7 @@ fun TagCard(
             .fillMaxWidth()
             .background(Color.Gray)
             .height(75.dp),
-        onClick = onClick
+        onClick = { onClick(tag) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

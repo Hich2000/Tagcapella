@@ -1,5 +1,6 @@
 package com.hich2000.tagcapella.music_player
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Queue
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Shuffle
@@ -31,12 +33,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +55,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.NavItems
 import com.hich2000.tagcapella.tags.TagCard
+import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
 
@@ -172,6 +178,7 @@ fun SongScreen(
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
     val songToTag = remember { mutableStateOf<SongDTO?>(null) }
+    var onTagClick by remember { mutableStateOf<(TagDTO) -> Unit>({}) }
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -184,20 +191,15 @@ fun SongScreen(
                     if (tag.tag != "All") {
                         TagCard(
                             tag = tag,
-                            onClick = {
+                            onClick = onTagClick,
+                            backgroundColor =
+                            try {
                                 if (songToTag.value!!.songTagList.contains(tag)) {
-                                    songToTag.value!!.id?.let {
-                                        tagViewModel.deleteSongTag(tag, songToTag.value!!)
-                                    }
+                                    Color.hsl(112f, 0.5f, 0.3f)
                                 } else {
-                                    songToTag.value!!.id?.let {
-                                        tagViewModel.addSongTag(tag, songToTag.value!!)
-                                    }
+                                    Color.Black
                                 }
-                            },
-                            backgroundColor = if (songToTag.value!!.songTagList.contains(tag)) {
-                                Color.hsl(112f, 0.5f, 0.3f)
-                            } else {
+                            } catch (e: Exception) {
                                 Color.Black
                             },
                         )
@@ -214,6 +216,19 @@ fun SongScreen(
             SongCard(
                 song = song,
                 tagCallBack = {
+                    //todo extract this copy and pasted code into a variable or something
+                    onTagClick = { tag ->
+                        if (songToTag.value!!.songTagList.contains(tag)) {
+                            songToTag.value!!.id?.let {
+                                tagViewModel.deleteSongTag(tag, songToTag.value!!)
+                            }
+                        } else {
+                            songToTag.value!!.id?.let {
+                                tagViewModel.addSongTag(tag, songToTag.value!!)
+                            }
+                        }
+                    }
+
                     showTagDialog.value = true
                     songToTag.value = song
                 },
@@ -225,18 +240,46 @@ fun SongScreen(
                             mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
                         }
                     } else if (screenType == NavItems.SongList) {
+                        //todo extract this copy and pasted code into a variable or something
+                        onTagClick = { tag ->
+                            if (songToTag.value!!.songTagList.contains(tag)) {
+                                songToTag.value!!.id?.let {
+                                    tagViewModel.deleteSongTag(tag, songToTag.value!!)
+                                }
+                            } else {
+                                songToTag.value!!.id?.let {
+                                    tagViewModel.addSongTag(tag, songToTag.value!!)
+                                }
+                            }
+                        }
+
                         showTagDialog.value = true
                         songToTag.value = song
                     }
                 }
             )
-        })
+        },
+        floatingActionButton = {
+            if (screenType == NavItems.Queue) {
+                SmallFloatingActionButton(onClick = {
+                    showTagDialog.value = true
+                    onTagClick = {
+                        println()
+                    }
+                }) {
+                    Icon(Icons.Default.Queue, contentDescription = "New queue")
+                }
+            }
+        }
+    )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
     list: SnapshotStateList<SongDTO> = SnapshotStateList(),
+    floatingActionButton: @Composable () -> Unit = {},
     songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
@@ -248,18 +291,22 @@ fun SongList(
 
     val songList = remember { list }
 
-    LazyColumn(
-        modifier = modifier
+    Scaffold (
+        floatingActionButton = floatingActionButton
     ) {
-        if (!isMediaControllerInitialized || !isSongListInitialized) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        } else {
-            items(songList) { song ->
-                songCard(song)
+        LazyColumn(
+            modifier = modifier
+        ) {
+            if (!isMediaControllerInitialized || !isSongListInitialized) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            } else {
+                items(songList) { song ->
+                    songCard(song)
+                }
             }
         }
     }
