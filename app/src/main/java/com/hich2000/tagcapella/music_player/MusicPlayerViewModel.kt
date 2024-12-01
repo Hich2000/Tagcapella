@@ -4,7 +4,10 @@ import android.app.Application
 import android.content.ComponentName
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -13,6 +16,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
+import com.hich2000.tagcapella.tags.TagDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -47,6 +51,11 @@ class MusicPlayerViewModel @Inject constructor(
     private val _isMediaControllerInitialized = mutableStateOf(false)
     val isMediaControllerInitialized: State<Boolean> get() = _isMediaControllerInitialized
 
+    //todo add a screen that shows only the currently loaded playlist and allows the user to play a specific song
+    //currently loaded playlist
+    private val _currentPlaylist = mutableStateListOf<SongDTO>()
+    val currentPlaylist: SnapshotStateList<SongDTO> get() = _currentPlaylist
+
     fun initializeMediaController() {
         viewModelScope.launch {
             val sessionToken =
@@ -77,10 +86,13 @@ class MusicPlayerViewModel @Inject constructor(
 
                         // Suspend and wait for playlist initialization
                         viewModelScope.launch {
-                            val playlist = getInitialPlaylist()
-                            _mediaController.addMediaItems(playlist)
-                            _mediaController.prepare()
+//                            val playlist = getFilteredPlayList(
+//                                listOf(TagDTO(3, "max fry", songRepository.database)),
+//                                listOf(TagDTO(5, "roes interlude", songRepository.database))
+//                            )
+                            val playlist = getFilteredPlayList()
 
+                            preparePlaylist(playlist)
                             _isMediaControllerInitialized.value = true
                         }
                     } catch (e: ExecutionException) {
@@ -92,12 +104,10 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getInitialPlaylist(): MutableList<MediaItem> {
-        // Wait until isInitialized becomes true
-        songRepository.isInitialized.first { it }
+    fun preparePlaylist(playlist: List<SongDTO>) {
+        val mediaItems = mutableListOf<MediaItem>()
 
-        val playlist = mutableListOf<MediaItem>()
-        songRepository.songList.listIterator().forEach {
+        playlist.listIterator().forEach {
             val mediaItem = MediaItem.Builder()
                 .setMediaId(it.path)
                 .setUri(it.path)
@@ -109,8 +119,22 @@ class MusicPlayerViewModel @Inject constructor(
                 )
                 .build()
 
-            playlist.add(mediaItem)
+            mediaItems.add(mediaItem)
         }
-        return playlist
+
+        _mediaController.clearMediaItems()
+        _mediaController.addMediaItems(mediaItems)
+        _mediaController.prepare()
+
+        _currentPlaylist.clear()
+        _currentPlaylist.addAll(playlist)
+    }
+
+    suspend fun getFilteredPlayList(
+        includeTags: List<TagDTO> = listOf(),
+        excludeTags: List<TagDTO> = listOf()
+    ): MutableList<SongDTO> {
+        songRepository.isInitialized.first { it }
+        return songRepository.filterSongList(includeTags, excludeTags).toMutableStateList()
     }
 }

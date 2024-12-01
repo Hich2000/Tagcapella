@@ -130,8 +130,6 @@ class MainActivity : ComponentActivity() {
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
             mediaPlayerViewModel.initializeMediaController()
 
-            println("I am here 1")
-
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
