@@ -64,7 +64,7 @@ data class SongDTO(val id: Long?, val path: String, val title: String, val datab
 
 @Singleton
 class SongRepository @Inject constructor(
-    private val database: Database
+    val database: Database
 ) {
 
     private val db = database.db

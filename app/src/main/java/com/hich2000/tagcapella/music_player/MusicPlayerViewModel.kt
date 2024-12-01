@@ -86,11 +86,11 @@ class MusicPlayerViewModel @Inject constructor(
 
                         // Suspend and wait for playlist initialization
                         viewModelScope.launch {
-//                            val playlist = getFilteredPlayList(
-//                                listOf(TagDTO(3, "max fry", songRepository.database)),
-//                                listOf(TagDTO(5, "roes interlude", songRepository.database))
-//                            )
-                            val playlist = getFilteredPlayList()
+                            val playlist = getFilteredPlayList(
+                                listOf(TagDTO(3, "max fry", songRepository.database)),
+                                listOf(TagDTO(5, "roes interlude", songRepository.database))
+                            )
+//                            val playlist = getFilteredPlayList()
 
                             preparePlaylist(playlist)
                             _isMediaControllerInitialized.value = true

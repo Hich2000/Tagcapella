@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +48,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import com.hich2000.tagcapella.NavItems
 import com.hich2000.tagcapella.tags.TagCard
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
@@ -163,10 +165,11 @@ fun MusicControls(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
+    songList: SnapshotStateList<SongDTO> = SnapshotStateList(),
+    screenType: NavItems,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
-
     val showTagDialog = remember { mutableStateOf(false) }
     val songToTag = remember { mutableStateOf<SongDTO?>(null) }
 
@@ -205,26 +208,35 @@ fun SongScreen(
         }
     }
 
-    SongList(songCard = { song ->
-        SongCard(
-            song = song,
-            tagCallBack = {
-                showTagDialog.value = true
-                songToTag.value = song
-            },
-            onClick = {
-                val index = mediaPlayerViewModel.songRepository.songList.indexOf(song)
-                if (index >= 0) {
-                    mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
+    SongList(
+        list = songList,
+        songCard = { song ->
+            SongCard(
+                song = song,
+                tagCallBack = {
+                    showTagDialog.value = true
+                    songToTag.value = song
+                },
+                onClick = {
+                    //todo maybe find a way to make this nicer I guess.
+                    if (screenType == NavItems.Queue) {
+                        val index = mediaPlayerViewModel.currentPlaylist.indexOf(song)
+                        if (index >= 0) {
+                            mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
+                        }
+                    } else if (screenType == NavItems.SongList) {
+                        showTagDialog.value = true
+                        songToTag.value = song
+                    }
                 }
-            }
-        )
-    })
+            )
+        })
 }
 
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
+    list: SnapshotStateList<SongDTO> = SnapshotStateList(),
     songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
@@ -234,7 +246,7 @@ fun SongList(
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
     val isSongListInitialized by songRepository.isInitialized.collectAsState()
 
-    val songList = remember { songRepository.songList }
+    val songList = remember { list }
 
     LazyColumn(
         modifier = modifier
@@ -296,7 +308,7 @@ fun SongCard(
             )
 
             if (tagCallBack != null) {
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconButton(
