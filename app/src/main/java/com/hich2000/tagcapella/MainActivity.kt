@@ -130,8 +130,6 @@ class MainActivity : ComponentActivity() {
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
             mediaPlayerViewModel.initializeMediaController()
 
-            println("I am here 1")
-
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
@@ -163,12 +161,16 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
+                    //todo fix up the dependency stuff for hilt so I can fix my dependency injection
                     if (selectedScreen == NavItems.SongList) {
-                        SongScreen()
+                        SongScreen(mediaPlayerViewModel.songRepository.songList, selectedScreen)
                     } else if (selectedScreen == NavItems.Tags) {
-                        TagScreen()
+                        TagScreen(mediaPlayerViewModel.songRepository)
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
+                    } else if (selectedScreen == NavItems.Queue) {
+                        val currentPlaylist = remember { mediaPlayerViewModel.currentPlaylist }
+                        SongScreen(currentPlaylist, selectedScreen)
                     }
                 }
             }

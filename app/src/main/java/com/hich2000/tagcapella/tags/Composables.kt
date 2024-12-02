@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
+import com.hich2000.tagcapella.music_player.SongRepository
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,57 +60,6 @@ fun TagList(
 ) {
     val tagList = remember { tagViewModel.tags }
     val columnScroll = rememberScrollState()
-    val showEditDialog = remember { mutableStateOf(false) }
-    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
-
-    val showSongDialog = remember { mutableStateOf(false) }
-
-    if (showEditDialog.value) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                showEditDialog.value = false
-                clickedTag.value = null
-            },
-        ) {
-            TagForm(
-                tag = clickedTag.value,
-                tagViewModel = tagViewModel
-            )
-        }
-    }
-
-    if (showSongDialog.value) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                showSongDialog.value = false
-                clickedTag.value = null
-            },
-        ) {
-            SongList(
-                songCard = { song ->
-                    SongCard(
-                        song = song,
-                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
-                            Color.hsl(112f, 0.5f, 0.3f)
-                        } else {
-                            Color.Black
-                        },
-                        onClick = {
-                            if (clickedTag.value!!.taggedSongList.contains(song)) {
-                                song.id?.let {
-                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
-                                }
-                            } else {
-                                song.id?.let {
-                                    tagViewModel.addSongTag(clickedTag.value!!, song)
-                                }
-                            }
-                        }
-                    )
-                }
-            )
-        }
-    }
 
     Scaffold(
         floatingActionButton = floatingActionButton
@@ -133,7 +83,7 @@ fun TagCard(
     editCallback: (() -> Unit)? = null,
     songCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
-    onClick: () -> Unit = {},
+    onClick: (tag: TagDTO) -> Unit = {},
     backgroundColor: Color = Color.Black
 ) {
 
@@ -145,7 +95,7 @@ fun TagCard(
             .fillMaxWidth()
             .background(Color.Gray)
             .height(75.dp),
-        onClick = onClick
+        onClick = { onClick(tag) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -246,6 +196,7 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
+    songRepository: SongRepository,
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
     val showEditDialog = remember { mutableStateOf(false) }
@@ -275,6 +226,7 @@ fun TagScreen(
             },
         ) {
             SongList(
+                list = songRepository.songList,
                 songCard = { song ->
                     SongCard(
                         song = song,

@@ -64,7 +64,7 @@ data class SongDTO(val id: Long?, val path: String, val title: String, val datab
 
 @Singleton
 class SongRepository @Inject constructor(
-    private val database: Database
+    val database: Database
 ) {
 
     private val db = database.db
@@ -72,6 +72,7 @@ class SongRepository @Inject constructor(
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    // List of all songs in the scanned directory
     private var _songList = mutableStateListOf<SongDTO>()
     val songList: SnapshotStateList<SongDTO> get() = _songList
 
@@ -85,9 +86,6 @@ class SongRepository @Inject constructor(
             saveSongList(scannedSongs)
             setSongList(getSongList())
             _isInitialized.value = true
-
-            println("songlist at end of songrepository init")
-            println(songList)
         }
     }
 
@@ -163,5 +161,34 @@ class SongRepository @Inject constructor(
 
     private fun songRecordExists(song: SongDTO): Boolean {
         return db.songQueries.selectSong(song.path).executeAsOneOrNull() !== null
+    }
+
+    fun filterSongList(
+        includeTags: List<TagDTO> = listOf(),
+        excludeTags: List<TagDTO> = listOf()
+    ): List<SongDTO> {
+        val filteredSongList = mutableListOf<SongDTO>()
+        val includeIds: List<Long> = includeTags.map { it.id }
+
+        //if the include tag list is empty we add the entire songlist otherwise we query only the included tags
+        if (includeTags.isEmpty()) {
+            filteredSongList.addAll(_songList)
+        } else {
+            filteredSongList.addAll(db.songQueries.filterSongList(includeIds) { id, path, title ->
+                SongDTO(
+                    id = id,
+                    path = path,
+                    title = title,
+                    database = database
+                )
+            }.executeAsList())
+        }
+
+        //now we remove the excluded tags
+        filteredSongList.removeAll { song ->
+            song.songTagList.any { it in excludeTags }
+        }
+
+        return filteredSongList
     }
 }

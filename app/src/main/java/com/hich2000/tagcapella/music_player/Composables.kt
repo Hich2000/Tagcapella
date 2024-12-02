@@ -1,10 +1,15 @@
 package com.hich2000.tagcapella.music_player
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Queue
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Shuffle
@@ -26,17 +32,23 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,9 +59,12 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
+import com.hich2000.tagcapella.NavItems
 import com.hich2000.tagcapella.tags.TagCard
+import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun MusicControls(
@@ -163,12 +178,18 @@ fun MusicControls(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
+    songList: SnapshotStateList<SongDTO> = SnapshotStateList(),
+    screenType: NavItems,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
-
     val showTagDialog = remember { mutableStateOf(false) }
     val songToTag = remember { mutableStateOf<SongDTO?>(null) }
+    val includedTags = remember { mediaPlayerViewModel.includedTags }
+    val excludedTags = remember { mediaPlayerViewModel.excludedTags }
+    var onTagClick by remember { mutableStateOf<(TagDTO) -> Unit>({}) }
+    var tagCardComposable by remember { mutableStateOf<@Composable (tag: TagDTO) -> Unit>({}) }
+    val coroutineScope = rememberCoroutineScope()
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -176,55 +197,179 @@ fun SongScreen(
                 showTagDialog.value = false
             }
         ) {
-            TagList(
-                tagCard = { tag ->
-                    if (tag.tag != "All") {
-                        TagCard(
-                            tag = tag,
-                            onClick = {
-                                if (songToTag.value!!.songTagList.contains(tag)) {
-                                    songToTag.value!!.id?.let {
-                                        tagViewModel.deleteSongTag(tag, songToTag.value!!)
-                                    }
-                                } else {
-                                    songToTag.value!!.id?.let {
-                                        tagViewModel.addSongTag(tag, songToTag.value!!)
-                                    }
-                                }
-                            },
-                            backgroundColor = if (songToTag.value!!.songTagList.contains(tag)) {
-                                Color.hsl(112f, 0.5f, 0.3f)
-                            } else {
-                                Color.Black
-                            },
-                        )
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+                val fraction = if (screenType == NavItems.Queue) 0.9f else 1f
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(fraction = fraction)
+                ) {
+                    TagList(
+                        tagCard = tagCardComposable,
+                        floatingActionButton = {}
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                if (screenType == NavItems.Queue) {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                val filteredSongList = mediaPlayerViewModel.getFilteredPlayList(
+                                    includedTags,
+                                    excludedTags
+                                )
+                                mediaPlayerViewModel.preparePlaylist(filteredSongList)
+                                showTagDialog.value = false
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Text("Save")
                     }
-                },
-                floatingActionButton = {}
-            )
+                }
+            }
         }
     }
 
-    SongList(songCard = { song ->
-        SongCard(
-            song = song,
-            tagCallBack = {
-                showTagDialog.value = true
-                songToTag.value = song
-            },
-            onClick = {
-                val index = mediaPlayerViewModel.songRepository.songList.indexOf(song)
-                if (index >= 0) {
-                    mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
+    SongList(
+        list = songList,
+        songCard = { song ->
+            SongCard(
+                song = song,
+                tagCallBack = {
+                    //todo extract this copy and pasted code into a variable or something
+                    onTagClick = { tag ->
+                        if (songToTag.value!!.songTagList.contains(tag)) {
+                            songToTag.value!!.id?.let {
+                                tagViewModel.deleteSongTag(tag, songToTag.value!!)
+                            }
+                        } else {
+                            songToTag.value!!.id?.let {
+                                tagViewModel.addSongTag(tag, songToTag.value!!)
+                            }
+                        }
+                    }
+
+                    tagCardComposable = { tag ->
+                        if (tag.tag != "All") {
+                            TagCard(
+                                tag = tag,
+                                onClick = onTagClick,
+                                backgroundColor =
+                                try {
+                                    //todo don't rely on try catching here, make this nicer later on
+                                    if (songToTag.value!!.songTagList.contains(tag)) {
+                                        Color.hsl(112f, 0.5f, 0.3f)
+                                    } else {
+                                        Color.Black
+                                    }
+                                } catch (e: Exception) {
+                                    Color.Black
+                                },
+                            )
+                        }
+                    }
+
+                    showTagDialog.value = true
+                    songToTag.value = song
+                },
+                onClick = {
+
+                    tagCardComposable = { tag ->
+                        if (tag.tag != "All") {
+                            TagCard(
+                                tag = tag,
+                                onClick = onTagClick,
+                                backgroundColor =
+                                try {
+                                    //todo don't rely on try catching here, make this nicer later on
+                                    if (songToTag.value!!.songTagList.contains(tag)) {
+                                        Color.hsl(112f, 0.5f, 0.3f)
+                                    } else {
+                                        Color.Black
+                                    }
+                                } catch (e: Exception) {
+                                    Color.Black
+                                },
+                            )
+                        }
+                    }
+
+                    //todo maybe find a way to make this nicer I guess.
+                    if (screenType == NavItems.Queue) {
+                        val index = mediaPlayerViewModel.currentPlaylist.indexOf(song)
+                        if (index >= 0) {
+                            mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
+                        }
+                    } else if (screenType == NavItems.SongList) {
+                        //todo extract this copy and pasted code into a variable or something
+                        onTagClick = { tag ->
+                            if (songToTag.value!!.songTagList.contains(tag)) {
+                                songToTag.value!!.id?.let {
+                                    tagViewModel.deleteSongTag(tag, songToTag.value!!)
+                                }
+                            } else {
+                                songToTag.value!!.id?.let {
+                                    tagViewModel.addSongTag(tag, songToTag.value!!)
+                                }
+                            }
+                        }
+
+                        showTagDialog.value = true
+                        songToTag.value = song
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            if (screenType == NavItems.Queue) {
+                SmallFloatingActionButton(onClick = {
+                    tagCardComposable = { tag ->
+                        if (tag.tag != "All") {
+                            TagCard(
+                                tag = tag,
+                                onClick = onTagClick,
+                                backgroundColor =
+                                if (includedTags.contains(tag)) {
+                                    Color.hsl(112f, 0.5f, 0.3f)
+                                } else if (excludedTags.contains(tag)) {
+                                    Color.Red
+                                } else {
+                                    Color.Black
+                                },
+                            )
+                        }
+                    }
+                    showTagDialog.value = true
+                    onTagClick = { tag ->
+                        if (includedTags.contains(tag)) {
+                            includedTags.remove(tag)
+                            excludedTags.add(tag)
+                        } else if (excludedTags.contains(tag)) {
+                            excludedTags.remove(tag)
+                        } else {
+                            includedTags.add(tag)
+                        }
+                    }
+                }) {
+                    Icon(Icons.Default.Queue, contentDescription = "New queue")
                 }
             }
-        )
-    })
+        }
+    )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
+    list: SnapshotStateList<SongDTO> = SnapshotStateList(),
+    floatingActionButton: @Composable () -> Unit = {},
     songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
@@ -234,20 +379,24 @@ fun SongList(
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
     val isSongListInitialized by songRepository.isInitialized.collectAsState()
 
-    val songList = remember { songRepository.songList }
+    val songList = remember { list }
 
-    LazyColumn(
-        modifier = modifier
+    Scaffold(
+        floatingActionButton = floatingActionButton
     ) {
-        if (!isMediaControllerInitialized || !isSongListInitialized) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        } else {
-            items(songList) { song ->
-                songCard(song)
+        LazyColumn(
+            modifier = modifier
+        ) {
+            if (!isMediaControllerInitialized || !isSongListInitialized) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            } else {
+                items(songList) { song ->
+                    songCard(song)
+                }
             }
         }
     }
@@ -296,7 +445,7 @@ fun SongCard(
             )
 
             if (tagCallBack != null) {
-                Row (
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconButton(

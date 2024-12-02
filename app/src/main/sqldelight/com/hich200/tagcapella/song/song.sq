@@ -12,3 +12,9 @@ DELETE FROM song WHERE id = ?;
 
 selectSongTags:
 SELECT tag.id, tag.tag FROM song_tag JOIN tag ON song_tag.tag = tag.id WHERE song = ?;
+
+filterSongList:
+SELECT s.id, s.path, s.title FROM song s
+JOIN song_tag st ON s.id = st.song
+WHERE st.tag IN :includeTags
+GROUP BY st.song;

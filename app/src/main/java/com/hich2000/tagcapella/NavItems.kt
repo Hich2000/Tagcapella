@@ -3,6 +3,7 @@ package com.hich2000.tagcapella
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -15,6 +16,10 @@ enum class NavItems(
     Player(
         title = "Player",
         icon = Icons.Default.MusicNote
+    ),
+    Queue(
+        title = "Queue",
+        icon = Icons.AutoMirrored.Filled.QueueMusic
     ),
     SongList (
         title = "Song List",
