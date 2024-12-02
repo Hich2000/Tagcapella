@@ -52,6 +52,15 @@ class MusicPlayerViewModel @Inject constructor(
     val isMediaControllerInitialized: State<Boolean> get() = _isMediaControllerInitialized
 
     //todo add a screen that shows only the currently loaded playlist and allows the user to play a specific song
+    //currently selected tags to include
+    private var _includedTags = mutableStateListOf<TagDTO>()
+    val includedTags: SnapshotStateList<TagDTO> get() = _includedTags
+
+    //currently selected tags to exclude
+    private var _excludedTags = mutableStateListOf<TagDTO>()
+    val excludedTags: SnapshotStateList<TagDTO> get() = _excludedTags
+
+
     //currently loaded playlist
     private val _currentPlaylist = mutableStateListOf<SongDTO>()
     val currentPlaylist: SnapshotStateList<SongDTO> get() = _currentPlaylist
@@ -86,11 +95,7 @@ class MusicPlayerViewModel @Inject constructor(
 
                         // Suspend and wait for playlist initialization
                         viewModelScope.launch {
-                            val playlist = getFilteredPlayList(
-                                listOf(TagDTO(3, "max fry", songRepository.database)),
-                                listOf(TagDTO(5, "roes interlude", songRepository.database))
-                            )
-//                            val playlist = getFilteredPlayList()
+                            val playlist = getFilteredPlayList()
 
                             preparePlaylist(playlist)
                             _isMediaControllerInitialized.value = true

@@ -72,6 +72,7 @@ class SongRepository @Inject constructor(
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+    // List of all songs in the scanned directory
     private var _songList = mutableStateListOf<SongDTO>()
     val songList: SnapshotStateList<SongDTO> get() = _songList
 

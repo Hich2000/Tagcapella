@@ -5,7 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +32,7 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +46,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -58,6 +64,7 @@ import com.hich2000.tagcapella.tags.TagCard
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun MusicControls(
@@ -178,7 +185,11 @@ fun SongScreen(
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
     val songToTag = remember { mutableStateOf<SongDTO?>(null) }
+    val includedTags = remember { mediaPlayerViewModel.includedTags }
+    val excludedTags = remember { mediaPlayerViewModel.excludedTags }
     var onTagClick by remember { mutableStateOf<(TagDTO) -> Unit>({}) }
+    var tagCardComposable by remember { mutableStateOf<@Composable (tag: TagDTO) -> Unit>({}) }
+    val coroutineScope = rememberCoroutineScope()
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -186,27 +197,42 @@ fun SongScreen(
                 showTagDialog.value = false
             }
         ) {
-            TagList(
-                tagCard = { tag ->
-                    if (tag.tag != "All") {
-                        TagCard(
-                            tag = tag,
-                            onClick = onTagClick,
-                            backgroundColor =
-                            try {
-                                if (songToTag.value!!.songTagList.contains(tag)) {
-                                    Color.hsl(112f, 0.5f, 0.3f)
-                                } else {
-                                    Color.Black
-                                }
-                            } catch (e: Exception) {
-                                Color.Black
-                            },
-                        )
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+                val fraction = if (screenType == NavItems.Queue) 0.9f else 1f
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(fraction = fraction)
+                ) {
+                    TagList(
+                        tagCard = tagCardComposable,
+                        floatingActionButton = {}
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                if (screenType == NavItems.Queue) {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                val filteredSongList = mediaPlayerViewModel.getFilteredPlayList(
+                                    includedTags,
+                                    excludedTags
+                                )
+                                mediaPlayerViewModel.preparePlaylist(filteredSongList)
+                                showTagDialog.value = false
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        Text("Save")
                     }
-                },
-                floatingActionButton = {}
-            )
+                }
+            }
         }
     }
 
@@ -229,10 +255,51 @@ fun SongScreen(
                         }
                     }
 
+                    tagCardComposable = { tag ->
+                        if (tag.tag != "All") {
+                            TagCard(
+                                tag = tag,
+                                onClick = onTagClick,
+                                backgroundColor =
+                                try {
+                                    //todo don't rely on try catching here, make this nicer later on
+                                    if (songToTag.value!!.songTagList.contains(tag)) {
+                                        Color.hsl(112f, 0.5f, 0.3f)
+                                    } else {
+                                        Color.Black
+                                    }
+                                } catch (e: Exception) {
+                                    Color.Black
+                                },
+                            )
+                        }
+                    }
+
                     showTagDialog.value = true
                     songToTag.value = song
                 },
                 onClick = {
+
+                    tagCardComposable = { tag ->
+                        if (tag.tag != "All") {
+                            TagCard(
+                                tag = tag,
+                                onClick = onTagClick,
+                                backgroundColor =
+                                try {
+                                    //todo don't rely on try catching here, make this nicer later on
+                                    if (songToTag.value!!.songTagList.contains(tag)) {
+                                        Color.hsl(112f, 0.5f, 0.3f)
+                                    } else {
+                                        Color.Black
+                                    }
+                                } catch (e: Exception) {
+                                    Color.Black
+                                },
+                            )
+                        }
+                    }
+
                     //todo maybe find a way to make this nicer I guess.
                     if (screenType == NavItems.Queue) {
                         val index = mediaPlayerViewModel.currentPlaylist.indexOf(song)
@@ -262,9 +329,32 @@ fun SongScreen(
         floatingActionButton = {
             if (screenType == NavItems.Queue) {
                 SmallFloatingActionButton(onClick = {
+                    tagCardComposable = { tag ->
+                        if (tag.tag != "All") {
+                            TagCard(
+                                tag = tag,
+                                onClick = onTagClick,
+                                backgroundColor =
+                                if (includedTags.contains(tag)) {
+                                    Color.hsl(112f, 0.5f, 0.3f)
+                                } else if (excludedTags.contains(tag)) {
+                                    Color.Red
+                                } else {
+                                    Color.Black
+                                },
+                            )
+                        }
+                    }
                     showTagDialog.value = true
-                    onTagClick = {
-                        println()
+                    onTagClick = { tag ->
+                        if (includedTags.contains(tag)) {
+                            includedTags.remove(tag)
+                            excludedTags.add(tag)
+                        } else if (excludedTags.contains(tag)) {
+                            excludedTags.remove(tag)
+                        } else {
+                            includedTags.add(tag)
+                        }
                     }
                 }) {
                     Icon(Icons.Default.Queue, contentDescription = "New queue")
@@ -291,7 +381,7 @@ fun SongList(
 
     val songList = remember { list }
 
-    Scaffold (
+    Scaffold(
         floatingActionButton = floatingActionButton
     ) {
         LazyColumn(
