@@ -38,6 +38,7 @@ class TagRepository @Inject constructor(
     fun addSongTag(tag: TagDTO, song: SongDTO) {
         if (!tag.taggedSongList.contains(song)) {
             song.id?.let { db.tagQueries.addSongTag(it, tag.id) }
+            println("adding tag: $tag to song: $song")
             tag.reloadSongList()
             song.reloadTagList()
         }
@@ -46,6 +47,7 @@ class TagRepository @Inject constructor(
     fun deleteSongTag(tag: TagDTO, song: SongDTO) {
         song.id?.let {
             db.tagQueries.deleteSongTag(tag.id, it)
+            println("removing tag: $tag from song: $song")
             tag.reloadSongList()
             song.reloadTagList()
         }

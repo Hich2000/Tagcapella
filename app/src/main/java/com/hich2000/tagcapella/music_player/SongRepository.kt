@@ -22,7 +22,7 @@ import kotlin.io.path.nameWithoutExtension
 
 @Singleton
 class SongRepository @Inject constructor(
-    val database: Database
+    private val database: Database
 ) {
 
     private val db = database.db
@@ -84,7 +84,7 @@ class SongRepository @Inject constructor(
         }
     }
 
-    private suspend fun saveSongList(songList: MutableList<SongDTO>): MutableList<SongDTO> {
+    suspend fun saveSongList(songList: MutableList<SongDTO>): MutableList<SongDTO> {
         return withContext(Dispatchers.IO) {
             val toRemove: MutableList<Int> = mutableListOf()
 
@@ -106,7 +106,7 @@ class SongRepository @Inject constructor(
         }
     }
 
-    private fun getSongList(): List<SongDTO> {
+    fun getSongList(): List<SongDTO> {
         return db.songQueries.selectAll { id, path, title ->
             SongDTO(
                 id = id,

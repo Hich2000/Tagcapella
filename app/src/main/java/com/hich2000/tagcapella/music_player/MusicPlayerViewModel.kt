@@ -118,7 +118,7 @@ class MusicPlayerViewModel @Inject constructor(
         return songRepository.filterSongList(includeTags, excludeTags)
     }
 
-    fun handleMediaControllerError(exception: Exception) {
+    private fun handleMediaControllerError(exception: Exception) {
         // Log or emit error state
         exception.printStackTrace()
     }

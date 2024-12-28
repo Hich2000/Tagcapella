@@ -35,6 +35,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.music_player.SongRepository
+import com.hich2000.tagcapella.music_player.SongViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -195,14 +196,14 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TagScreen(
-    songRepository: SongRepository,
+fun TagScreen (
+    songViewModel: SongViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
     val showEditDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
-
     val showSongDialog = remember { mutableStateOf(false) }
+    val songList by songViewModel.songList.collectAsState()
 
     if (showEditDialog.value) {
         BasicAlertDialog(
@@ -226,7 +227,7 @@ fun TagScreen(
             },
         ) {
             SongList(
-                songList = songRepository.songList,
+                songList = songList,
                 songCard = { song ->
                     SongCard(
                         song = song,
@@ -236,12 +237,17 @@ fun TagScreen(
                             Color.Black
                         },
                         onClick = {
+                            println("clicked tag: $clickedTag")
+                            println("clicked song: $song")
+
                             if (clickedTag.value!!.taggedSongList.contains(song)) {
                                 song.id?.let {
+                                    println("flow1")
                                     tagViewModel.deleteSongTag(clickedTag.value!!, song)
                                 }
                             } else {
                                 song.id?.let {
+                                    println("flow2")
                                     tagViewModel.addSongTag(clickedTag.value!!, song)
                                 }
                             }

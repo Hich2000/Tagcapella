@@ -41,6 +41,7 @@ import androidx.core.content.ContextCompat
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongScreen
+import com.hich2000.tagcapella.music_player.SongViewModel
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity() {
     private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
 
     private val musicPlayerViewModel: MusicPlayerViewModel by viewModels()
+    private val songViewModel: SongViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -161,11 +163,12 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
-                    //todo fix up the dependency stuff for hilt so I can fix my dependency injection
                     if (selectedScreen == NavItems.SongList) {
-                        SongScreen(musicPlayerViewModel.songRepository.songList, selectedScreen)
+                        val songList by songViewModel.songList.collectAsState()
+                        SongScreen(songList, selectedScreen)
                     } else if (selectedScreen == NavItems.Tags) {
-                        TagScreen(musicPlayerViewModel.songRepository)
+                        //todo split my songRepository into a repository and viewmodel for DI purposes
+                        TagScreen()
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
                     } else if (selectedScreen == NavItems.Queue) {

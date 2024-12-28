@@ -201,6 +201,8 @@ fun SongScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
 
+                //this is only for the save button when setting up a queue. this is dumb, fix later.
+                //todo improve this
                 val fraction = if (screenType == NavItems.Queue) 0.9f else 1f
 
                 Box(
@@ -377,6 +379,7 @@ fun SongList(
     songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
 ) {
+    //todo split my songRepository into a repository and viewmodel for DI purposes
     val songRepository = mediaController.songRepository
 
     // Use the state variable to determine if the MediaController and song list are initialized
