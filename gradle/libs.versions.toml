@@ -1,6 +1,7 @@
 [versions]
 agp = "8.6.1"
 androidDriverVersion = "2.0.2"
+concurrentFuturesKtx = "1.2.0"
 hiltAndroid = "2.51.1"
 hiltAndroidCompiler = "2.51.1"
 hiltNavigationCompose = "1.2.0"
@@ -13,12 +14,13 @@ appcompat = "1.7.0"
 kotlinxCoroutinesAndroid = "1.7.3"
 lifecycleViewmodelCompose = "2.8.7"
 material = "1.12.0"
-media3Exoplayer = "1.5.0"
+media3Exoplayer = "1.5.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.11.00"
+composeBom = "2024.12.01"
 
 [libraries]
+androidx-concurrent-futures-ktx = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "concurrentFuturesKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }

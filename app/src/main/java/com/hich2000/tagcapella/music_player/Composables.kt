@@ -48,7 +48,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,14 +70,14 @@ fun MusicControls(
     mediaControllerViewModel: MusicPlayerViewModel = hiltViewModel()
 ) {
     // Use the state variable to determine if the MediaController and songlist are initialized
-    val isMediaControllerInitialized by mediaControllerViewModel.isMediaControllerInitialized
+    val isMediaControllerInitialized by mediaControllerViewModel.isMediaControllerInitialized.collectAsState()
     if (isMediaControllerInitialized) {
         //observe the isPlaying state for ui changes
-        val isPlaying by mediaControllerViewModel.isPlaying
+        val isPlaying by mediaControllerViewModel.isPlaying.collectAsState()
         //observe the shuffleModeEnabled state for ui changes
-        val shuffleModeEnabled by mediaControllerViewModel.shuffleModeEnabled
+        val shuffleModeEnabled by mediaControllerViewModel.shuffleModeEnabled.collectAsState()
         //observe the loopMode state for ui changes
-        val repeatMode by mediaControllerViewModel.repeatMode
+        val repeatMode by mediaControllerViewModel.repeatMode.collectAsState()
 
         //get the mediaController itself
         val mediaController = mediaControllerViewModel.mediaController
@@ -178,18 +177,19 @@ fun MusicControls(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
-    songList: SnapshotStateList<SongDTO> = SnapshotStateList(),
+    songList: List<SongDTO> = emptyList(),
     screenType: NavItems,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
     val songToTag = remember { mutableStateOf<SongDTO?>(null) }
-    val includedTags = remember { mediaPlayerViewModel.includedTags }
-    val excludedTags = remember { mediaPlayerViewModel.excludedTags }
     var onTagClick by remember { mutableStateOf<(TagDTO) -> Unit>({}) }
     var tagCardComposable by remember { mutableStateOf<@Composable (tag: TagDTO) -> Unit>({}) }
     val coroutineScope = rememberCoroutineScope()
+
+    val includedTags by mediaPlayerViewModel.includedTags.collectAsState()
+    val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -218,7 +218,7 @@ fun SongScreen(
                     Button(
                         onClick = {
                             coroutineScope.launch {
-                                val filteredSongList = mediaPlayerViewModel.getFilteredPlayList(
+                                val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
                                     includedTags,
                                     excludedTags
                                 )
@@ -237,7 +237,7 @@ fun SongScreen(
     }
 
     SongList(
-        list = songList,
+        songList = songList,
         songCard = { song ->
             SongCard(
                 song = song,
@@ -302,7 +302,7 @@ fun SongScreen(
 
                     //todo maybe find a way to make this nicer I guess.
                     if (screenType == NavItems.Queue) {
-                        val index = mediaPlayerViewModel.currentPlaylist.indexOf(song)
+                        val index = mediaPlayerViewModel.currentPlaylist.value.indexOf(song)
                         if (index >= 0) {
                             mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
                         }
@@ -348,12 +348,16 @@ fun SongScreen(
                     showTagDialog.value = true
                     onTagClick = { tag ->
                         if (includedTags.contains(tag)) {
-                            includedTags.remove(tag)
-                            excludedTags.add(tag)
+                            mediaPlayerViewModel.removeIncludedTag(tag)
+                            mediaPlayerViewModel.addExcludedTag(tag)
+//                            includedTags.remove(tag)
+//                            excludedTags.add(tag)
                         } else if (excludedTags.contains(tag)) {
-                            excludedTags.remove(tag)
+                            mediaPlayerViewModel.removeExcludedTag(tag)
+//                            excludedTags.remove(tag)
                         } else {
-                            includedTags.add(tag)
+                            mediaPlayerViewModel.addIncludedTag(tag)
+//                            includedTags.add(tag)
                         }
                     }
                 }) {
@@ -368,7 +372,7 @@ fun SongScreen(
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
-    list: SnapshotStateList<SongDTO> = SnapshotStateList(),
+    songList: List<SongDTO> = emptyList(),
     floatingActionButton: @Composable () -> Unit = {},
     songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
@@ -376,10 +380,8 @@ fun SongList(
     val songRepository = mediaController.songRepository
 
     // Use the state variable to determine if the MediaController and song list are initialized
-    val isMediaControllerInitialized by mediaController.isMediaControllerInitialized
+    val isMediaControllerInitialized by mediaController.isMediaControllerInitialized.collectAsState()
     val isSongListInitialized by songRepository.isInitialized.collectAsState()
-
-    val songList = remember { list }
 
     Scaffold(
         floatingActionButton = floatingActionButton

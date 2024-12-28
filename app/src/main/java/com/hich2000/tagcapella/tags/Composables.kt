@@ -226,7 +226,7 @@ fun TagScreen(
             },
         ) {
             SongList(
-                list = songRepository.songList,
+                songList = songRepository.songList,
                 songCard = { song ->
                     SongCard(
                         song = song,

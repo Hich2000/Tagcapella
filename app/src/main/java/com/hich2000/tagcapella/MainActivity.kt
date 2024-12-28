@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
         MutableStateFlow(PackageManager.PERMISSION_DENIED)
     private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
 
-    private val mediaPlayerViewModel: MusicPlayerViewModel by viewModels()
+    private val musicPlayerViewModel: MusicPlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
-            mediaPlayerViewModel.initializeMediaController()
+            musicPlayerViewModel.initializeMediaController()
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -163,13 +163,13 @@ class MainActivity : ComponentActivity() {
                 ) {
                     //todo fix up the dependency stuff for hilt so I can fix my dependency injection
                     if (selectedScreen == NavItems.SongList) {
-                        SongScreen(mediaPlayerViewModel.songRepository.songList, selectedScreen)
+                        SongScreen(musicPlayerViewModel.songRepository.songList, selectedScreen)
                     } else if (selectedScreen == NavItems.Tags) {
-                        TagScreen(mediaPlayerViewModel.songRepository)
+                        TagScreen(musicPlayerViewModel.songRepository)
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
                     } else if (selectedScreen == NavItems.Queue) {
-                        val currentPlaylist = remember { mediaPlayerViewModel.currentPlaylist }
+                        val currentPlaylist by musicPlayerViewModel.currentPlaylist.collectAsState()
                         SongScreen(currentPlaylist, selectedScreen)
                     }
                 }
