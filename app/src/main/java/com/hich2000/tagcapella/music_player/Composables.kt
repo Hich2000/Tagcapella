@@ -191,6 +191,8 @@ fun SongScreen(
     val includedTags by mediaPlayerViewModel.includedTags.collectAsState()
     val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
 
+    println("songlist = $songList")
+
     if (showTagDialog.value) {
         BasicAlertDialog(
             onDismissRequest = {

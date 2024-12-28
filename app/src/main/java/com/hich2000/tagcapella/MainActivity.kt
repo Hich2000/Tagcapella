@@ -130,8 +130,6 @@ class MainActivity : ComponentActivity() {
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
-            musicPlayerViewModel.initializeMediaController()
-
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {

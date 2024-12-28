@@ -1,15 +1,9 @@
 package com.hich2000.tagcapella.music_player
 
-import android.app.Application
-import android.content.ComponentName
-import androidx.concurrent.futures.await
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
-import androidx.media3.session.SessionToken
 import com.hich2000.tagcapella.tags.TagDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
-    private val application: Application,
+    private val mediaControllerManager: MediaControllerManager,
     val songRepository: SongRepository
 ) : ViewModel() {
 
@@ -29,14 +23,14 @@ class MusicPlayerViewModel @Inject constructor(
     val mediaController: MediaController get() = _mediaController
 
     // State management
-    private val _isPlaying = MutableStateFlow(false)
-    val isPlaying: StateFlow<Boolean> get() = _isPlaying.asStateFlow()
-
     private val _shuffleModeEnabled = MutableStateFlow(false)
-    val shuffleModeEnabled: StateFlow<Boolean> get() = _shuffleModeEnabled.asStateFlow()
+    val shuffleModeEnabled: StateFlow<Boolean> get() = _shuffleModeEnabled
 
     private val _repeatMode = MutableStateFlow(Player.REPEAT_MODE_ALL)
-    val repeatMode: StateFlow<Int> get() = _repeatMode.asStateFlow()
+    val repeatMode: StateFlow<Int> get() = _repeatMode
+
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying: StateFlow<Boolean> get() = _isPlaying
 
     private val _isMediaControllerInitialized = MutableStateFlow(false)
     val isMediaControllerInitialized: StateFlow<Boolean> get() = _isMediaControllerInitialized.asStateFlow()
@@ -50,64 +44,46 @@ class MusicPlayerViewModel @Inject constructor(
     private val _currentPlaylist = MutableStateFlow<List<SongDTO>>(emptyList())
     val currentPlaylist: StateFlow<List<SongDTO>> get() = _currentPlaylist.asStateFlow()
 
-    fun initializeMediaController() {
+    init {
         viewModelScope.launch {
-            try {
-                val sessionToken = SessionToken(application, ComponentName(application, PlaybackService::class.java))
-                val controller = MediaController.Builder(application, sessionToken).buildAsync().await()
-                setupMediaController(controller)
+            _isMediaControllerInitialized.value = try {
+                val controller = mediaControllerManager.initializeMediaController()
+                observeMediaControllerState(controller)
                 _mediaController = controller
+                _mediaController.repeatMode = Player.REPEAT_MODE_ALL
 
                 val playlist = getFilteredPlaylist()
                 preparePlaylist(playlist)
 
-                _isMediaControllerInitialized.value = true
+                true
             } catch (e: Exception) {
-                handleMediaControllerError(e)
+                e.printStackTrace()
+                false
             }
         }
     }
 
-    private fun setupMediaController(controller: MediaController) {
+    private fun observeMediaControllerState(controller: MediaController) {
         controller.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 _isPlaying.value = isPlaying
             }
 
-            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-                _shuffleModeEnabled.value = shuffleModeEnabled
-            }
-
             override fun onRepeatModeChanged(repeatMode: Int) {
                 _repeatMode.value = repeatMode
             }
+
+            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                _shuffleModeEnabled.value = shuffleModeEnabled
+            }
         })
-        controller.repeatMode = Player.REPEAT_MODE_ALL
     }
 
     fun preparePlaylist(playlist: List<SongDTO>) {
-        val mediaItems = mutableListOf<MediaItem>()
-
-        playlist.listIterator().forEach {
-            val mediaItem = MediaItem.Builder()
-                .setMediaId(it.path)
-                .setUri(it.path)
-                .setMediaMetadata(
-                    MediaMetadata.Builder()
-                        .setTitle(it.title)
-                        .setDisplayTitle(it.title)
-                        .build()
-                )
-                .build()
-
-            mediaItems.add(mediaItem)
+        viewModelScope.launch {
+            mediaControllerManager.preparePlaylist(_mediaController, playlist)
+            _currentPlaylist.value = playlist
         }
-
-        _mediaController.clearMediaItems()
-        _mediaController.addMediaItems(mediaItems)
-        _mediaController.prepare()
-
-        _currentPlaylist.value = playlist
     }
 
     suspend fun getFilteredPlaylist(
@@ -116,11 +92,6 @@ class MusicPlayerViewModel @Inject constructor(
     ): List<SongDTO> {
         songRepository.isInitialized.first { it }
         return songRepository.filterSongList(includeTags, excludeTags)
-    }
-
-    private fun handleMediaControllerError(exception: Exception) {
-        // Log or emit error state
-        exception.printStackTrace()
     }
 
     fun addIncludedTag(tag: TagDTO) {
