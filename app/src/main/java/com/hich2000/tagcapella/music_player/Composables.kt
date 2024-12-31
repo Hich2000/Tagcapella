@@ -1,6 +1,5 @@
 package com.hich2000.tagcapella.music_player
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -370,7 +371,6 @@ fun SongScreen(
     )
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
@@ -387,9 +387,12 @@ fun SongList(
 
     Scaffold(
         floatingActionButton = floatingActionButton
-    ) {
+    ) { innerPadding ->
         LazyColumn(
             modifier = modifier
+                .padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
+                )
         ) {
             if (!isMediaControllerInitialized || !isSongListInitialized) {
                 item {

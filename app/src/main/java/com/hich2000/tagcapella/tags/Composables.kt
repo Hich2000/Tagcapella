@@ -1,11 +1,11 @@
 package com.hich2000.tagcapella.tags
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,9 +51,6 @@ import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.music_player.SongViewModel
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun TagList(
     tagCard: @Composable (tag: TagDTO) -> Unit,
@@ -64,9 +62,12 @@ fun TagList(
 
     Scaffold(
         floatingActionButton = floatingActionButton
-    ) {
+    ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
+                )
                 .fillMaxSize()
                 .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
