@@ -59,7 +59,7 @@ fun TagList(
     floatingActionButton: @Composable () -> Unit,
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
-    val tagList = remember { tagViewModel.tags }
+    val tagList by tagViewModel.tags.collectAsState()
     val columnScroll = rememberScrollState()
 
     Scaffold(

@@ -1,7 +1,5 @@
 package com.hich2000.tagcapella.tags
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.Database
 import com.hich2000.tagcapella.music_player.SongDTO
@@ -15,14 +13,15 @@ class TagRepository @Inject constructor(
 
     private val db: TagcapellaDb = database.db
 
-    fun selectAllTags(): SnapshotStateList<TagDTO> {
+    fun selectAllTags(): List<TagDTO> {
         return db.tagQueries.selectAll { id, tag -> TagDTO(id, tag, database) }.executeAsList()
-            .toMutableStateList()
+            .toList()
     }
 
     fun insertTag(tag: String): TagDTO {
         db.tagQueries.insertTag(null, tag)
-        return db.tagQueries.lastInsertedTag { _id, _tag -> TagDTO(_id, _tag, database) }.executeAsOne()
+        return db.tagQueries.lastInsertedTag { _id, _tag -> TagDTO(_id, _tag, database) }
+            .executeAsOne()
     }
 
     fun updateTag(id: Long, tag: String) {
@@ -38,18 +37,14 @@ class TagRepository @Inject constructor(
     fun addSongTag(tag: TagDTO, song: SongDTO) {
         if (!tag.taggedSongList.contains(song)) {
             song.id?.let { db.tagQueries.addSongTag(it, tag.id) }
-            println("adding tag: $tag to song: $song")
             tag.reloadSongList()
             song.reloadTagList()
         }
     }
 
     fun deleteSongTag(tag: TagDTO, song: SongDTO) {
-        song.id?.let {
-            db.tagQueries.deleteSongTag(tag.id, it)
-            println("removing tag: $tag from song: $song")
-            tag.reloadSongList()
-            song.reloadTagList()
-        }
+        song.id?.let { db.tagQueries.deleteSongTag(tag.id, it) }
+        tag.reloadSongList()
+        song.reloadTagList()
     }
 }

@@ -1,10 +1,10 @@
 package com.hich2000.tagcapella.tags
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.hich2000.tagcapella.music_player.SongDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -12,34 +12,36 @@ class TagViewModel @Inject constructor(
     private val tagRepository: TagRepository,
 ) : ViewModel() {
 
-    private var _tags = mutableStateListOf<TagDTO>()
-    val tags: SnapshotStateList<TagDTO> get() = _tags
+    private var _tags = MutableStateFlow<List<TagDTO>>(emptyList())
+    val tags: StateFlow<List<TagDTO>> get() = _tags
 
     init {
-        _tags = selectAllTags()
+        _tags.value = selectAllTags()
     }
 
-    private fun selectAllTags(): SnapshotStateList<TagDTO> {
+    private fun selectAllTags(): List<TagDTO> {
         return tagRepository.selectAllTags()
     }
 
     fun insertTag(tag: String) {
         val newTag = tagRepository.insertTag(tag)
-        _tags.add(newTag)
+        _tags.value = selectAllTags()
     }
 
     fun updateTag(id: Long, tag: String) {
         tagRepository.updateTag(id = id, tag = tag)
-        val updatedIndex = _tags.indexOfFirst { it.id == id }
-        if (updatedIndex >= 0) {
-            _tags[updatedIndex] = _tags[updatedIndex].copy(tag = tag)
-        }
+        _tags.value = selectAllTags()
+//        val updatedIndex = _tags.indexOfFirst { it.id == id }
+//        if (updatedIndex >= 0) {
+//            _tags[updatedIndex] = _tags[updatedIndex].copy(tag = tag)
+//        }
     }
 
     fun deleteTag(id: Long) {
-        val deleteIndex = _tags.indexOfFirst { it.id == id }
-        tagRepository.deleteTag(_tags[deleteIndex].id)
-        _tags.removeAt(deleteIndex)
+        val deleteIndex = _tags.value.indexOfFirst { it.id == id }
+        tagRepository.deleteTag(_tags.value[deleteIndex].id)
+        _tags.value = selectAllTags()
+//        _tags.removeAt(deleteIndex)
     }
 
     fun addSongTag(tag: TagDTO, song: SongDTO) {

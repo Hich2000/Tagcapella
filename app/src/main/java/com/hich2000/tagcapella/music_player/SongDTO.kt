@@ -22,7 +22,7 @@ data class SongDTO(val id: Long?, val path: String, val title: String, val datab
     private var _songTagCount = mutableIntStateOf(getSongTagCount())
     val songTagCount: State<Int>
         get() {
-            if (_songTagList.isEmpty()) reloadTagList()
+            reloadTagList()
             return _songTagCount
         }
 
