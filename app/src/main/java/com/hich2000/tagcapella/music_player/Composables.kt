@@ -378,13 +378,12 @@ fun SongList(
     floatingActionButton: @Composable () -> Unit = {},
     songCard: @Composable (song: SongDTO) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
+    songViewModel: SongViewModel = hiltViewModel()
 ) {
-    //todo split my songRepository into a repository and viewmodel for DI purposes
-    val songRepository = mediaController.songRepository
 
     // Use the state variable to determine if the MediaController and song list are initialized
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized.collectAsState()
-    val isSongListInitialized by songRepository.isInitialized.collectAsState()
+    val isSongListInitialized by songViewModel.isInitialized.collectAsState()
 
     Scaffold(
         floatingActionButton = floatingActionButton

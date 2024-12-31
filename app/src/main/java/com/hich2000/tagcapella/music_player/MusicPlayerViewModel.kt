@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
     private val mediaControllerManager: MediaControllerManager,
-    val songRepository: SongRepository
+    private val songRepository: SongRepository
 ) : ViewModel() {
 
     private lateinit var _mediaController: MediaController

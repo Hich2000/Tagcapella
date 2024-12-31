@@ -161,8 +161,10 @@ class MainActivity : ComponentActivity() {
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
+                    val songList by songViewModel.songList.collectAsState()
+//                    val songListInitialized by songViewModel.isInitialized.collectAsState()
+
                     if (selectedScreen == NavItems.SongList) {
-                        val songList by songViewModel.songList.collectAsState()
                         SongScreen(songList, selectedScreen)
                     } else if (selectedScreen == NavItems.Tags) {
                         //todo split my songRepository into a repository and viewmodel for DI purposes
