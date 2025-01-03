@@ -6,10 +6,14 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.tags.TagDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,6 +48,16 @@ class MusicPlayerViewModel @Inject constructor(
     private val _currentPlaylist = MutableStateFlow<List<SongDTO>>(emptyList())
     val currentPlaylist: StateFlow<List<SongDTO>> get() = _currentPlaylist.asStateFlow()
 
+    private val _playbackPosition = MutableStateFlow(0L)
+    val playbackPosition: StateFlow<Long> get() = _playbackPosition
+
+    private val _duration = MutableStateFlow(0L)
+    val duration: StateFlow<Long> get() = _duration
+
+    val playbackProgress: StateFlow<Float> = combine(playbackPosition, duration) { position, duration ->
+        if (duration > 0) position / duration.toFloat() else 0f
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0f)
+
     init {
         viewModelScope.launch {
             _isMediaControllerInitialized.value = try {
@@ -76,7 +90,17 @@ class MusicPlayerViewModel @Inject constructor(
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                 _shuffleModeEnabled.value = shuffleModeEnabled
             }
+
         })
+
+        //get the duration and position of the current song every second
+        viewModelScope.launch {
+            while (true) {
+                _playbackPosition.value = _mediaController.currentPosition
+                _duration.value = _mediaController.duration
+                delay(1000L)
+            }
+        }
     }
 
     fun preparePlaylist(playlist: List<SongDTO>) {
