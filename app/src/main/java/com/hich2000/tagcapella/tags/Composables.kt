@@ -51,6 +51,107 @@ import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.music_player.SongViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TagScreen (
+    songViewModel: SongViewModel = hiltViewModel(),
+    tagViewModel: TagViewModel = hiltViewModel()
+) {
+    val showEditDialog = remember { mutableStateOf(false) }
+    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
+    val showSongDialog = remember { mutableStateOf(false) }
+    val songList by songViewModel.songList.collectAsState()
+
+    if (showEditDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showEditDialog.value = false
+                clickedTag.value = null
+            },
+        ) {
+            TagForm(
+                tag = clickedTag.value,
+                tagViewModel = tagViewModel
+            )
+        }
+    }
+
+    if (showSongDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showSongDialog.value = false
+                clickedTag.value = null
+            },
+        ) {
+            SongList(
+                songList = songList,
+                songCard = { song ->
+                    SongCard(
+                        song = song,
+                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
+                            Color.hsl(112f, 0.5f, 0.3f)
+                        } else {
+                            Color.Black
+                        },
+                        onClick = {
+                            println("clicked tag: $clickedTag")
+                            println("clicked song: $song")
+
+                            if (clickedTag.value!!.taggedSongList.contains(song)) {
+                                song.id?.let {
+                                    println("flow1")
+                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
+                                }
+                            } else {
+                                song.id?.let {
+                                    println("flow2")
+                                    tagViewModel.addSongTag(clickedTag.value!!, song)
+                                }
+                            }
+                        }
+                    )
+                }
+            )
+        }
+    }
+
+    TagList(
+        tagCard = { tag ->
+            var editCallback: (() -> Unit)? = null
+            var songCallback: (() -> Unit)? = null
+            var deleteCallback: (() -> Unit)? = null
+
+            if (tag.tag != "All") {
+                editCallback = {
+                    clickedTag.value = tag
+                    showEditDialog.value = true
+                }
+                songCallback = {
+                    clickedTag.value = tag
+                    showSongDialog.value = true
+                }
+                deleteCallback = {
+                    tagViewModel.deleteTag(tag.id)
+                }
+            }
+
+            TagCard(
+                tag = tag,
+                editCallback = editCallback,
+                songCallback = songCallback,
+                deleteCallback = deleteCallback
+            )
+        },
+        floatingActionButton = {
+            SmallFloatingActionButton(onClick = {
+                showEditDialog.value = true
+            }) {
+                Icon(Icons.Default.Add, contentDescription = "Add label")
+            }
+        }
+    )
+}
+
 @Composable
 fun TagList(
     tagCard: @Composable (tag: TagDTO) -> Unit,
@@ -193,105 +294,4 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TagScreen (
-    songViewModel: SongViewModel = hiltViewModel(),
-    tagViewModel: TagViewModel = hiltViewModel()
-) {
-    val showEditDialog = remember { mutableStateOf(false) }
-    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
-    val showSongDialog = remember { mutableStateOf(false) }
-    val songList by songViewModel.songList.collectAsState()
-
-    if (showEditDialog.value) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                showEditDialog.value = false
-                clickedTag.value = null
-            },
-        ) {
-            TagForm(
-                tag = clickedTag.value,
-                tagViewModel = tagViewModel
-            )
-        }
-    }
-
-    if (showSongDialog.value) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                showSongDialog.value = false
-                clickedTag.value = null
-            },
-        ) {
-            SongList(
-                songList = songList,
-                songCard = { song ->
-                    SongCard(
-                        song = song,
-                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
-                            Color.hsl(112f, 0.5f, 0.3f)
-                        } else {
-                            Color.Black
-                        },
-                        onClick = {
-                            println("clicked tag: $clickedTag")
-                            println("clicked song: $song")
-
-                            if (clickedTag.value!!.taggedSongList.contains(song)) {
-                                song.id?.let {
-                                    println("flow1")
-                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
-                                }
-                            } else {
-                                song.id?.let {
-                                    println("flow2")
-                                    tagViewModel.addSongTag(clickedTag.value!!, song)
-                                }
-                            }
-                        }
-                    )
-                }
-            )
-        }
-    }
-
-    TagList(
-        tagCard = { tag ->
-            var editCallback: (() -> Unit)? = null
-            var songCallback: (() -> Unit)? = null
-            var deleteCallback: (() -> Unit)? = null
-
-            if (tag.tag != "All") {
-                editCallback = {
-                    clickedTag.value = tag
-                    showEditDialog.value = true
-                }
-                songCallback = {
-                    clickedTag.value = tag
-                    showSongDialog.value = true
-                }
-                deleteCallback = {
-                    tagViewModel.deleteTag(tag.id)
-                }
-            }
-
-            TagCard(
-                tag = tag,
-                editCallback = editCallback,
-                songCallback = songCallback,
-                deleteCallback = deleteCallback
-            )
-        },
-        floatingActionButton = {
-            SmallFloatingActionButton(onClick = {
-                showEditDialog.value = true
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Add label")
-            }
-        }
-    )
 }
