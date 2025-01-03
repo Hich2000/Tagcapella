@@ -1,6 +1,5 @@
 package com.hich2000.tagcapella.music_player
 
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hich2000.tagcapella.Database
@@ -19,52 +18,11 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
-import androidx.compose.runtime.State
-import androidx.compose.runtime.toMutableStateList
 
-data class SongDTO(val id: Long?, val path: String, val title: String, val database: Database) {
-
-    private var db = database.db
-
-    private var _songTagList = mutableStateListOf<TagDTO>()
-    val songTagList: SnapshotStateList<TagDTO>
-        get() {
-            if (_songTagList.isEmpty()) reloadTagList()
-            return _songTagList
-        }
-
-    private var _songTagCount = mutableIntStateOf(getSongTagCount())
-    val songTagCount: State<Int>
-        get() {
-            if (_songTagList.isEmpty()) reloadTagList()
-            return _songTagCount
-        }
-
-
-    fun reloadTagList() {
-        _songTagList.clear()
-        _songTagList.addAll(getSongTags())
-        _songTagCount.intValue = getSongTagCount()
-    }
-
-    private fun getSongTags(): MutableList<TagDTO> {
-        val tags = id?.let {
-            db.songQueries.selectSongTags(it) { id, tag ->
-                TagDTO(id, tag, database)
-            }.executeAsList()
-        }
-
-        return tags?.toMutableStateList() ?: mutableListOf()
-    }
-
-    private fun getSongTagCount(): Int {
-        return _songTagList.size
-    }
-}
 
 @Singleton
 class SongRepository @Inject constructor(
-    val database: Database
+    private val database: Database
 ) {
 
     private val db = database.db
@@ -126,7 +84,7 @@ class SongRepository @Inject constructor(
         }
     }
 
-    private suspend fun saveSongList(songList: MutableList<SongDTO>): MutableList<SongDTO> {
+    suspend fun saveSongList(songList: MutableList<SongDTO>): MutableList<SongDTO> {
         return withContext(Dispatchers.IO) {
             val toRemove: MutableList<Int> = mutableListOf()
 
@@ -148,7 +106,7 @@ class SongRepository @Inject constructor(
         }
     }
 
-    private fun getSongList(): List<SongDTO> {
+    fun getSongList(): List<SongDTO> {
         return db.songQueries.selectAll { id, path, title ->
             SongDTO(
                 id = id,

@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
+    //coroutines
+    implementation(libs.androidx.concurrent.futures.ktx)
+
     // Lifecycle and ViewModel
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

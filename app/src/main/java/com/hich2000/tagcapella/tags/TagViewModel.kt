@@ -1,105 +1,54 @@
 package com.hich2000.tagcapella.tags
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import com.hich200.tagcapella.TagcapellaDb
-import com.hich2000.tagcapella.Database
 import com.hich2000.tagcapella.music_player.SongDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
-
-data class TagDTO @Inject constructor(val id: Long, val tag: String, val database: Database) {
-
-    private var db = database.db
-
-    private var _taggedSongList = mutableStateListOf<SongDTO>()
-    val taggedSongList: SnapshotStateList<SongDTO>
-        get() {
-            if (_taggedSongList.isEmpty()) reloadSongList()
-            return _taggedSongList
-        }
-
-    private var _taggedSongCount = mutableIntStateOf(getSongCount())
-    val taggedSongCount: State<Int>
-        get() {
-            if (_taggedSongList.isEmpty()) reloadSongList()
-            return _taggedSongCount
-        }
-
-    fun reloadSongList() {
-        _taggedSongList.clear()
-        _taggedSongList.addAll(getTaggedSongs())
-        _taggedSongCount.intValue = getSongCount()
-    }
-
-    private fun getTaggedSongs(): MutableList<SongDTO> {
-        val songs = db.tagQueries.selectTaggedSongs(id) { id, title, path ->
-            SongDTO(id, path, title, database)
-        }.executeAsList()
-        return songs.toMutableStateList()
-    }
-
-    private fun getSongCount(): Int {
-        return _taggedSongList.size
-    }
-}
 
 @HiltViewModel
 class TagViewModel @Inject constructor(
-    private val database: Database
+    private val tagRepository: TagRepository,
 ) : ViewModel() {
 
-    private var _tags = mutableStateListOf<TagDTO>()
-    val tags: SnapshotStateList<TagDTO> get() = _tags
-
-    private val db: TagcapellaDb = database.db
+    private var _tags = MutableStateFlow<List<TagDTO>>(emptyList())
+    val tags: StateFlow<List<TagDTO>> get() = _tags
 
     init {
-        _tags = selectAllTags()
+        _tags.value = selectAllTags()
     }
 
-    private fun selectAllTags(): SnapshotStateList<TagDTO> {
-        return db.tagQueries.selectAll { id, tag -> TagDTO(id, tag, database) }.executeAsList()
-            .toMutableStateList()
+    private fun selectAllTags(): List<TagDTO> {
+        return tagRepository.selectAllTags()
     }
 
     fun insertTag(tag: String) {
-        db.tagQueries.insertTag(null, tag)
-        val newTag = db.tagQueries.lastInsertedTag().executeAsOne()
-        _tags.add(TagDTO(newTag.id, newTag.tag, database))
+        val newTag = tagRepository.insertTag(tag)
+        _tags.value = selectAllTags()
     }
 
     fun updateTag(id: Long, tag: String) {
-        db.tagQueries.updateTag(tag, id)
-        val updatedIndex = _tags.indexOfFirst { it.id == id }
-        if (updatedIndex >= 0) {
-            _tags[updatedIndex] = _tags[updatedIndex].copy(tag = tag)
-        }
+        tagRepository.updateTag(id = id, tag = tag)
+        _tags.value = selectAllTags()
+//        val updatedIndex = _tags.indexOfFirst { it.id == id }
+//        if (updatedIndex >= 0) {
+//            _tags[updatedIndex] = _tags[updatedIndex].copy(tag = tag)
+//        }
     }
 
     fun deleteTag(id: Long) {
-        val deleteIndex = _tags.indexOfFirst { it.id == id }
-        db.tagQueries.deleteTag(_tags[deleteIndex].id)
-        _tags.removeAt(deleteIndex)
+        val deleteIndex = _tags.value.indexOfFirst { it.id == id }
+        tagRepository.deleteTag(_tags.value[deleteIndex].id)
+        _tags.value = selectAllTags()
+//        _tags.removeAt(deleteIndex)
     }
 
     fun addSongTag(tag: TagDTO, song: SongDTO) {
-        if (!tag.taggedSongList.contains(song)) {
-            song.id?.let { db.tagQueries.addSongTag(it, tag.id) }
-            tag.reloadSongList()
-            song.reloadTagList()
-        }
+        tagRepository.addSongTag(tag = tag, song = song)
     }
 
     fun deleteSongTag(tag: TagDTO, song: SongDTO) {
-        song.id?.let {
-            db.tagQueries.deleteSongTag(tag.id, it)
-            tag.reloadSongList()
-            song.reloadTagList()
-        }
+        tagRepository.deleteSongTag(tag = tag, song = song)
     }
 }

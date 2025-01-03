@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,12 +36,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongScreen
+import com.hich2000.tagcapella.music_player.SongViewModel
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,7 +63,8 @@ class MainActivity : ComponentActivity() {
         MutableStateFlow(PackageManager.PERMISSION_DENIED)
     private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
 
-    private val mediaPlayerViewModel: MusicPlayerViewModel by viewModels()
+    private val musicPlayerViewModel: MusicPlayerViewModel by viewModels()
+    private val songViewModel: SongViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -128,8 +132,6 @@ class MainActivity : ComponentActivity() {
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
-            mediaPlayerViewModel.initializeMediaController()
-
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
@@ -158,18 +160,25 @@ class MainActivity : ComponentActivity() {
             ) { innerPadding ->
                 Box(
                     modifier = Modifier
-                        .padding(innerPadding)
+                        .padding(
+                            top = innerPadding.calculateTopPadding(),
+                            start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                            bottom = innerPadding.calculateBottomPadding()
+                        )
                         .fillMaxSize()
                 ) {
-                    //todo fix up the dependency stuff for hilt so I can fix my dependency injection
+                    val songList by songViewModel.songList.collectAsState()
+//                    val songListInitialized by songViewModel.isInitialized.collectAsState()
+
                     if (selectedScreen == NavItems.SongList) {
-                        SongScreen(mediaPlayerViewModel.songRepository.songList, selectedScreen)
+                        SongScreen(songList, selectedScreen)
                     } else if (selectedScreen == NavItems.Tags) {
-                        TagScreen(mediaPlayerViewModel.songRepository)
+                        //todo split my songRepository into a repository and viewmodel for DI purposes
+                        TagScreen()
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
                     } else if (selectedScreen == NavItems.Queue) {
-                        val currentPlaylist = remember { mediaPlayerViewModel.currentPlaylist }
+                        val currentPlaylist by musicPlayerViewModel.currentPlaylist.collectAsState()
                         SongScreen(currentPlaylist, selectedScreen)
                     }
                 }
