@@ -8,12 +8,9 @@ import com.hich2000.tagcapella.tags.TagDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,10 +50,6 @@ class MusicPlayerViewModel @Inject constructor(
 
     private val _duration = MutableStateFlow(0L)
     val duration: StateFlow<Long> get() = _duration
-
-    val playbackProgress: StateFlow<Float> = combine(playbackPosition, duration) { position, duration ->
-        if (duration > 0) position / duration.toFloat() else 0f
-    }.stateIn(viewModelScope, SharingStarted.Lazily, 0f)
 
     init {
         viewModelScope.launch {
@@ -98,7 +91,7 @@ class MusicPlayerViewModel @Inject constructor(
             while (true) {
                 _playbackPosition.value = _mediaController.currentPosition
                 _duration.value = _mediaController.duration
-                delay(1000L)
+                delay(1000)
             }
         }
     }
@@ -116,6 +109,13 @@ class MusicPlayerViewModel @Inject constructor(
     ): List<SongDTO> {
         songRepository.isInitialized.first { it }
         return songRepository.filterSongList(includeTags, excludeTags)
+    }
+
+    fun setPlaybackPosition(position: Number, finished: Boolean = false) {
+        _playbackPosition.value = position.toLong()
+        if (finished) {
+            _mediaController.seekTo(_playbackPosition.value)
+        }
     }
 
     fun addIncludedTag(tag: TagDTO) {

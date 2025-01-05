@@ -38,8 +38,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -67,12 +67,14 @@ import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MusicControls(
     mediaControllerViewModel: MusicPlayerViewModel = hiltViewModel()
 ) {
     // Use the state variable to determine if the MediaController and songlist are initialized
     val isMediaControllerInitialized by mediaControllerViewModel.isMediaControllerInitialized.collectAsState()
+
     if (isMediaControllerInitialized) {
         //observe the isPlaying state for ui changes
         val isPlaying by mediaControllerViewModel.isPlaying.collectAsState()
@@ -80,8 +82,9 @@ fun MusicControls(
         val shuffleModeEnabled by mediaControllerViewModel.shuffleModeEnabled.collectAsState()
         //observe the loopMode state for ui changes
         val repeatMode by mediaControllerViewModel.repeatMode.collectAsState()
-        //observe the progress of the song
-        val progress by mediaControllerViewModel.playbackProgress.collectAsState()
+
+        val playbackPosition by mediaControllerViewModel.playbackPosition.collectAsState()
+        val playbackDuration by mediaControllerViewModel.duration.collectAsState()
 
         //get the mediaController itself
         val mediaController = mediaControllerViewModel.mediaController
@@ -98,11 +101,21 @@ fun MusicControls(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                LinearProgressIndicator(
-                    progress = { progress },
-                )
+                if (playbackDuration > 0) {
+
+                    Slider(
+                        value = playbackPosition.toFloat(),
+                        valueRange = (0f..playbackDuration.toFloat()),
+                        onValueChange = { newPosition ->
+                            mediaControllerViewModel.setPlaybackPosition(newPosition)
+                        },
+                        onValueChangeFinished = {
+                            mediaControllerViewModel.setPlaybackPosition(playbackPosition, true)
+                        }
+                    )
+
+                }
             }
-//            Spacer(modifier = Modifier.weight(0.2f))
 
             Row(
                 modifier = Modifier
@@ -197,7 +210,6 @@ fun MusicControls(
     }
 
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
