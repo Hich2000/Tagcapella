@@ -48,8 +48,8 @@ class MusicPlayerViewModel @Inject constructor(
     private val _playbackPosition = MutableStateFlow(0L)
     val playbackPosition: StateFlow<Long> get() = _playbackPosition
 
-    private val _duration = MutableStateFlow(0L)
-    val duration: StateFlow<Long> get() = _duration
+    private val _playbackDuration = MutableStateFlow(0L)
+    val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
     init {
         viewModelScope.launch {
@@ -90,7 +90,7 @@ class MusicPlayerViewModel @Inject constructor(
         viewModelScope.launch {
             while (true) {
                 _playbackPosition.value = _mediaController.currentPosition
-                _duration.value = _mediaController.duration
+                _playbackDuration.value = _mediaController.duration
                 delay(1000)
             }
         }

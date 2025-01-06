@@ -1,5 +1,6 @@
 package com.hich2000.tagcapella.music_player
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -67,8 +68,8 @@ import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MusicControls(
     mediaControllerViewModel: MusicPlayerViewModel = hiltViewModel()
@@ -85,7 +86,7 @@ fun MusicControls(
         val repeatMode by mediaControllerViewModel.repeatMode.collectAsState()
 
         val playbackPosition by mediaControllerViewModel.playbackPosition.collectAsState()
-        val playbackDuration by mediaControllerViewModel.duration.collectAsState()
+        val playbackDuration by mediaControllerViewModel.playbackDuration.collectAsState()
 
         //get the mediaController itself
         val mediaController = mediaControllerViewModel.mediaController
@@ -213,6 +214,7 @@ fun MusicControls(
 
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun PlaybackSlider(
     playbackPosition: Long,
@@ -220,12 +222,38 @@ fun PlaybackSlider(
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: () -> Unit
 ) {
-    Slider(
-        value = playbackPosition.toFloat(),
-        valueRange = if (playbackDuration > 0) {(0f..playbackDuration.toFloat())} else {(0f..1f)},
-        onValueChange = onValueChange,
-        onValueChangeFinished = onValueChangeFinished
-    )
+
+    val pHours = TimeUnit.MILLISECONDS.toHours(playbackPosition)
+    val pMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackPosition)%60
+    val pSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackPosition)%60
+    val formattedPosition = if (pHours > 0) { String.format("%d:%02d:%02d", pHours, pMinutes, pSeconds) } else { String.format("%02d:%02d", pMinutes, pSeconds) }
+
+    val dHours = TimeUnit.MILLISECONDS.toHours(playbackDuration)
+    val dMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackDuration)%60
+    val dSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackDuration)%60
+    val formattedDuration = if (pHours > 0) { String.format("%d:%02d:%02d", dHours, dMinutes, dSeconds) } else { String.format("%02d:%02d", dMinutes, dSeconds) }
+
+    Column (
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Text("$formattedPosition/$formattedDuration")
+        }
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Slider(
+                value = playbackPosition.toFloat(),
+                valueRange = if (playbackDuration > 0) {(0f..playbackDuration.toFloat())} else {(0f..1f)},
+                onValueChange = onValueChange,
+                onValueChangeFinished = onValueChangeFinished
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
