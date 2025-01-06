@@ -107,7 +107,7 @@ fun MusicControls(
                 //Don't know for sure how to improve on this, might look into it later. Not important now tho.
                 var currentPosition by remember { mutableLongStateOf(playbackPosition) }
                 PlaybackSlider(
-                    playbackPosition = playbackPosition,
+                    playbackPosition = currentPosition,
                     playbackDuration = playbackDuration,
                     onValueChange = { newPosition: Float ->
                         currentPosition = newPosition.toLong()
