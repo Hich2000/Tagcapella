@@ -94,17 +94,12 @@ fun TagScreen (
                             Color.Black
                         },
                         onClick = {
-                            println("clicked tag: $clickedTag")
-                            println("clicked song: $song")
-
                             if (clickedTag.value!!.taggedSongList.contains(song)) {
                                 song.id?.let {
-                                    println("flow1")
                                     tagViewModel.deleteSongTag(clickedTag.value!!, song)
                                 }
                             } else {
                                 song.id?.let {
-                                    println("flow2")
                                     tagViewModel.addSongTag(clickedTag.value!!, song)
                                 }
                             }

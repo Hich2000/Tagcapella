@@ -6,6 +6,7 @@ import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.tags.TagDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +45,12 @@ class MusicPlayerViewModel @Inject constructor(
     private val _currentPlaylist = MutableStateFlow<List<SongDTO>>(emptyList())
     val currentPlaylist: StateFlow<List<SongDTO>> get() = _currentPlaylist.asStateFlow()
 
+    private val _playbackPosition = MutableStateFlow(0L)
+    val playbackPosition: StateFlow<Long> get() = _playbackPosition
+
+    private val _playbackDuration = MutableStateFlow(0L)
+    val playbackDuration: StateFlow<Long> get() = _playbackDuration
+
     init {
         viewModelScope.launch {
             _isMediaControllerInitialized.value = try {
@@ -76,7 +83,17 @@ class MusicPlayerViewModel @Inject constructor(
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                 _shuffleModeEnabled.value = shuffleModeEnabled
             }
+
         })
+
+        //get the duration and position of the current song every second
+        viewModelScope.launch {
+            while (true) {
+                _playbackPosition.value = _mediaController.currentPosition
+                _playbackDuration.value = _mediaController.duration
+                delay(1000)
+            }
+        }
     }
 
     fun preparePlaylist(playlist: List<SongDTO>) {
@@ -92,6 +109,13 @@ class MusicPlayerViewModel @Inject constructor(
     ): List<SongDTO> {
         songRepository.isInitialized.first { it }
         return songRepository.filterSongList(includeTags, excludeTags)
+    }
+
+    fun setPlaybackPosition(position: Number, finished: Boolean = false) {
+        _playbackPosition.value = position.toLong()
+        if (finished) {
+            _mediaController.seekTo(_playbackPosition.value)
+        }
     }
 
     fun addIncludedTag(tag: TagDTO) {

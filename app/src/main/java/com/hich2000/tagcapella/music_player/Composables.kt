@@ -1,5 +1,6 @@
 package com.hich2000.tagcapella.music_player
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -39,11 +40,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,6 +69,7 @@ import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun MusicControls(
@@ -72,6 +77,7 @@ fun MusicControls(
 ) {
     // Use the state variable to determine if the MediaController and songlist are initialized
     val isMediaControllerInitialized by mediaControllerViewModel.isMediaControllerInitialized.collectAsState()
+
     if (isMediaControllerInitialized) {
         //observe the isPlaying state for ui changes
         val isPlaying by mediaControllerViewModel.isPlaying.collectAsState()
@@ -80,100 +86,202 @@ fun MusicControls(
         //observe the loopMode state for ui changes
         val repeatMode by mediaControllerViewModel.repeatMode.collectAsState()
 
+        val playbackPosition by mediaControllerViewModel.playbackPosition.collectAsState()
+        val playbackDuration by mediaControllerViewModel.playbackDuration.collectAsState()
+
         //get the mediaController itself
         val mediaController = mediaControllerViewModel.mediaController
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .border(2.dp, Color.Gray),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center
         ) {
-            //shuffle mode
-            IconButton(
-                onClick = {
-                    if (shuffleModeEnabled) {
-                        mediaController.shuffleModeEnabled = false
-                    } else {
-                        mediaController.shuffleModeEnabled = true
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                // Temporary state for slider interaction
+                var sliderPosition by remember { mutableFloatStateOf(playbackPosition.toFloat()) }
+                var isUserInteracting by remember { mutableStateOf(false) }
+
+                // Sync sliderPosition with playbackPosition when not interacting
+                LaunchedEffect(playbackPosition) {
+                    if (!isUserInteracting) {
+                        sliderPosition = playbackPosition.toFloat()
                     }
                 }
-            ) {
-                val icon =
-                    if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
-                Icon(
-                    icon,
-                    contentDescription = "Shuffle button"
+
+                PlaybackSlider(
+                    playbackPosition = sliderPosition.toLong(),
+                    playbackDuration = playbackDuration,
+                    onValueChange = { newPosition: Float ->
+                        isUserInteracting = true
+                        sliderPosition = newPosition
+                    },
+                    onValueChangeFinished = {
+                        isUserInteracting = false
+                        mediaControllerViewModel.setPlaybackPosition(sliderPosition.toLong(), true)
+                    }
                 )
             }
-            //skip previous
-            IconButton(
-                onClick = {
-                    mediaController.seekToPrevious()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, Color.Gray),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                //shuffle mode
+                IconButton(
+                    onClick = {
+                        if (shuffleModeEnabled) {
+                            mediaController.shuffleModeEnabled = false
+                        } else {
+                            mediaController.shuffleModeEnabled = true
+                        }
+                    }
+                ) {
+                    val icon =
+                        if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
+                    Icon(
+                        icon,
+                        contentDescription = "Shuffle button"
+                    )
                 }
-            ) {
-                Icon(
-                    Icons.Default.SkipPrevious,
-                    contentDescription = "Skip to previous button"
-                )
-            }
-            //play/pause
-            IconButton(
-                onClick = {
-                    if (isPlaying) mediaController.pause() else mediaController.play()
+                //skip previous
+                IconButton(
+                    onClick = {
+                        mediaController.seekToPrevious()
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.SkipPrevious,
+                        contentDescription = "Skip to previous button"
+                    )
                 }
-            ) {
-                val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
-                val contentDescription = if (isPlaying) "Pause" else "Play"
-                Icon(
-                    icon,
-                    contentDescription = contentDescription
-                )
-            }
-            //skip next
-            IconButton(
-                onClick = {
-                    mediaController.seekToNext()
+                //play/pause
+                IconButton(
+                    onClick = {
+                        if (isPlaying) mediaController.pause() else mediaController.play()
+                    }
+                ) {
+                    val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                    val contentDescription = if (isPlaying) "Pause" else "Play"
+                    Icon(
+                        icon,
+                        contentDescription = contentDescription
+                    )
                 }
-            ) {
-                Icon(
-                    Icons.Default.SkipNext,
-                    contentDescription = "Skip to next button"
-                )
-            }
-            //loop mode
-            IconButton(
-                onClick = {
+                //skip next
+                IconButton(
+                    onClick = {
+                        mediaController.seekToNext()
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.SkipNext,
+                        contentDescription = "Skip to next button"
+                    )
+                }
+                //loop mode
+                IconButton(
+                    onClick = {
+                        if (repeatMode == Player.REPEAT_MODE_OFF) {
+                            mediaController.repeatMode = Player.REPEAT_MODE_ALL
+                        } else if (repeatMode == Player.REPEAT_MODE_ALL) {
+                            mediaController.repeatMode = Player.REPEAT_MODE_ONE
+                        } else if (repeatMode == Player.REPEAT_MODE_ONE) {
+                            mediaController.repeatMode = Player.REPEAT_MODE_OFF
+                        }
+                    }
+                ) {
+                    var icon = Icons.Default.Repeat
+
                     if (repeatMode == Player.REPEAT_MODE_OFF) {
-                        mediaController.repeatMode = Player.REPEAT_MODE_ALL
+                        icon = Icons.AutoMirrored.Filled.ArrowRightAlt
                     } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                        mediaController.repeatMode = Player.REPEAT_MODE_ONE
+                        icon = Icons.Default.Repeat
                     } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                        mediaController.repeatMode = Player.REPEAT_MODE_OFF
+                        icon = Icons.Default.RepeatOne
                     }
-                }
-            ) {
-                var icon = Icons.Default.Repeat
 
-                if (repeatMode == Player.REPEAT_MODE_OFF) {
-                    icon = Icons.AutoMirrored.Filled.ArrowRightAlt
-                } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                    icon = Icons.Default.Repeat
-                } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                    icon = Icons.Default.RepeatOne
+                    Icon(
+                        icon,
+                        contentDescription = "Shuffle button"
+                    )
                 }
 
-                Icon(
-                    icon,
-                    contentDescription = "Shuffle button"
-                )
             }
-
         }
+
     }
 
 }
 
+@SuppressLint("DefaultLocale")
+@Composable
+fun PlaybackSlider(
+    playbackPosition: Long,
+    playbackDuration: Long,
+    onValueChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit
+) {
+
+    val pHours = TimeUnit.MILLISECONDS.toHours(playbackPosition)
+    val pMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackPosition) % 60
+    val pSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackPosition) % 60
+    val formattedPosition = if (pHours > 0) {
+        String.format("%d:%02d:%02d", pHours, pMinutes, pSeconds)
+    } else {
+        String.format("%02d:%02d", pMinutes, pSeconds)
+    }
+
+    //formatted duration needs to only trigger when duration has actually propagated and is not negative
+    var formattedDuration = "--:--"
+    if (playbackDuration > 0) {
+        val dHours = TimeUnit.MILLISECONDS.toHours(playbackDuration)
+        val dMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackDuration) % 60
+        val dSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackDuration) % 60
+        formattedDuration = if (pHours > 0) {
+            String.format("%d:%02d:%02d", dHours, dMinutes, dSeconds)
+        } else {
+            String.format("%02d:%02d", dMinutes, dSeconds)
+        }
+    }
+
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Text("$formattedPosition/$formattedDuration")
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Slider(
+                value = playbackPosition.toFloat(),
+                valueRange = if (playbackDuration > 0) {
+                    (0f..playbackDuration.toFloat())
+                } else {
+                    (0f..1f)
+                },
+                onValueChange = onValueChange,
+                onValueChangeFinished = onValueChangeFinished
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
