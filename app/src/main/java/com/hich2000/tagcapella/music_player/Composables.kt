@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -101,20 +102,21 @@ fun MusicControls(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                if (playbackDuration > 0) {
-
-                    Slider(
-                        value = playbackPosition.toFloat(),
-                        valueRange = (0f..playbackDuration.toFloat()),
-                        onValueChange = { newPosition ->
-                            mediaControllerViewModel.setPlaybackPosition(newPosition)
-                        },
-                        onValueChangeFinished = {
-                            mediaControllerViewModel.setPlaybackPosition(playbackPosition, true)
+                //Kinda strange, but if I don't do something like this then tapping on the bar to skip to a section doesn't work.
+                //Don't know for sure how to improve on this, might look into it later. Not important now tho.
+                var currentPosition by remember { mutableLongStateOf(playbackPosition) }
+                PlaybackSlider(
+                    playbackPosition = playbackPosition,
+                    playbackDuration = playbackDuration,
+                    onValueChange = { newPosition: Float ->
+                        currentPosition = newPosition.toLong()
+                    },
+                    onValueChangeFinished = {
+                        if (currentPosition != playbackPosition) {
+                            mediaControllerViewModel.setPlaybackPosition(currentPosition, true)
                         }
-                    )
-
-                }
+                    }
+                )
             }
 
             Row(
@@ -209,6 +211,21 @@ fun MusicControls(
 
     }
 
+}
+
+@Composable
+fun PlaybackSlider(
+    playbackPosition: Long,
+    playbackDuration: Long,
+    onValueChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit
+) {
+    Slider(
+        value = playbackPosition.toFloat(),
+        valueRange = if (playbackDuration > 0) {(0f..playbackDuration.toFloat())} else {(0f..1f)},
+        onValueChange = onValueChange,
+        onValueChangeFinished = onValueChangeFinished
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
