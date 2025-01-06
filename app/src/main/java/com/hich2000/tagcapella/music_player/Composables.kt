@@ -242,14 +242,19 @@ fun PlaybackSlider(
         String.format("%02d:%02d", pMinutes, pSeconds)
     }
 
-    val dHours = TimeUnit.MILLISECONDS.toHours(playbackDuration)
-    val dMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackDuration) % 60
-    val dSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackDuration) % 60
-    val formattedDuration = if (pHours > 0) {
-        String.format("%d:%02d:%02d", dHours, dMinutes, dSeconds)
-    } else {
-        String.format("%02d:%02d", dMinutes, dSeconds)
+    //formatted duration needs to only trigger when duration has actually propagated and is not negative
+    var formattedDuration = "--:--"
+    if (playbackDuration > 0) {
+        val dHours = TimeUnit.MILLISECONDS.toHours(playbackDuration)
+        val dMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackDuration) % 60
+        val dSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackDuration) % 60
+        formattedDuration = if (pHours > 0) {
+            String.format("%d:%02d:%02d", dHours, dMinutes, dSeconds)
+        } else {
+            String.format("%02d:%02d", dMinutes, dSeconds)
+        }
     }
+
 
     Column(
         modifier = Modifier.fillMaxWidth()
