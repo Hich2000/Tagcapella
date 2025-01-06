@@ -44,9 +44,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -91,31 +92,40 @@ fun MusicControls(
         //get the mediaController itself
         val mediaController = mediaControllerViewModel.mediaController
 
-        Column (
+        Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
 
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                //Kinda strange, but if I don't do something like this then tapping on the bar to skip to a section doesn't work.
-                //Don't know for sure how to improve on this, might look into it later. Not important now tho.
-                var currentPosition by remember { mutableLongStateOf(playbackPosition) }
+
+                // Temporary state for slider interaction
+                var sliderPosition by remember { mutableFloatStateOf(playbackPosition.toFloat()) }
+                var isUserInteracting by remember { mutableStateOf(false) }
+
+                // Sync sliderPosition with playbackPosition when not interacting
+                LaunchedEffect(playbackPosition) {
+                    if (!isUserInteracting) {
+                        sliderPosition = playbackPosition.toFloat()
+                    }
+                }
+
                 PlaybackSlider(
-                    playbackPosition = currentPosition,
+                    playbackPosition = sliderPosition.toLong(),
                     playbackDuration = playbackDuration,
                     onValueChange = { newPosition: Float ->
-                        currentPosition = newPosition.toLong()
+                        isUserInteracting = true
+                        sliderPosition = newPosition
                     },
                     onValueChangeFinished = {
-                        if (currentPosition != playbackPosition) {
-                            mediaControllerViewModel.setPlaybackPosition(currentPosition, true)
-                        }
+                        isUserInteracting = false
+                        mediaControllerViewModel.setPlaybackPosition(sliderPosition.toLong(), true)
                     }
                 )
             }
@@ -224,31 +234,43 @@ fun PlaybackSlider(
 ) {
 
     val pHours = TimeUnit.MILLISECONDS.toHours(playbackPosition)
-    val pMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackPosition)%60
-    val pSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackPosition)%60
-    val formattedPosition = if (pHours > 0) { String.format("%d:%02d:%02d", pHours, pMinutes, pSeconds) } else { String.format("%02d:%02d", pMinutes, pSeconds) }
+    val pMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackPosition) % 60
+    val pSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackPosition) % 60
+    val formattedPosition = if (pHours > 0) {
+        String.format("%d:%02d:%02d", pHours, pMinutes, pSeconds)
+    } else {
+        String.format("%02d:%02d", pMinutes, pSeconds)
+    }
 
     val dHours = TimeUnit.MILLISECONDS.toHours(playbackDuration)
-    val dMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackDuration)%60
-    val dSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackDuration)%60
-    val formattedDuration = if (pHours > 0) { String.format("%d:%02d:%02d", dHours, dMinutes, dSeconds) } else { String.format("%02d:%02d", dMinutes, dSeconds) }
+    val dMinutes = TimeUnit.MILLISECONDS.toMinutes(playbackDuration) % 60
+    val dSeconds = TimeUnit.MILLISECONDS.toSeconds(playbackDuration) % 60
+    val formattedDuration = if (pHours > 0) {
+        String.format("%d:%02d:%02d", dHours, dMinutes, dSeconds)
+    } else {
+        String.format("%02d:%02d", dMinutes, dSeconds)
+    }
 
-    Column (
+    Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
             Text("$formattedPosition/$formattedDuration")
         }
-        Row (
+        Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             Slider(
                 value = playbackPosition.toFloat(),
-                valueRange = if (playbackDuration > 0) {(0f..playbackDuration.toFloat())} else {(0f..1f)},
+                valueRange = if (playbackDuration > 0) {
+                    (0f..playbackDuration.toFloat())
+                } else {
+                    (0f..1f)
+                },
                 onValueChange = onValueChange,
                 onValueChangeFinished = onValueChangeFinished
             )
