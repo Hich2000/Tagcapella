@@ -7,6 +7,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -38,5 +42,17 @@ class MediaControllerManager @Inject constructor(
         controller.clearMediaItems()
         controller.addMediaItems(mediaItems)
         controller.prepare()
+    }
+}
+
+
+@Module
+@InstallIn(SingletonComponent::class)
+object MediaControllerModule {
+
+    @Provides
+    @Singleton
+    fun provideMediaControllerManager(application: Application): MediaControllerManager {
+        return MediaControllerManager(application)
     }
 }

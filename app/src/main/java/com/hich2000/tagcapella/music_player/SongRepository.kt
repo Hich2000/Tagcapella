@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.music_player
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.hich2000.tagcapella.Database
+import com.hich2000.tagcapella.utils.Database
 import com.hich2000.tagcapella.tags.TagDTO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

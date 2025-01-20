@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella
+package com.hich2000.tagcapella.utils
 
 import android.app.Application
 import androidx.sqlite.db.SupportSQLiteDatabase
