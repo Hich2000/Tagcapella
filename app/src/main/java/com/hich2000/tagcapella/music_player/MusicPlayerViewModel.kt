@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.utils.SharedPreferenceKeys
+import com.hich2000.tagcapella.utils.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MusicPlayerViewModel @Inject constructor(
     private val mediaControllerManager: MediaControllerManager,
-    private val songRepository: SongRepository
+    private val songRepository: SongRepository,
+    private val sharedPreferenceManager: SharedPreferenceManager
 ) : ViewModel() {
 
     private lateinit var _mediaController: MediaController
@@ -52,28 +55,38 @@ class MusicPlayerViewModel @Inject constructor(
     val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
     init {
-
         viewModelScope.launch {
             _isMediaControllerInitialized.value = try {
                 val controller = mediaControllerManager.initializeMediaController()
                 observeMediaControllerState(controller)
                 _mediaController = controller
 
+
+                val repeatMode: Int = sharedPreferenceManager.getPreference(
+                    SharedPreferenceKeys.PLAYER_REPEAT_MODE,
+                    Player.REPEAT_MODE_ALL
+                )!!
+                _repeatMode.value = repeatMode
+                _mediaController.repeatMode = repeatMode
+
+                val shuffleMode: Boolean = sharedPreferenceManager.getPreference(
+                    SharedPreferenceKeys.PLAYER_SHUFFLE_MODE,
+                    false
+                )!!
+                _shuffleModeEnabled.value = shuffleMode
+                _mediaController.shuffleModeEnabled = shuffleMode
+
+
+
                 //todo use shared preferences to remember settings, which song was playing and how far it was.
                 //  I think on pausing it should save like the currently playing song and progress for when the service has ended.
                 //  also use shared preferences to save the current tags and playlist.
                 if (!_mediaController.isPlaying) {
-                    _mediaController.repeatMode = Player.REPEAT_MODE_ALL
                     val playlist = getFilteredPlaylist()
                     preparePlaylist(playlist)
                 } else {
-                    _repeatMode.value = _mediaController.repeatMode
                     _isPlaying.value = _mediaController.isPlaying
-                    _shuffleModeEnabled.value = _mediaController.shuffleModeEnabled
                 }
-
-
-
                 true
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -90,10 +103,18 @@ class MusicPlayerViewModel @Inject constructor(
 
             override fun onRepeatModeChanged(repeatMode: Int) {
                 _repeatMode.value = repeatMode
+                sharedPreferenceManager.savePreference(
+                    SharedPreferenceKeys.PLAYER_REPEAT_MODE,
+                    repeatMode
+                )
             }
 
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                 _shuffleModeEnabled.value = shuffleModeEnabled
+                sharedPreferenceManager.savePreference(
+                    SharedPreferenceKeys.PLAYER_SHUFFLE_MODE,
+                    shuffleModeEnabled
+                )
             }
 
         })
