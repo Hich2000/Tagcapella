@@ -8,17 +8,23 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class MediaControllerManager @Inject constructor(
     private val application: Application
 ) {
-    private lateinit var mediaController: MediaController
+    private var mediaController: MediaController? = null
 
     suspend fun initializeMediaController(): MediaController {
+
+        // Reuse existing MediaController if it's already connected
+        mediaController?.let { return it }
+
         val sessionToken = SessionToken(application, ComponentName(application, PlaybackService::class.java))
         val controllerFuture = MediaController.Builder(application, sessionToken).buildAsync()
         mediaController = controllerFuture.await()
-        return mediaController
+        return mediaController!!
     }
 
     fun preparePlaylist(controller: MediaController, playlist: List<SongDTO>) {

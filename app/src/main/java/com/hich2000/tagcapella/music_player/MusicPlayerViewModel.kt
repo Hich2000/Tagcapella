@@ -52,15 +52,24 @@ class MusicPlayerViewModel @Inject constructor(
     val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
     init {
+
         viewModelScope.launch {
             _isMediaControllerInitialized.value = try {
                 val controller = mediaControllerManager.initializeMediaController()
                 observeMediaControllerState(controller)
                 _mediaController = controller
-                _mediaController.repeatMode = Player.REPEAT_MODE_ALL
 
-                val playlist = getFilteredPlaylist()
-                preparePlaylist(playlist)
+                if (!_mediaController.isPlaying) {
+                    _mediaController.repeatMode = Player.REPEAT_MODE_ALL
+                    val playlist = getFilteredPlaylist()
+                    preparePlaylist(playlist)
+                } else {
+                    _repeatMode.value = _mediaController.repeatMode
+                    _isPlaying.value = _mediaController.isPlaying
+                    _shuffleModeEnabled.value = _mediaController.shuffleModeEnabled
+                }
+
+
 
                 true
             } catch (e: Exception) {
