@@ -21,6 +21,7 @@ class SharedPreferenceManager @Inject constructor(
             Int::class to { editor, key, value -> editor.putInt(key, value as Int) },
             Boolean::class to { editor, key, value -> editor.putBoolean(key, value as Boolean) },
             String::class to { editor, key, value -> editor.putString(key, value as String) },
+            Long::class to { editor, key, value -> editor.putLong(key, value as Long) }
         )
 
     private val getTypeHandlers: Map<KClass<*>, (SharedPreferences, String, Any) -> Any?> = mapOf(
@@ -37,6 +38,12 @@ class SharedPreferenceManager @Inject constructor(
                 defaultValue as String
             )
         },
+        Long::class to { store, key, defaultValue ->
+            store.getLong(
+                key,
+                defaultValue as Long
+            )
+        }
     )
 
     fun savePreference(key: SharedPreferenceKeys, value: Any) {
@@ -50,10 +57,10 @@ class SharedPreferenceManager @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getPreference(
         key: SharedPreferenceKeys,
-        defaultValue: Any
-    ): T? {
+        defaultValue: T
+    ): T {
         val handler = getTypeHandlers[key.type]
             ?: throw IllegalArgumentException("Unsupported type: ${key.type}")
-        return handler(sharedPreferences, key.key, defaultValue) as? T
+        return handler(sharedPreferences, key.key, defaultValue) as T
     }
 }

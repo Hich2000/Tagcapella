@@ -14,4 +14,12 @@ enum class SharedPreferenceKeys (
         key = "PLAYER_SHUFFLE_MODE",
         type = Boolean::class
     ),
+    INCLUDED_TAGS(
+        key = "INCLUDED_TAGS",
+        type = String::class
+    ),
+    EXCLUDED_TAGS(
+        key = "EXCLUDED_TAGS",
+        type = String::class
+    )
 }
