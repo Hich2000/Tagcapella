@@ -77,7 +77,6 @@ class MusicPlayerViewModel @Inject constructor(
                 _mediaController.shuffleModeEnabled = shuffleMode
 
 
-
                 //todo use shared preferences to remember settings, which song was playing and how far it was.
                 //  I think on pausing it should save like the currently playing song and progress for when the service has ended.
                 //  also use shared preferences to save the current tags and playlist.
