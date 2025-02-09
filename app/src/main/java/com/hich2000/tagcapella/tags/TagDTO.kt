@@ -44,3 +44,15 @@ data class TagDTO @Inject constructor(val id: Long, val tag: String, val databas
         return _taggedSongList.size
     }
 }
+
+class TagDTOFactory @Inject constructor(private val database: Database) {
+
+    fun getTagById(tagId: Long): TagDTO? {
+        val db = database.db
+        val tagResult = db.tagQueries.selectTagById(tagId) { id, tag ->
+            TagDTO(id, tag, database)
+        }.executeAsOneOrNull()
+
+        return tagResult
+    }
+}
