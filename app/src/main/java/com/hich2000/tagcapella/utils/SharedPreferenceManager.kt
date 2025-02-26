@@ -3,6 +3,8 @@ package com.hich2000.tagcapella.utils
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.reflect.KClass
@@ -11,6 +13,9 @@ import kotlin.reflect.KClass
 class SharedPreferenceManager @Inject constructor(
     application: Application
 ) {
+
+    private val gson = Gson()
+
     private val sharedPreferences = application.getSharedPreferences(
         "com.hich2000.tagcapella.application_preferences",
         Context.MODE_PRIVATE
@@ -21,7 +26,15 @@ class SharedPreferenceManager @Inject constructor(
             Int::class to { editor, key, value -> editor.putInt(key, value as Int) },
             Boolean::class to { editor, key, value -> editor.putBoolean(key, value as Boolean) },
             String::class to { editor, key, value -> editor.putString(key, value as String) },
-            Long::class to { editor, key, value -> editor.putLong(key, value as Long) }
+            Long::class to { editor, key, value -> editor.putLong(key, value as Long) },
+            List::class to { editor, key, value ->
+                if (value is List<*>) {
+                    val json = gson.toJson(value)
+                    editor.putString(key, json)
+                } else {
+                    throw IllegalArgumentException("Expected List but got ${value::class}")
+                }
+            }
         )
 
     private val getTypeHandlers: Map<KClass<*>, (SharedPreferences, String, Any) -> Any?> = mapOf(
@@ -43,6 +56,19 @@ class SharedPreferenceManager @Inject constructor(
                 key,
                 defaultValue as Long
             )
+        },
+        List::class to { store, key, defaultValue -> // Retrieve List<String>
+            val json = store.getString(key, null)
+            try {
+                if (!json.isNullOrEmpty()) {
+                    val type = object : TypeToken<List<String>>() {}.type
+                    gson.fromJson<List<String>>(json, type) ?: defaultValue
+                } else {
+                    defaultValue
+                }
+            } catch (e: Throwable) {
+                defaultValue
+            }
         }
     )
 

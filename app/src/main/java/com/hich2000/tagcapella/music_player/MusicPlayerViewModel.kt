@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.tags.TagDTOFactory
 import com.hich2000.tagcapella.utils.SharedPreferenceKeys
 import com.hich2000.tagcapella.utils.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,6 +55,9 @@ class MusicPlayerViewModel @Inject constructor(
     private val _playbackDuration = MutableStateFlow(0L)
     val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
+    @Inject
+    lateinit var tagDTOFactory: TagDTOFactory
+
     init {
         viewModelScope.launch {
             _isMediaControllerInitialized.value = try {
@@ -65,27 +69,38 @@ class MusicPlayerViewModel @Inject constructor(
                 val repeatMode: Int = sharedPreferenceManager.getPreference(
                     SharedPreferenceKeys.PLAYER_REPEAT_MODE,
                     Player.REPEAT_MODE_ALL
-                )!!
+                )
                 _repeatMode.value = repeatMode
                 _mediaController.repeatMode = repeatMode
 
                 val shuffleMode: Boolean = sharedPreferenceManager.getPreference(
                     SharedPreferenceKeys.PLAYER_SHUFFLE_MODE,
                     false
-                )!!
+                )
                 _shuffleModeEnabled.value = shuffleMode
                 _mediaController.shuffleModeEnabled = shuffleMode
+
+
+                _isPlaying.value = _mediaController.isPlaying
 
 
                 //todo use shared preferences to remember settings, which song was playing and how far it was.
                 //  I think on pausing it should save like the currently playing song and progress for when the service has ended.
                 //  also use shared preferences to save the current tags and playlist.
                 if (!_mediaController.isPlaying) {
-                    val playlist = getFilteredPlaylist()
+
+                    //get included and excluded tag ids
+                    val includedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.INCLUDED_TAGS, listOf())
+                    val excludedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.EXCLUDED_TAGS, listOf())
+
+                    //use the list of ids to make a list of DTOs
+                    _includedTags.value = includedTagIds.map { tagDTOFactory.getTagById(it.toLong())!! }
+                    _excludedTags.value = excludedTagIds.map { tagDTOFactory.getTagById(it.toLong())!! }
+
+                    val playlist = getFilteredPlaylist(_includedTags.value, _excludedTags.value)
                     preparePlaylist(playlist)
-                } else {
-                    _isPlaying.value = _mediaController.isPlaying
                 }
+
                 true
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -139,6 +154,12 @@ class MusicPlayerViewModel @Inject constructor(
         includeTags: List<TagDTO> = listOf(),
         excludeTags: List<TagDTO> = listOf()
     ): List<SongDTO> {
+
+        val jsonIncluded: List<Long> = includeTags.map {it.id}
+        val jsonExcluded: List<Long> = excludeTags.map {it.id}
+        sharedPreferenceManager.savePreference(SharedPreferenceKeys.INCLUDED_TAGS, jsonIncluded)
+        sharedPreferenceManager.savePreference(SharedPreferenceKeys.EXCLUDED_TAGS, jsonExcluded)
+
         songRepository.isInitialized.first { it }
         return songRepository.filterSongList(includeTags, excludeTags)
     }
@@ -165,5 +186,6 @@ class MusicPlayerViewModel @Inject constructor(
     fun removeExcludedTag(tag: TagDTO) {
         _excludedTags.value -= tag
     }
+
 }
 

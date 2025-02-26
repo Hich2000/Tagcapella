@@ -16,10 +16,10 @@ enum class SharedPreferenceKeys (
     ),
     INCLUDED_TAGS(
         key = "INCLUDED_TAGS",
-        type = String::class
+        type = List::class
     ),
     EXCLUDED_TAGS(
         key = "EXCLUDED_TAGS",
-        type = String::class
+        type = List::class
     )
 }
