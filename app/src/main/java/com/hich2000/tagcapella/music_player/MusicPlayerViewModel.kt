@@ -21,7 +21,8 @@ import javax.inject.Inject
 class MusicPlayerViewModel @Inject constructor(
     private val mediaControllerManager: MediaControllerManager,
     private val songRepository: SongRepository,
-    private val sharedPreferenceManager: SharedPreferenceManager
+    private val sharedPreferenceManager: SharedPreferenceManager,
+    private val tagDTOFactory: TagDTOFactory
 ) : ViewModel() {
 
     private lateinit var _mediaController: MediaController
@@ -55,9 +56,6 @@ class MusicPlayerViewModel @Inject constructor(
     private val _playbackDuration = MutableStateFlow(0L)
     val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
-    @Inject
-    lateinit var tagDTOFactory: TagDTOFactory
-
     init {
         viewModelScope.launch {
             _isMediaControllerInitialized.value = try {
@@ -87,17 +85,18 @@ class MusicPlayerViewModel @Inject constructor(
                 //todo use shared preferences to remember settings, which song was playing and how far it was.
                 //  I think on pausing it should save like the currently playing song and progress for when the service has ended.
                 //  also use shared preferences to save the current tags and playlist.
+
+                //get included and excluded tag ids
+                val includedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.INCLUDED_TAGS, listOf())
+                val excludedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.EXCLUDED_TAGS, listOf())
+
+                //use the list of ids to make a list of DTOs
+                _includedTags.value = includedTagIds.map { tagDTOFactory.getTagById(it.toLong())!! }
+                _excludedTags.value = excludedTagIds.map { tagDTOFactory.getTagById(it.toLong())!! }
+                val playlist = getFilteredPlaylist(_includedTags.value, _excludedTags.value)
+                _currentPlaylist.value = playlist
+
                 if (!_mediaController.isPlaying) {
-
-                    //get included and excluded tag ids
-                    val includedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.INCLUDED_TAGS, listOf())
-                    val excludedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.EXCLUDED_TAGS, listOf())
-
-                    //use the list of ids to make a list of DTOs
-                    _includedTags.value = includedTagIds.map { tagDTOFactory.getTagById(it.toLong())!! }
-                    _excludedTags.value = excludedTagIds.map { tagDTOFactory.getTagById(it.toLong())!! }
-
-                    val playlist = getFilteredPlaylist(_includedTags.value, _excludedTags.value)
                     preparePlaylist(playlist)
                 }
 
