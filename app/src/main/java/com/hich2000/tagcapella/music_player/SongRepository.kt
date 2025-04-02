@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.io.path.Path
@@ -142,9 +143,9 @@ class SongRepository @Inject constructor(
             }.executeAsList())
         }
 
-        //now we remove the excluded tags
+        //now we remove the excluded tags and songs who's path does not exist anymore
         filteredSongList.removeAll { song ->
-            song.songTagList.any { it in excludeTags }
+            song.songTagList.any { it in excludeTags } or !File(song.path).exists()
         }
 
         return filteredSongList

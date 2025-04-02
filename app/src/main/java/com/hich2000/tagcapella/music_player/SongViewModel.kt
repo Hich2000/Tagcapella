@@ -28,7 +28,7 @@ class SongViewModel @Inject constructor(
         viewModelScope.launch {
             val scannedSongs = songRepository.scanMusicFolder()
             songRepository.saveSongList(scannedSongs)
-            _songList.value = songRepository.getSongList()
+            _songList.value = scannedSongs
             _isInitialized.value = true
         }
     }
