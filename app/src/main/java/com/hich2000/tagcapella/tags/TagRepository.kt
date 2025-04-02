@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.tags
 
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.utils.Database
-import com.hich2000.tagcapella.music_player.SongDTO
+import com.hich2000.tagcapella.songs.SongDTO
 import javax.inject.Inject
 import javax.inject.Singleton
 

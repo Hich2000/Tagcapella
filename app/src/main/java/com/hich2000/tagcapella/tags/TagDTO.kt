@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.hich2000.tagcapella.utils.Database
-import com.hich2000.tagcapella.music_player.SongDTO
+import com.hich2000.tagcapella.songs.SongDTO
 import javax.inject.Inject
 
 data class TagDTO @Inject constructor(val id: Long, val tag: String, val database: Database) {

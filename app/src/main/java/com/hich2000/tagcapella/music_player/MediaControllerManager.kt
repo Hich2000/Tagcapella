@@ -9,6 +9,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.hich2000.tagcapella.songs.SongDTO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

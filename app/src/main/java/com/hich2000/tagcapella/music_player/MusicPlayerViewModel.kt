@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
+import com.hich2000.tagcapella.songs.SongDTO
+import com.hich2000.tagcapella.songs.SongRepository
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagDTOFactory
 import com.hich2000.tagcapella.utils.SharedPreferenceKeys
