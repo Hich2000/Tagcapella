@@ -82,11 +82,6 @@ class MusicPlayerViewModel @Inject constructor(
 
                 _isPlaying.value = _mediaController.isPlaying
 
-
-                //todo use shared preferences to remember settings, which song was playing and how far it was.
-                //  I think on pausing it should save like the currently playing song and progress for when the service has ended.
-                //  also use shared preferences to save the current tags and playlist.
-
                 //get included and excluded tag ids
                 val includedTagIds: List<String> = sharedPreferenceManager.getPreference(
                     SharedPreferenceKeys.INCLUDED_TAGS,
