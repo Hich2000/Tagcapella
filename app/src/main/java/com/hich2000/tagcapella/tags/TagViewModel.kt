@@ -1,7 +1,7 @@
 package com.hich2000.tagcapella.tags
 
 import androidx.lifecycle.ViewModel
-import com.hich2000.tagcapella.music_player.SongDTO
+import com.hich2000.tagcapella.songs.SongDTO
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +24,7 @@ class TagViewModel @Inject constructor(
     }
 
     fun insertTag(tag: String) {
-        val newTag = tagRepository.insertTag(tag)
+        tagRepository.insertTag(tag)
         _tags.value = selectAllTags()
     }
 

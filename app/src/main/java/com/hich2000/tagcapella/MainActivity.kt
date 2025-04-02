@@ -43,7 +43,7 @@ import androidx.core.content.ContextCompat
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongScreen
-import com.hich2000.tagcapella.music_player.SongViewModel
+import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music_player
+package com.hich2000.tagcapella.songs
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,7 +28,7 @@ class SongViewModel @Inject constructor(
         viewModelScope.launch {
             val scannedSongs = songRepository.scanMusicFolder()
             songRepository.saveSongList(scannedSongs)
-            _songList.value = songRepository.getSongList()
+            _songList.value = scannedSongs
             _isInitialized.value = true
         }
     }

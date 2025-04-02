@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import com.hich2000.tagcapella.Database
-import com.hich2000.tagcapella.music_player.SongDTO
+import com.hich2000.tagcapella.utils.Database
+import com.hich2000.tagcapella.songs.SongDTO
 import javax.inject.Inject
 
 data class TagDTO @Inject constructor(val id: Long, val tag: String, val database: Database) {
@@ -42,5 +42,17 @@ data class TagDTO @Inject constructor(val id: Long, val tag: String, val databas
 
     private fun getSongCount(): Int {
         return _taggedSongList.size
+    }
+}
+
+class TagDTOFactory @Inject constructor(private val database: Database) {
+
+    fun getTagById(tagId: Long): TagDTO? {
+        val db = database.db
+        val tagResult = db.tagQueries.selectTagById(tagId) { id, tag ->
+            TagDTO(id, tag, database)
+        }.executeAsOneOrNull()
+
+        return tagResult
     }
 }

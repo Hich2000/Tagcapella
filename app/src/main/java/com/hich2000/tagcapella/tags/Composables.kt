@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.music_player.SongViewModel
+import com.hich2000.tagcapella.songs.SongViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

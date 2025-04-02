@@ -1,11 +1,11 @@
-package com.hich2000.tagcapella.music_player
+package com.hich2000.tagcapella.songs
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import com.hich2000.tagcapella.Database
+import com.hich2000.tagcapella.utils.Database
 import com.hich2000.tagcapella.tags.TagDTO
 
 data class SongDTO(val id: Long?, val path: String, val title: String, val database: Database) {

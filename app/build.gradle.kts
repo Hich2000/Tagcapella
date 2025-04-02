@@ -105,6 +105,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //gson
+    implementation(libs.google.gson)
 }
 
 // Configure KAPT for Hilt
