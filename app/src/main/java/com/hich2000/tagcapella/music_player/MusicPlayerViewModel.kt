@@ -2,6 +2,7 @@ package com.hich2000.tagcapella.music_player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.songs.SongDTO
@@ -65,7 +66,6 @@ class MusicPlayerViewModel @Inject constructor(
                 observeMediaControllerState(controller)
                 _mediaController = controller
 
-
                 val repeatMode: Int = sharedPreferenceManager.getPreference(
                     SharedPreferenceKeys.PLAYER_REPEAT_MODE,
                     Player.REPEAT_MODE_ALL
@@ -80,7 +80,6 @@ class MusicPlayerViewModel @Inject constructor(
                 _shuffleModeEnabled.value = shuffleMode
                 _mediaController.shuffleModeEnabled = shuffleMode
 
-
                 _isPlaying.value = _mediaController.isPlaying
 
 
@@ -89,8 +88,14 @@ class MusicPlayerViewModel @Inject constructor(
                 //  also use shared preferences to save the current tags and playlist.
 
                 //get included and excluded tag ids
-                val includedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.INCLUDED_TAGS, listOf())
-                val excludedTagIds: List<String> = sharedPreferenceManager.getPreference(SharedPreferenceKeys.EXCLUDED_TAGS, listOf())
+                val includedTagIds: List<String> = sharedPreferenceManager.getPreference(
+                    SharedPreferenceKeys.INCLUDED_TAGS,
+                    listOf()
+                )
+                val excludedTagIds: List<String> = sharedPreferenceManager.getPreference(
+                    SharedPreferenceKeys.EXCLUDED_TAGS,
+                    listOf()
+                )
 
                 //use the list of ids to make a list of DTOs
                 _includedTags.value = includedTagIds.map { tagDTOFactory.getTagById(it.toLong())!! }
@@ -100,6 +105,23 @@ class MusicPlayerViewModel @Inject constructor(
 
                 if (!_mediaController.isPlaying) {
                     preparePlaylist(playlist)
+
+                    val lastSongPlayed: String = sharedPreferenceManager.getPreference(
+                        SharedPreferenceKeys.LAST_SONG_PLAYED,
+                        ""
+                    )
+                    val playbackPosition: Long = sharedPreferenceManager.getPreference(
+                        SharedPreferenceKeys.LAST_SONG_POSITION,
+                        0L
+                    )
+
+                    if (lastSongPlayed.isNotEmpty()) {
+                        val seekToIndex = _currentPlaylist.value.indexOfFirst { song ->
+                            song.path == lastSongPlayed
+                        }
+
+                        _mediaController.seekTo(seekToIndex, playbackPosition)
+                    }
                 }
 
                 true
@@ -114,6 +136,17 @@ class MusicPlayerViewModel @Inject constructor(
         controller.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 _isPlaying.value = isPlaying
+
+                _mediaController.currentMediaItem?.let {
+                    sharedPreferenceManager.savePreference(
+                        SharedPreferenceKeys.LAST_SONG_PLAYED,
+                        it.mediaId
+                    )
+                    sharedPreferenceManager.savePreference(
+                        SharedPreferenceKeys.LAST_SONG_POSITION,
+                        _playbackPosition.value
+                    )
+                }
             }
 
             override fun onRepeatModeChanged(repeatMode: Int) {
@@ -132,6 +165,20 @@ class MusicPlayerViewModel @Inject constructor(
                 )
             }
 
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                super.onMediaItemTransition(mediaItem, reason)
+                _mediaController.currentMediaItem?.let {
+                    sharedPreferenceManager.savePreference(
+                        SharedPreferenceKeys.LAST_SONG_PLAYED,
+                        it.mediaId
+                    )
+                    sharedPreferenceManager.savePreference(
+                        SharedPreferenceKeys.LAST_SONG_POSITION,
+                        _playbackPosition.value
+                    )
+                }
+            }
         })
 
         //get the duration and position of the current song every second
@@ -156,8 +203,8 @@ class MusicPlayerViewModel @Inject constructor(
         excludeTags: List<TagDTO> = listOf()
     ): List<SongDTO> {
 
-        val jsonIncluded: List<Long> = includeTags.map {it.id}
-        val jsonExcluded: List<Long> = excludeTags.map {it.id}
+        val jsonIncluded: List<Long> = includeTags.map { it.id }
+        val jsonExcluded: List<Long> = excludeTags.map { it.id }
         sharedPreferenceManager.savePreference(SharedPreferenceKeys.INCLUDED_TAGS, jsonIncluded)
         sharedPreferenceManager.savePreference(SharedPreferenceKeys.EXCLUDED_TAGS, jsonExcluded)
 

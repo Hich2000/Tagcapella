@@ -21,5 +21,13 @@ enum class SharedPreferenceKeys (
     EXCLUDED_TAGS(
         key = "EXCLUDED_TAGS",
         type = List::class
-    )
+    ),
+    LAST_SONG_PLAYED(
+        key = "LAST_SONG_PLAYED",
+        type = String::class
+    ),
+    LAST_SONG_POSITION(
+        key = "LAST_SONG_POSITION",
+        type = Long::class
+    ),
 }
