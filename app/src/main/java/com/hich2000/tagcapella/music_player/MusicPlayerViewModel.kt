@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
-import com.hich2000.tagcapella.songs.SongDTO
+import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagDTOFactory
@@ -50,8 +50,8 @@ class MusicPlayerViewModel @Inject constructor(
     private val _excludedTags = MutableStateFlow<List<TagDTO>>(emptyList())
     val excludedTags: StateFlow<List<TagDTO>> get() = _excludedTags.asStateFlow()
 
-    private val _currentPlaylist = MutableStateFlow<List<SongDTO>>(emptyList())
-    val currentPlaylist: StateFlow<List<SongDTO>> get() = _currentPlaylist.asStateFlow()
+    private val _currentPlaylist = MutableStateFlow<List<Song>>(emptyList())
+    val currentPlaylist: StateFlow<List<Song>> get() = _currentPlaylist.asStateFlow()
 
     private val _playbackPosition = MutableStateFlow(0L)
     val playbackPosition: StateFlow<Long> get() = _playbackPosition
@@ -186,7 +186,7 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
-    fun preparePlaylist(playlist: List<SongDTO>) {
+    fun preparePlaylist(playlist: List<Song>) {
         viewModelScope.launch {
             mediaControllerManager.preparePlaylist(_mediaController, playlist)
             _currentPlaylist.value = playlist
@@ -196,7 +196,7 @@ class MusicPlayerViewModel @Inject constructor(
     suspend fun getFilteredPlaylist(
         includeTags: List<TagDTO> = listOf(),
         excludeTags: List<TagDTO> = listOf()
-    ): List<SongDTO> {
+    ): List<Song> {
 
         val jsonIncluded: List<Long> = includeTags.map { it.id }
         val jsonExcluded: List<Long> = excludeTags.map { it.id }

@@ -1,7 +1,7 @@
 package com.hich2000.tagcapella.tags
 
 import androidx.lifecycle.ViewModel
-import com.hich2000.tagcapella.songs.SongDTO
+import com.hich2000.tagcapella.songs.Song
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,24 +31,19 @@ class TagViewModel @Inject constructor(
     fun updateTag(id: Long, tag: String) {
         tagRepository.updateTag(id = id, tag = tag)
         _tags.value = selectAllTags()
-//        val updatedIndex = _tags.indexOfFirst { it.id == id }
-//        if (updatedIndex >= 0) {
-//            _tags[updatedIndex] = _tags[updatedIndex].copy(tag = tag)
-//        }
     }
 
     fun deleteTag(id: Long) {
         val deleteIndex = _tags.value.indexOfFirst { it.id == id }
         tagRepository.deleteTag(_tags.value[deleteIndex].id)
         _tags.value = selectAllTags()
-//        _tags.removeAt(deleteIndex)
     }
 
-    fun addSongTag(tag: TagDTO, song: SongDTO) {
+    fun addSongTag(tag: TagDTO, song: Song) {
         tagRepository.addSongTag(tag = tag, song = song)
     }
 
-    fun deleteSongTag(tag: TagDTO, song: SongDTO) {
+    fun deleteSongTag(tag: TagDTO, song: Song) {
         tagRepository.deleteSongTag(tag = tag, song = song)
     }
 }

@@ -64,7 +64,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.NavItems
-import com.hich2000.tagcapella.songs.SongDTO
+import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagCard
 import com.hich2000.tagcapella.tags.TagDTO
@@ -288,13 +288,13 @@ fun PlaybackSlider(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
-    songList: List<SongDTO> = emptyList(),
+    songList: List<Song> = emptyList(),
     screenType: NavItems,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
-    val songToTag = remember { mutableStateOf<SongDTO?>(null) }
+    val songToTag = remember { mutableStateOf<Song?>(null) }
     var onTagClick by remember { mutableStateOf<(TagDTO) -> Unit>({}) }
     var tagCardComposable by remember { mutableStateOf<@Composable (tag: TagDTO) -> Unit>({}) }
     val coroutineScope = rememberCoroutineScope()
@@ -358,11 +358,11 @@ fun SongScreen(
                     //todo extract this copy and pasted code into a variable or something
                     onTagClick = { tag ->
                         if (songToTag.value!!.songTagList.contains(tag)) {
-                            songToTag.value!!.id?.let {
+                            songToTag.value!!.path.let {
                                 tagViewModel.deleteSongTag(tag, songToTag.value!!)
                             }
                         } else {
-                            songToTag.value!!.id?.let {
+                            songToTag.value!!.path.let {
                                 tagViewModel.addSongTag(tag, songToTag.value!!)
                             }
                         }
@@ -423,11 +423,11 @@ fun SongScreen(
                         //todo extract this copy and pasted code into a variable or something
                         onTagClick = { tag ->
                             if (songToTag.value!!.songTagList.contains(tag)) {
-                                songToTag.value!!.id?.let {
+                                songToTag.value!!.path.let {
                                     tagViewModel.deleteSongTag(tag, songToTag.value!!)
                                 }
                             } else {
-                                songToTag.value!!.id?.let {
+                                songToTag.value!!.path.let {
                                     tagViewModel.addSongTag(tag, songToTag.value!!)
                                 }
                             }
@@ -484,9 +484,9 @@ fun SongScreen(
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
-    songList: List<SongDTO> = emptyList(),
+    songList: List<Song> = emptyList(),
     floatingActionButton: @Composable () -> Unit = {},
-    songCard: @Composable (song: SongDTO) -> Unit,
+    songCard: @Composable (song: Song) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
     songViewModel: SongViewModel = hiltViewModel()
 ) {
@@ -521,7 +521,7 @@ fun SongList(
 
 @Composable
 fun SongCard(
-    song: SongDTO,
+    song: Song,
     tagCallBack: (() -> Unit)? = null,
     onClick: () -> Unit = {},
     backgroundColor: Color = Color.Black
