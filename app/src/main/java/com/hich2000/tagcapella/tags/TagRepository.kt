@@ -18,9 +18,9 @@ class TagRepository @Inject constructor(
             .toList()
     }
 
-    fun insertTag(tag: String): TagDTO {
-        db.tagQueries.insertTag(null, tag)
-        return db.tagQueries.lastInsertedTag { _id, _tag -> TagDTO(_id, _tag, database) }
+    fun insertTag(newTag: String): TagDTO {
+        db.tagQueries.insertTag(null, newTag)
+        return db.tagQueries.lastInsertedTag { id, tag -> TagDTO(id, tag, database) }
             .executeAsOne()
     }
 
