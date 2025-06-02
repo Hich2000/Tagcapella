@@ -9,11 +9,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.hich2000.tagcapella.songs.SongDTO
+import com.hich2000.tagcapella.songs.Song
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,12 +44,12 @@ class MediaControllerManager @Inject constructor(
         return mediaController!!
     }
 
-    fun preparePlaylist(controller: MediaController, playlist: List<SongDTO>) {
+    fun preparePlaylist(controller: MediaController, playlist: List<Song>) {
         val mediaItems = playlist.map {
             MediaItem.Builder()
                 .setMediaId(it.path)
                 .setUri(it.path)
-                .setMediaMetadata(MediaMetadata.Builder().setTitle(it.title).build())
+                .setMediaMetadata(MediaMetadata.Builder().setTitle(File(it.path).nameWithoutExtension).build())
                 .build()
         }
         controller.clearMediaItems()

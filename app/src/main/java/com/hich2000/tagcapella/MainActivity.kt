@@ -46,6 +46,7 @@ import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
+import com.hich2000.tagcapella.utils.NavItems
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.MutableStateFlow

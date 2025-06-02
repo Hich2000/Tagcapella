@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.tags
 
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.utils.Database
-import com.hich2000.tagcapella.songs.SongDTO
+import com.hich2000.tagcapella.songs.Song
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,9 +18,9 @@ class TagRepository @Inject constructor(
             .toList()
     }
 
-    fun insertTag(tag: String): TagDTO {
-        db.tagQueries.insertTag(null, tag)
-        return db.tagQueries.lastInsertedTag { _id, _tag -> TagDTO(_id, _tag, database) }
+    fun insertTag(newTag: String): TagDTO {
+        db.tagQueries.insertTag(null, newTag)
+        return db.tagQueries.lastInsertedTag { id, tag -> TagDTO(id, tag, database) }
             .executeAsOne()
     }
 
@@ -34,16 +34,16 @@ class TagRepository @Inject constructor(
         //todo add something here to check if the delete was successful
     }
 
-    fun addSongTag(tag: TagDTO, song: SongDTO) {
+    fun addSongTag(tag: TagDTO, song: Song) {
         if (!tag.taggedSongList.contains(song)) {
-            song.id?.let { db.tagQueries.addSongTag(it, tag.id) }
+            song.path.let { db.tagQueries.addSongTag(it, tag.id) }
             tag.reloadSongList()
             song.reloadTagList()
         }
     }
 
-    fun deleteSongTag(tag: TagDTO, song: SongDTO) {
-        song.id?.let { db.tagQueries.deleteSongTag(tag.id, it) }
+    fun deleteSongTag(tag: TagDTO, song: Song) {
+        song.path.let { db.tagQueries.deleteSongTag(tag.id, it) }
         tag.reloadSongList()
         song.reloadTagList()
     }

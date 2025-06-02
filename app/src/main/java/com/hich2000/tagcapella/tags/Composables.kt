@@ -95,11 +95,11 @@ fun TagScreen (
                         },
                         onClick = {
                             if (clickedTag.value!!.taggedSongList.contains(song)) {
-                                song.id?.let {
+                                song.path.let {
                                     tagViewModel.deleteSongTag(clickedTag.value!!, song)
                                 }
                             } else {
-                                song.id?.let {
+                                song.path.let {
                                     tagViewModel.addSongTag(clickedTag.value!!, song)
                                 }
                             }
