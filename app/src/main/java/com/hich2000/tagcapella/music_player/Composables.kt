@@ -63,7 +63,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import com.hich2000.tagcapella.NavItems
+import com.hich2000.tagcapella.utils.NavItems
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagCard
