@@ -56,6 +56,14 @@ class MediaControllerManager @Inject constructor(
         controller.addMediaItems(mediaItems)
         controller.prepare()
     }
+
+    fun stopPlayback() {
+        mediaController?.apply {
+            if (isPlaying) {
+                pause()
+            }
+        }
+    }
 }
 
 

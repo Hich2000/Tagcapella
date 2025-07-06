@@ -1,5 +1,11 @@
 package com.hich2000.tagcapella.music_player
 
+import android.app.Application
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.media.AudioManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -25,7 +31,8 @@ class MusicPlayerViewModel @Inject constructor(
     private val mediaControllerManager: MediaControllerManager,
     private val songRepository: SongRepository,
     private val sharedPreferenceManager: SharedPreferenceManager,
-    private val tagDTOFactory: TagDTOFactory
+    private val tagDTOFactory: TagDTOFactory,
+    private val application: Application
 ) : ViewModel() {
 
     private lateinit var _mediaController: MediaController
@@ -59,8 +66,22 @@ class MusicPlayerViewModel @Inject constructor(
     private val _playbackDuration = MutableStateFlow(0L)
     val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
+    private lateinit var audioOutputChangeReceiver: BroadcastReceiver
+
     init {
         viewModelScope.launch {
+            // Register the receiver to detect changes in audio output
+            audioOutputChangeReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+                        stopPlayback()
+                    }
+                }
+            }
+            // Register the receiver
+            val filter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+            application.registerReceiver(audioOutputChangeReceiver, filter)
+
             _isMediaControllerInitialized.value = try {
                 val controller = mediaControllerManager.initializeMediaController()
                 observeMediaControllerState(controller)
@@ -228,6 +249,23 @@ class MusicPlayerViewModel @Inject constructor(
 
     fun removeExcludedTag(tag: TagDTO) {
         _excludedTags.value -= tag
+    }
+
+    private fun stopPlayback() {
+        viewModelScope.launch {
+            mediaControllerManager.stopPlayback()
+            _isPlaying.value = false
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Unregister the receiver when the ViewModel is cleared to avoid memory leaks
+        try {
+            application.unregisterReceiver(audioOutputChangeReceiver)
+        } catch (e: IllegalArgumentException) {
+            // Receiver might have already been unregistered
+        }
     }
 
 }
