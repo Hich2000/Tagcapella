@@ -72,7 +72,6 @@ import com.hich2000.tagcapella.tags.TagCard
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
-import com.hich2000.tagcapella.utils.NavItems
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -107,7 +106,7 @@ fun MusicControls(
             sheetPeekHeight = 40.dp,
             sheetShape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetContent = {
-                SongScreen(songList, NavItems.Queue)
+                SongScreen(songList = songList, showQueue = true)
             }
         ) { innerPadding ->
             Column(
@@ -304,7 +303,7 @@ fun PlaybackSlider(
 @Composable
 fun SongScreen(
     songList: List<Song> = emptyList(),
-    screenType: NavItems,
+    showQueue: Boolean = false,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
@@ -329,7 +328,7 @@ fun SongScreen(
 
                 //this is only for the save button when setting up a queue. this is dumb, fix later.
                 //todo improve this
-                val fraction = if (screenType == NavItems.Queue) 0.9f else 1f
+                val fraction = if (showQueue) 0.9f else 1f
 
                 Box(
                     modifier = Modifier
@@ -342,7 +341,7 @@ fun SongScreen(
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                if (screenType == NavItems.Queue) {
+                if (showQueue) {
                     Button(
                         onClick = {
                             coroutineScope.launch {
@@ -429,12 +428,12 @@ fun SongScreen(
                     }
 
                     //todo maybe find a way to make this nicer I guess.
-                    if (screenType == NavItems.Queue) {
+                    if (showQueue) {
                         val index = mediaPlayerViewModel.currentPlaylist.value.indexOf(song)
                         if (index >= 0) {
                             mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
                         }
-                    } else if (screenType == NavItems.SongList) {
+                    } else {
                         //todo extract this copy and pasted code into a variable or something
                         onTagClick = { tag ->
                             if (songToTag.value!!.songTagList.contains(tag)) {
@@ -455,7 +454,7 @@ fun SongScreen(
             )
         },
         floatingActionButton = {
-            if (screenType == NavItems.Queue) {
+            if (showQueue) {
                 SmallFloatingActionButton(onClick = {
                     tagCardComposable = { tag ->
                         if (tag.tag != "All") {
@@ -478,14 +477,10 @@ fun SongScreen(
                         if (includedTags.contains(tag)) {
                             mediaPlayerViewModel.removeIncludedTag(tag)
                             mediaPlayerViewModel.addExcludedTag(tag)
-//                            includedTags.remove(tag)
-//                            excludedTags.add(tag)
                         } else if (excludedTags.contains(tag)) {
                             mediaPlayerViewModel.removeExcludedTag(tag)
-//                            excludedTags.remove(tag)
                         } else {
                             mediaPlayerViewModel.addIncludedTag(tag)
-//                            includedTags.add(tag)
                         }
                     }
                 }) {

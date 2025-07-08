@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.hich2000.tagcapella.music_player.MusicControls
-import com.hich2000.tagcapella.music_player.MusicPlayerViewModel
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagScreen
@@ -64,7 +63,6 @@ class MainActivity : ComponentActivity() {
         MutableStateFlow(PackageManager.PERMISSION_DENIED)
     private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
 
-    private val musicPlayerViewModel: MusicPlayerViewModel by viewModels()
     private val songViewModel: SongViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -169,18 +167,14 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     val songList by songViewModel.songList.collectAsState()
-//                    val songListInitialized by songViewModel.isInitialized.collectAsState()
 
-                    if (selectedScreen == NavItems.SongList) {
-                        SongScreen(songList, selectedScreen)
+                    if (selectedScreen == NavItems.SongLibrary) {
+                        SongScreen(songList = songList)
                     } else if (selectedScreen == NavItems.Tags) {
                         //todo split my songRepository into a repository and viewmodel for DI purposes
                         TagScreen()
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
-                    } else if (selectedScreen == NavItems.Queue) {
-                        val currentPlaylist by musicPlayerViewModel.currentPlaylist.collectAsState()
-                        SongScreen(currentPlaylist, selectedScreen)
                     }
                 }
             }
