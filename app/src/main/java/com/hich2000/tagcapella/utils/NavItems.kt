@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.utils
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
-import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -18,7 +18,7 @@ enum class NavItems(
     ),
     SongLibrary (
         title = "Song Library",
-        icon = Icons.AutoMirrored.Filled.List
+        icon = Icons.Default.Folder
     ),
     Tags (
         title = "Tags",
