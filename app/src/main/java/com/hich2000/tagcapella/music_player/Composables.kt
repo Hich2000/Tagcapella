@@ -555,7 +555,7 @@ fun SongCard(
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(Color.Gray)
-            .height(75.dp),
+            .height(50.dp),
         onClick = onClick
     ) {
         Row(
