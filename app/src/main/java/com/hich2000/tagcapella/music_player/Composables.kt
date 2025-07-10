@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +32,6 @@ import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -61,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -317,7 +316,7 @@ fun SongScreen(
     val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
 
     if (showTagDialog.value) {
-        BasicAlertDialog(
+        Dialog (
             onDismissRequest = {
                 showTagDialog.value = false
             }
@@ -325,39 +324,36 @@ fun SongScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-
-                //this is only for the save button when setting up a queue. this is dumb, fix later.
-                //todo improve this
-                val fraction = if (showQueue) 0.9f else 1f
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(fraction = fraction)
+                        .fillMaxHeight()
                 ) {
                     TagList(
                         tagCard = tagCardComposable,
                         floatingActionButton = {}
                     )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                if (showQueue) {
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
-                                    includedTags,
-                                    excludedTags
-                                )
-                                mediaPlayerViewModel.preparePlaylist(filteredSongList)
-                                showTagDialog.value = false
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        Text("Save")
+
+                    if (showQueue) {
+                        Button(
+                            onClick = {
+                                coroutineScope.launch {
+                                    val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
+                                        includedTags,
+                                        excludedTags
+                                    )
+                                    mediaPlayerViewModel.preparePlaylist(filteredSongList)
+                                    showTagDialog.value = false
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                        ) {
+                            Text("Save")
+                        }
                     }
+
                 }
             }
         }
