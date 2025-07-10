@@ -365,7 +365,7 @@ fun SongScreen(
                         ),
                         colors = ButtonColors(
                             containerColor = Color.Gray,
-                            contentColor = ButtonDefaults.buttonColors().contentColor,
+                            contentColor = Color.Black,
                             disabledContainerColor = ButtonDefaults.buttonColors().disabledContainerColor,
                             disabledContentColor = ButtonDefaults.buttonColors().disabledContentColor,
                         ),
