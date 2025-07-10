@@ -7,9 +7,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,6 +34,8 @@ import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -109,7 +111,9 @@ fun MusicControls(
             }
         ) { innerPadding ->
             Column(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 verticalArrangement = Arrangement.Center
             ) {
                 Row(
@@ -140,7 +144,10 @@ fun MusicControls(
                         },
                         onValueChangeFinished = {
                             isUserInteracting = false
-                            mediaControllerViewModel.setPlaybackPosition(sliderPosition.toLong(), true)
+                            mediaControllerViewModel.setPlaybackPosition(
+                                sliderPosition.toLong(),
+                                true
+                            )
                         }
                     )
                 }
@@ -316,44 +323,59 @@ fun SongScreen(
     val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
 
     if (showTagDialog.value) {
-        Dialog (
+        Dialog(
             onDismissRequest = {
                 showTagDialog.value = false
-            }
+            },
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
+            Card(
+                shape = CutCornerShape(0.dp),
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 16.dp)
+                    .fillMaxSize()
+                    .border(2.dp, Color.Gray)
             ) {
                 Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
+                        .fillMaxSize()
                 ) {
                     TagList(
                         tagCard = tagCardComposable,
                         floatingActionButton = {}
                     )
 
-                    if (showQueue) {
-                        Button(
-                            onClick = {
-                                coroutineScope.launch {
-                                    val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
-                                        includedTags,
-                                        excludedTags
-                                    )
-                                    mediaPlayerViewModel.preparePlaylist(filteredSongList)
-                                    showTagDialog.value = false
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter)
-                        ) {
-                            Text("Save")
-                        }
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
+                                    includedTags,
+                                    excludedTags
+                                )
+                                mediaPlayerViewModel.preparePlaylist(filteredSongList)
+                                showTagDialog.value = false
+                            }
+                        },
+                        contentPadding = PaddingValues(0.dp),
+                        shape = CutCornerShape(
+                            topStart = 16.dp,
+                            topEnd = 16.dp,
+                            bottomStart = 0.dp,
+                            bottomEnd = 0.dp
+                        ),
+                        colors = ButtonColors(
+                            containerColor = Color.Gray,
+                            contentColor = ButtonDefaults.buttonColors().contentColor,
+                            disabledContainerColor = ButtonDefaults.buttonColors().disabledContainerColor,
+                            disabledContentColor = ButtonDefaults.buttonColors().disabledContentColor,
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                    ) {
+                        Text(text = "Save")
                     }
-
                 }
             }
         }
