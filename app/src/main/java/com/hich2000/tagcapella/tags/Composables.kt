@@ -165,7 +165,7 @@ fun TagList(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
                 )
                 .fillMaxSize()
-                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+//                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
             tagList.forEach { tag ->
