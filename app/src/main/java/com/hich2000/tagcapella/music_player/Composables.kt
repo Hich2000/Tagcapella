@@ -7,7 +7,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,9 +32,6 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,6 +69,7 @@ import com.hich2000.tagcapella.tags.TagCard
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
+import com.hich2000.tagcapella.utils.TagCapellaButton
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -345,7 +342,8 @@ fun SongScreen(
                         floatingActionButton = {}
                     )
 
-                    Button(
+
+                    TagCapellaButton(
                         onClick = {
                             coroutineScope.launch {
                                 val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
@@ -356,19 +354,6 @@ fun SongScreen(
                                 showTagDialog.value = false
                             }
                         },
-                        contentPadding = PaddingValues(0.dp),
-                        shape = CutCornerShape(
-                            topStart = 16.dp,
-                            topEnd = 16.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 0.dp
-                        ),
-                        colors = ButtonColors(
-                            containerColor = Color.Gray,
-                            contentColor = Color.Black,
-                            disabledContainerColor = ButtonDefaults.buttonColors().disabledContainerColor,
-                            disabledContentColor = ButtonDefaults.buttonColors().disabledContentColor,
-                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)

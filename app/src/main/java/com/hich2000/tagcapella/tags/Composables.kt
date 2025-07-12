@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,6 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.songs.SongViewModel
+import com.hich2000.tagcapella.utils.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -260,29 +260,44 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
         shape = MaterialTheme.shapes.large,
         tonalElevation = AlertDialogDefaults.TonalElevation
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .border(2.dp, Color.Gray)
+        ) {
             TextField(
                 value = textState,
                 onValueChange = { textState = it },
                 label = { Text("Tag") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 8.dp)
             )
 
             if (tag === null) {
-                Button(
+                TagCapellaButton(
                     onClick = {
                         tagViewModel.insertTag(textState)
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .height(36.dp)
                 ) {
                     Text("add")
                 }
             } else {
-                Button(
+                TagCapellaButton(
                     onClick = {
                         tagViewModel.updateTag(
                             id = tag.id,
                             tag = textState
                         )
                     },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .height(36.dp)
                 ) {
                     Text("update")
                 }
