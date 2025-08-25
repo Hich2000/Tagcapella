@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
@@ -32,8 +31,7 @@ import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +41,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,24 +57,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import com.hich2000.tagcapella.utils.NavItems
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagCard
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagList
 import com.hich2000.tagcapella.tags.TagViewModel
+import com.hich2000.tagcapella.utils.TagCapellaButton
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MusicControls(
-    mediaControllerViewModel: MusicPlayerViewModel = hiltViewModel()
+    mediaControllerViewModel: MusicPlayerViewModel = hiltViewModel(),
 ) {
     // Use the state variable to determine if the MediaController and songlist are initialized
     val isMediaControllerInitialized by mediaControllerViewModel.isMediaControllerInitialized.collectAsState()
@@ -94,134 +95,151 @@ fun MusicControls(
         //get the mediaController itself
         val mediaController = mediaControllerViewModel.mediaController
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
-        ) {
+        //bottomsheet stuff
+        val sheetState = rememberBottomSheetScaffoldState()
+        val songList by mediaControllerViewModel.currentPlaylist.collectAsState()
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-
-                // Temporary state for slider interaction
-                var sliderPosition by remember { mutableFloatStateOf(playbackPosition.toFloat()) }
-                var isUserInteracting by remember { mutableStateOf(false) }
-
-                // Sync sliderPosition with playbackPosition when not interacting
-                LaunchedEffect(playbackPosition) {
-                    if (!isUserInteracting) {
-                        sliderPosition = playbackPosition.toFloat()
-                    }
-                }
-
-                PlaybackSlider(
-                    playbackPosition = sliderPosition.toLong(),
-                    playbackDuration = playbackDuration,
-                    onValueChange = { newPosition: Float ->
-                        isUserInteracting = true
-                        sliderPosition = newPosition
-                    },
-                    onValueChangeFinished = {
-                        isUserInteracting = false
-                        mediaControllerViewModel.setPlaybackPosition(sliderPosition.toLong(), true)
-                    }
-                )
+        BottomSheetScaffold(
+            scaffoldState = sheetState,
+            sheetPeekHeight = 40.dp,
+            sheetShape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            sheetContent = {
+                SongScreen(songList = songList, showQueue = true)
             }
-
-            Row(
+        ) { innerPadding ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .border(2.dp, Color.Gray),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.Center
             ) {
-                //shuffle mode
-                IconButton(
-                    onClick = {
-                        if (shuffleModeEnabled) {
-                            mediaController.shuffleModeEnabled = false
-                        } else {
-                            mediaController.shuffleModeEnabled = true
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 20.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    // Temporary state for slider interaction
+                    var sliderPosition by remember { mutableFloatStateOf(playbackPosition.toFloat()) }
+                    var isUserInteracting by remember { mutableStateOf(false) }
+
+                    // Sync sliderPosition with playbackPosition when not interacting
+                    LaunchedEffect(playbackPosition) {
+                        if (!isUserInteracting) {
+                            sliderPosition = playbackPosition.toFloat()
                         }
                     }
-                ) {
-                    val icon =
-                        if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
-                    Icon(
-                        icon,
-                        contentDescription = "Shuffle button"
+
+                    PlaybackSlider(
+                        playbackPosition = sliderPosition.toLong(),
+                        playbackDuration = playbackDuration,
+                        onValueChange = { newPosition: Float ->
+                            isUserInteracting = true
+                            sliderPosition = newPosition
+                        },
+                        onValueChangeFinished = {
+                            isUserInteracting = false
+                            mediaControllerViewModel.setPlaybackPosition(
+                                sliderPosition.toLong(),
+                                true
+                            )
+                        }
                     )
                 }
-                //skip previous
-                IconButton(
-                    onClick = {
-                        mediaController.seekToPrevious()
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .border(2.dp, Color.Gray)
+                ) {
+                    //shuffle mode
+                    IconButton(
+                        onClick = {
+                            if (shuffleModeEnabled) {
+                                mediaController.shuffleModeEnabled = false
+                            } else {
+                                mediaController.shuffleModeEnabled = true
+                            }
+                        }
+                    ) {
+                        val icon =
+                            if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
+                        Icon(
+                            icon,
+                            contentDescription = "Shuffle button"
+                        )
                     }
-                ) {
-                    Icon(
-                        Icons.Default.SkipPrevious,
-                        contentDescription = "Skip to previous button"
-                    )
-                }
-                //play/pause
-                IconButton(
-                    onClick = {
-                        if (isPlaying) mediaController.pause() else mediaController.play()
+                    //skip previous
+                    IconButton(
+                        onClick = {
+                            mediaController.seekToPrevious()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.SkipPrevious,
+                            contentDescription = "Skip to previous button"
+                        )
                     }
-                ) {
-                    val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
-                    val contentDescription = if (isPlaying) "Pause" else "Play"
-                    Icon(
-                        icon,
-                        contentDescription = contentDescription
-                    )
-                }
-                //skip next
-                IconButton(
-                    onClick = {
-                        mediaController.seekToNext()
+                    //play/pause
+                    IconButton(
+                        onClick = {
+                            if (isPlaying) mediaController.pause() else mediaController.play()
+                        }
+                    ) {
+                        val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                        val contentDescription = if (isPlaying) "Pause" else "Play"
+                        Icon(
+                            icon,
+                            contentDescription = contentDescription
+                        )
                     }
-                ) {
-                    Icon(
-                        Icons.Default.SkipNext,
-                        contentDescription = "Skip to next button"
-                    )
-                }
-                //loop mode
-                IconButton(
-                    onClick = {
+                    //skip next
+                    IconButton(
+                        onClick = {
+                            mediaController.seekToNext()
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.SkipNext,
+                            contentDescription = "Skip to next button"
+                        )
+                    }
+                    //loop mode
+                    IconButton(
+                        onClick = {
+                            if (repeatMode == Player.REPEAT_MODE_OFF) {
+                                mediaController.repeatMode = Player.REPEAT_MODE_ALL
+                            } else if (repeatMode == Player.REPEAT_MODE_ALL) {
+                                mediaController.repeatMode = Player.REPEAT_MODE_ONE
+                            } else if (repeatMode == Player.REPEAT_MODE_ONE) {
+                                mediaController.repeatMode = Player.REPEAT_MODE_OFF
+                            }
+                        }
+                    ) {
+                        var icon = Icons.Default.Repeat
+
                         if (repeatMode == Player.REPEAT_MODE_OFF) {
-                            mediaController.repeatMode = Player.REPEAT_MODE_ALL
+                            icon = Icons.AutoMirrored.Filled.ArrowRightAlt
                         } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                            mediaController.repeatMode = Player.REPEAT_MODE_ONE
+                            icon = Icons.Default.Repeat
                         } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                            mediaController.repeatMode = Player.REPEAT_MODE_OFF
+                            icon = Icons.Default.RepeatOne
                         }
-                    }
-                ) {
-                    var icon = Icons.Default.Repeat
 
-                    if (repeatMode == Player.REPEAT_MODE_OFF) {
-                        icon = Icons.AutoMirrored.Filled.ArrowRightAlt
-                    } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                        icon = Icons.Default.Repeat
-                    } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                        icon = Icons.Default.RepeatOne
+                        Icon(
+                            icon,
+                            contentDescription = "Shuffle button"
+                        )
                     }
 
-                    Icon(
-                        icon,
-                        contentDescription = "Shuffle button"
-                    )
                 }
-
             }
         }
-
     }
 
 }
@@ -289,7 +307,7 @@ fun PlaybackSlider(
 @Composable
 fun SongScreen(
     songList: List<Song> = emptyList(),
-    screenType: NavItems,
+    showQueue: Boolean = false,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
@@ -303,32 +321,30 @@ fun SongScreen(
     val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
 
     if (showTagDialog.value) {
-        BasicAlertDialog(
+        Dialog(
             onDismissRequest = {
                 showTagDialog.value = false
-            }
+            },
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
+            Card(
+                shape = CutCornerShape(0.dp),
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 16.dp)
+                    .fillMaxSize()
+                    .border(2.dp, Color.Gray)
             ) {
-
-                //this is only for the save button when setting up a queue. this is dumb, fix later.
-                //todo improve this
-                val fraction = if (screenType == NavItems.Queue) 0.9f else 1f
-
                 Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(fraction = fraction)
+                        .fillMaxSize()
                 ) {
                     TagList(
                         tagCard = tagCardComposable,
                         floatingActionButton = {}
                     )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                if (screenType == NavItems.Queue) {
-                    Button(
+
+
+                    TagCapellaButton(
                         onClick = {
                             coroutineScope.launch {
                                 val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
@@ -340,9 +356,11 @@ fun SongScreen(
                             }
                         },
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
                     ) {
-                        Text("Save")
+                        Text(text = "Save")
                     }
                 }
             }
@@ -414,12 +432,12 @@ fun SongScreen(
                     }
 
                     //todo maybe find a way to make this nicer I guess.
-                    if (screenType == NavItems.Queue) {
+                    if (showQueue) {
                         val index = mediaPlayerViewModel.currentPlaylist.value.indexOf(song)
                         if (index >= 0) {
                             mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
                         }
-                    } else if (screenType == NavItems.SongList) {
+                    } else {
                         //todo extract this copy and pasted code into a variable or something
                         onTagClick = { tag ->
                             if (songToTag.value!!.songTagList.contains(tag)) {
@@ -440,7 +458,7 @@ fun SongScreen(
             )
         },
         floatingActionButton = {
-            if (screenType == NavItems.Queue) {
+            if (showQueue) {
                 SmallFloatingActionButton(onClick = {
                     tagCardComposable = { tag ->
                         if (tag.tag != "All") {
@@ -463,14 +481,10 @@ fun SongScreen(
                         if (includedTags.contains(tag)) {
                             mediaPlayerViewModel.removeIncludedTag(tag)
                             mediaPlayerViewModel.addExcludedTag(tag)
-//                            includedTags.remove(tag)
-//                            excludedTags.add(tag)
                         } else if (excludedTags.contains(tag)) {
                             mediaPlayerViewModel.removeExcludedTag(tag)
-//                            excludedTags.remove(tag)
                         } else {
                             mediaPlayerViewModel.addIncludedTag(tag)
-//                            includedTags.add(tag)
                         }
                     }
                 }) {
@@ -545,7 +559,7 @@ fun SongCard(
             .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(Color.Gray)
-            .height(75.dp),
+            .height(50.dp),
         onClick = onClick
     ) {
         Row(
