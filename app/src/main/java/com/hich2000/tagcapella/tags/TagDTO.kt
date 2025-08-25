@@ -9,7 +9,7 @@ import com.hich2000.tagcapella.utils.Database
 import com.hich2000.tagcapella.songs.Song
 import javax.inject.Inject
 
-data class TagDTO @Inject constructor(val id: Long, val tag: String, val database: Database) {
+data class TagDTO @Inject constructor(val id: Long, val tag: String, val categoryId: Long?, val database: Database) {
 
     private var db = database.db
 
@@ -49,8 +49,8 @@ class TagDTOFactory @Inject constructor(private val database: Database) {
 
     fun getTagById(tagId: Long): TagDTO? {
         val db = database.db
-        val tagResult = db.tagQueries.selectTagById(tagId) { id, tag ->
-            TagDTO(id, tag, database)
+        val tagResult = db.tagQueries.selectTagById(tagId) { id, tag, category ->
+            TagDTO(id, tag, category, database)
         }.executeAsOneOrNull()
 
         return tagResult

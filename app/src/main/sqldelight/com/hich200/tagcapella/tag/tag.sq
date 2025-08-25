@@ -1,5 +1,5 @@
 selectAll:
-SELECT * FROM tag;
+SELECT id, tag, category FROM tag;
 
 insertTag:
 INSERT INTO tag (id, tag) VALUES (?, ?);
@@ -23,4 +23,4 @@ deleteSongTag:
 DELETE FROM song_tag WHERE tag = ? AND song = ?;
 
 selectTagById:
-SELECT id, tag FROM tag WHERE id = ?;
+SELECT id, tag, category FROM tag WHERE id = ?;

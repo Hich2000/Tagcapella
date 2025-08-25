@@ -1,5 +1,5 @@
 selectSongTags:
-SELECT tag.id, tag.tag FROM song_tag JOIN tag ON song_tag.tag = tag.id WHERE song = ?;
+SELECT tag.id, tag.tag, tag.category FROM song_tag JOIN tag ON song_tag.tag = tag.id WHERE song = ?;
 
 filterSongList:
 SELECT s.id, s.song FROM song_tag s
