@@ -1,8 +1,3 @@
--- an explanation of this file:
--- basically this is the file that will be used during the build process to generate the type safe code.
--- if you make changes you do so by making a migration in the migrations folder and then changing the
--- schema here as well so that sqldelight can then properly build.
-
 CREATE TABLE tag_category (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     category TEXT NOT NULL,

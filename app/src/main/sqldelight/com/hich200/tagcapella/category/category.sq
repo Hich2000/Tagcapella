@@ -1,0 +1,15 @@
+selectAll:
+SELECT * FROM tag_category;
+
+insertCategory:
+INSERT INTO tag_category (category) VALUES (?);
+
+updateCategory:
+UPDATE tag_category SET category = ? WHERE id = ?;
+
+deleteCategory:
+DELETE FROM tag_category WHERE id = ?;
+
+selectTagsInCategory:
+SELECT * FROM tag WHERE category = ?;
+
