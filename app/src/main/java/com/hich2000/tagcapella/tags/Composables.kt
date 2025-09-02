@@ -67,11 +67,13 @@ import com.hich2000.tagcapella.utils.TagCapellaButton
 @Composable
 fun TagScreen(
     songViewModel: SongViewModel = hiltViewModel(),
-    tagViewModel: TagViewModel = hiltViewModel()
+    tagViewModel: TagViewModel = hiltViewModel(),
+    categoryViewModel: CategoryViewModel = hiltViewModel()
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
     val showCategoryDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
+    val clickedCategory = remember { mutableStateOf<CategoryDTO?>(null) }
     val showSongDialog = remember { mutableStateOf(false) }
     val songList by songViewModel.songList.collectAsState()
     var fabExpanded by remember { mutableStateOf(false) }
@@ -87,6 +89,20 @@ fun TagScreen(
             TagForm(
                 tag = clickedTag.value,
                 tagViewModel = tagViewModel
+            )
+        }
+    }
+
+    if (showCategoryDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showCategoryDialog.value = false
+                clickedCategory.value = null
+            },
+        ) {
+            CategoryForm(
+                category = clickedCategory.value,
+                categoryViewModel = categoryViewModel
             )
         }
     }
@@ -380,6 +396,63 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
                         tagViewModel.updateTag(
                             id = tag.id,
                             tag = textState
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .height(36.dp)
+                ) {
+                    Text("update")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewModel) {
+    var textState by remember { mutableStateOf(if (category is CategoryDTO) category.category else "") }
+
+    Surface(
+        modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight(),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = AlertDialogDefaults.TonalElevation
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .border(2.dp, Color.Gray)
+        ) {
+            TextField(
+                value = textState,
+                onValueChange = { textState = it },
+                label = { Text("Category") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 8.dp)
+            )
+
+            if (category === null) {
+                TagCapellaButton(
+                    onClick = {
+                        categoryViewModel.insertCategory(textState)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .height(36.dp)
+                ) {
+                    Text("add")
+                }
+            } else {
+                TagCapellaButton(
+                    onClick = {
+                        categoryViewModel.updateCategory(
+                            id = category.id,
+                            category = textState
                         )
                     },
                     modifier = Modifier

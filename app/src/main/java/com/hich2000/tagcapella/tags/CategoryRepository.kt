@@ -17,18 +17,18 @@ class CategoryRepository @Inject constructor(
             .toList()
     }
 
-    fun insertCategories(newCategory: String): CategoryDTO {
+    fun insertCategory(newCategory: String): CategoryDTO {
         db.categoryQueries.insertCategory(newCategory)
         return db.categoryQueries.lastInsertedCategory { id, category -> CategoryDTO(id, category, database) }
             .executeAsOne()
     }
 
-    fun updateCategories(id: Long, category: String) {
+    fun updateCategory(id: Long, category: String) {
         db.categoryQueries.updateCategory(category, id)
         //todo add something here to check if the update was successful
     }
 
-    fun deleteCategories(id: Long) {
+    fun deleteCategory(id: Long) {
         db.categoryQueries.deleteCategory(id)
         //todo add something here to check if the delete was successful
     }
