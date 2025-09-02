@@ -1,8 +1,18 @@
 package com.hich2000.tagcapella.tags
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -10,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -25,13 +36,14 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -53,19 +65,22 @@ import com.hich2000.tagcapella.utils.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TagScreen (
+fun TagScreen(
     songViewModel: SongViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
-    val showEditDialog = remember { mutableStateOf(false) }
+    val showTagDialog = remember { mutableStateOf(false) }
+    val showCategoryDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
     val showSongDialog = remember { mutableStateOf(false) }
     val songList by songViewModel.songList.collectAsState()
+    var fabExpanded by remember { mutableStateOf(false) }
 
-    if (showEditDialog.value) {
+
+    if (showTagDialog.value) {
         BasicAlertDialog(
             onDismissRequest = {
-                showEditDialog.value = false
+                showTagDialog.value = false
                 clickedTag.value = null
             },
         ) {
@@ -110,41 +125,72 @@ fun TagScreen (
         }
     }
 
-    TagList(
-        tagCard = { tag ->
-            var editCallback: (() -> Unit)? = null
-            var songCallback: (() -> Unit)? = null
-            var deleteCallback: (() -> Unit)? = null
-
-            if (tag.tag != "All") {
-                editCallback = {
-                    clickedTag.value = tag
-                    showEditDialog.value = true
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = {
+                    if (fabExpanded) {
+                        fabExpanded = false
+                    }
                 }
-                songCallback = {
-                    clickedTag.value = tag
-                    showSongDialog.value = true
-                }
-                deleteCallback = {
-                    tagViewModel.deleteTag(tag.id)
-                }
-            }
-
-            TagCard(
-                tag = tag,
-                editCallback = editCallback,
-                songCallback = songCallback,
-                deleteCallback = deleteCallback
             )
-        },
-        floatingActionButton = {
-            SmallFloatingActionButton(onClick = {
-                showEditDialog.value = true
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Add label")
+    ) {
+        TagList(
+            tagCard = { tag ->
+                var editCallback: (() -> Unit)? = null
+                var songCallback: (() -> Unit)? = null
+                var deleteCallback: (() -> Unit)? = null
+
+                if (tag.tag != "All") {
+                    editCallback = {
+                        clickedTag.value = tag
+                        showTagDialog.value = true
+                    }
+                    songCallback = {
+                        clickedTag.value = tag
+                        showSongDialog.value = true
+                    }
+                    deleteCallback = {
+                        tagViewModel.deleteTag(tag.id)
+                    }
+                }
+
+                TagCard(
+                    tag = tag,
+                    editCallback = editCallback,
+                    songCallback = songCallback,
+                    deleteCallback = deleteCallback
+                )
+            },
+            floatingActionButton = {
+                ExpandableFab(
+                    buttons = listOf {
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                showTagDialog.value = true
+                            }
+                        ) {
+                            Text("New Tag")
+                        }
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                showCategoryDialog.value = true
+                            }
+                        ) {
+                            Text("New Category")
+                        }
+                    },
+                    expanded = fabExpanded,
+                    onclick = { fabExpanded = true }
+                )
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -170,6 +216,48 @@ fun TagList(
         ) {
             tagList.forEach { tag ->
                 tagCard(tag)
+            }
+        }
+    }
+}
+
+@Composable
+fun ExpandableFab(
+    buttons: List<@Composable () -> Unit>,
+    expanded: Boolean = false,
+    onclick: (() -> Unit)
+) {
+    Box(
+        modifier = Modifier,
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        AnimatedContent(
+            targetState = expanded,
+            transitionSpec = {
+                fadeIn(tween(200)) + scaleIn(tween(200)) togetherWith
+                        fadeOut(tween(200)) + scaleOut(tween(200))
+            },
+            label = "FAB Expansion"
+        ) { expanded ->
+            if (expanded) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .border(2.dp, Color.Gray)
+                        .padding(8.dp)
+                        .width(200.dp)
+                ) {
+                    buttons.forEach { button ->
+                        button()
+                    }
+                }
+            } else {
+                FloatingActionButton(
+                    onClick = onclick,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Expand")
+                }
             }
         }
     }
