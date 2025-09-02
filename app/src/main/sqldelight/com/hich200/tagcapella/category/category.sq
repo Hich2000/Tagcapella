@@ -1,6 +1,9 @@
 selectAll:
 SELECT * FROM tag_category;
 
+selectCategoryById:
+SELECT * FROM tag_category WHERE id = ?;
+
 insertCategory:
 INSERT INTO tag_category (category) VALUES (?);
 
