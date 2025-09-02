@@ -7,6 +7,9 @@ SELECT * FROM tag_category WHERE id = ?;
 insertCategory:
 INSERT INTO tag_category (category) VALUES (?);
 
+lastInsertedCategory:
+SELECT * FROM tag_category ORDER BY id DESC LIMIT 1;
+
 updateCategory:
 UPDATE tag_category SET category = ? WHERE id = ?;
 
