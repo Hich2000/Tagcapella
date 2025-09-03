@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,6 +49,7 @@ import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.NavItems
+import com.hich2000.tagcapella.utils.TagCapellaButton
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -136,7 +138,7 @@ class MainActivity : ComponentActivity() {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
@@ -190,7 +192,8 @@ class MainActivity : ComponentActivity() {
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
                     } else if (selectedScreen == NavItems.Categories) {
-                        CategoryScreen()
+//                        CategoryScreen()
+                        TagCategoryScreen()
                     }
                 }
             }
@@ -211,6 +214,47 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Text("Media permissions are necessary to use this application")
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun TagCategoryScreen() {
+        val selectedScreen = remember { mutableIntStateOf(0) }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TagCapellaButton (
+                        onClick = {
+                            selectedScreen.intValue = 0
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Tags")
+                    }
+                    TagCapellaButton (
+                        onClick = {
+                            selectedScreen.intValue = 1
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Categories")
+                    }
+                }
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    if (selectedScreen.intValue == 0) {
+                        TagScreen()
+                    } else if (selectedScreen.intValue == 1) {
+                        CategoryScreen()
                     }
                 }
             }
