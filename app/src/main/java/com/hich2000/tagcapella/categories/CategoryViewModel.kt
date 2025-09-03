@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags
+package com.hich2000.tagcapella.categories
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

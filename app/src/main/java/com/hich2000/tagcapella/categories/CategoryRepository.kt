@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags
+package com.hich2000.tagcapella.categories
 
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.utils.Database

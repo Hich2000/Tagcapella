@@ -58,6 +58,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hich2000.tagcapella.categories.CategoryDTO
+import com.hich2000.tagcapella.categories.CategoryForm
+import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.songs.SongViewModel
@@ -413,59 +416,3 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
     }
 }
 
-@Composable
-fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewModel) {
-    var textState by remember { mutableStateOf(if (category is CategoryDTO) category.category else "") }
-
-    Surface(
-        modifier = Modifier
-            .wrapContentWidth()
-            .wrapContentHeight(),
-        shape = MaterialTheme.shapes.large,
-        tonalElevation = AlertDialogDefaults.TonalElevation
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .border(2.dp, Color.Gray)
-        ) {
-            TextField(
-                value = textState,
-                onValueChange = { textState = it },
-                label = { Text("Category") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(all = 8.dp)
-            )
-
-            if (category === null) {
-                TagCapellaButton(
-                    onClick = {
-                        categoryViewModel.insertCategory(textState)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("add")
-                }
-            } else {
-                TagCapellaButton(
-                    onClick = {
-                        categoryViewModel.updateCategory(
-                            id = category.id,
-                            category = textState
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("update")
-                }
-            }
-        }
-    }
-}
