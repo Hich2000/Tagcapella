@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.hich2000.tagcapella.categories.CategoryScreen
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.songs.SongViewModel
@@ -185,10 +186,11 @@ class MainActivity : ComponentActivity() {
                     if (selectedScreen == NavItems.SongLibrary) {
                         SongScreen(songList = songList)
                     } else if (selectedScreen == NavItems.Tags) {
-                        //todo split my songRepository into a repository and viewmodel for DI purposes
                         TagScreen()
                     } else if (selectedScreen == NavItems.Player) {
                         MusicControls()
+                    } else if (selectedScreen == NavItems.Categories) {
+                        CategoryScreen()
                     }
                 }
             }

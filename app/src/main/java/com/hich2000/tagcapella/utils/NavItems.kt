@@ -23,5 +23,9 @@ enum class NavItems(
     Tags (
         title = "Tags",
         icon = Icons.AutoMirrored.Filled.Label
+    ),
+    Categories (
+        title = "Categories",
+        icon = Icons.AutoMirrored.Filled.Label
     )
 }

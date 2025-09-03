@@ -1,18 +1,38 @@
 package com.hich2000.tagcapella.categories
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Label
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,8 +40,138 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.utils.TagCapellaButton
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryScreen(
+    categoryViewModel: CategoryViewModel = hiltViewModel()
+) {
+    val showCategoryDialog = remember { mutableStateOf(false) }
+    val clickedCategory = remember { mutableStateOf<CategoryDTO?>(null) }
+
+    if (showCategoryDialog.value) {
+        BasicAlertDialog(
+            onDismissRequest = {
+                showCategoryDialog.value = false
+                clickedCategory.value = null
+            },
+        ) {
+            CategoryForm(
+                category = clickedCategory.value,
+                categoryViewModel = categoryViewModel
+            )
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        CategoryList(
+            categoryCard = { category ->
+                val editCallback: (() -> Unit) = {
+                    clickedCategory.value = category
+                    showCategoryDialog.value = true
+                }
+                val deleteCallback: (() -> Unit) = {
+                    categoryViewModel.deleteCategory(category.id)
+                }
+
+                CategoryCard(
+                    category = category,
+                    editCallback = editCallback,
+                    deleteCallback = deleteCallback
+                )
+            }
+        )
+    }
+}
+
+@Composable
+fun CategoryList(
+    categoryCard: @Composable (category: CategoryDTO) -> Unit,
+    categoryViewModel: CategoryViewModel = hiltViewModel()
+) {
+    val categoryList by categoryViewModel.categories.collectAsState()
+    val columnScroll = rememberScrollState()
+
+    Scaffold { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
+                )
+                .fillMaxSize()
+//                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+                .verticalScroll(columnScroll)
+        ) {
+            categoryList.forEach { category ->
+                categoryCard(category)
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryCard(
+    category: CategoryDTO,
+    editCallback: (() -> Unit)? = null,
+    deleteCallback: (() -> Unit)? = null,
+    backgroundColor: Color = Color.Black
+) {
+
+    Card(
+        modifier = Modifier
+            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .fillMaxWidth()
+            .background(Color.Gray)
+            .height(50.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
+                .background(backgroundColor)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.Label, contentDescription = "Label"
+            )
+            Text(
+                category.category,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            )
+
+            if (deleteCallback != null) {
+                IconButton(
+                    onClick = deleteCallback
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete"
+                    )
+                }
+            }
+            if (editCallback != null) {
+                IconButton(
+                    onClick = editCallback
+                ) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Edit"
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewModel) {
