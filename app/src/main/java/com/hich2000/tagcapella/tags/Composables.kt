@@ -9,8 +9,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -58,9 +55,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.categories.CategoryDTO
-import com.hich2000.tagcapella.categories.CategoryForm
-import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.songs.SongViewModel
@@ -71,16 +65,11 @@ import com.hich2000.tagcapella.utils.TagCapellaButton
 fun TagScreen(
     songViewModel: SongViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel(),
-    categoryViewModel: CategoryViewModel = hiltViewModel()
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
-    val showCategoryDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
-    val clickedCategory = remember { mutableStateOf<CategoryDTO?>(null) }
     val showSongDialog = remember { mutableStateOf(false) }
     val songList by songViewModel.songList.collectAsState()
-    var fabExpanded by remember { mutableStateOf(false) }
-
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -92,20 +81,6 @@ fun TagScreen(
             TagForm(
                 tag = clickedTag.value,
                 tagViewModel = tagViewModel
-            )
-        }
-    }
-
-    if (showCategoryDialog.value) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                showCategoryDialog.value = false
-                clickedCategory.value = null
-            },
-        ) {
-            CategoryForm(
-                category = clickedCategory.value,
-                categoryViewModel = categoryViewModel
             )
         }
     }
@@ -145,17 +120,7 @@ fun TagScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {
-                    if (fabExpanded) {
-                        fabExpanded = false
-                    }
-                }
-            )
+        modifier = Modifier.fillMaxSize()
     ) {
         TagList(
             tagCard = { tag ->
@@ -183,30 +148,6 @@ fun TagScreen(
                     songCallback = songCallback,
                     deleteCallback = deleteCallback
                 )
-            },
-            floatingActionButton = {
-                ExpandableFab(
-                    buttons = listOf {
-                        TextButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                showTagDialog.value = true
-                            }
-                        ) {
-                            Text("New Tag")
-                        }
-                        TextButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = {
-                                showCategoryDialog.value = true
-                            }
-                        ) {
-                            Text("New Category")
-                        }
-                    },
-                    expanded = fabExpanded,
-                    onclick = { fabExpanded = true }
-                )
             }
         )
     }
@@ -215,15 +156,12 @@ fun TagScreen(
 @Composable
 fun TagList(
     tagCard: @Composable (tag: TagDTO) -> Unit,
-    floatingActionButton: @Composable () -> Unit,
     tagViewModel: TagViewModel = hiltViewModel()
 ) {
     val tagList by tagViewModel.tags.collectAsState()
     val columnScroll = rememberScrollState()
 
-    Scaffold(
-        floatingActionButton = floatingActionButton
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(

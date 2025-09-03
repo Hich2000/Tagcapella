@@ -340,7 +340,6 @@ fun SongScreen(
                 ) {
                     TagList(
                         tagCard = tagCardComposable,
-                        floatingActionButton = {}
                     )
 
 

@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
@@ -14,6 +15,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,11 +26,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,11 +48,17 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
+import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.songs.SongViewModel
+import com.hich2000.tagcapella.tags.ExpandableFab
+import com.hich2000.tagcapella.tags.TagForm
 import com.hich2000.tagcapella.tags.TagScreen
+import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.NavItems
 import com.hich2000.tagcapella.utils.TagCapellaButton
@@ -220,18 +232,61 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
-    fun TagCategoryScreen() {
+    fun TagCategoryScreen(
+        tagViewModel: TagViewModel = hiltViewModel(),
+        categoryViewModel: CategoryViewModel = hiltViewModel()
+    ) {
         val selectedScreen = remember { mutableIntStateOf(0) }
+        val showTagDialog = remember { mutableStateOf(false) }
+        val showCategoryDialog = remember { mutableStateOf(false) }
+        var fabExpanded by remember { mutableStateOf(false) }
+
+
+        if (showTagDialog.value) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    showTagDialog.value = false
+                },
+            ) {
+                TagForm(
+                    tagViewModel = tagViewModel
+                )
+            }
+        }
+
+        if (showCategoryDialog.value) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    showCategoryDialog.value = false
+                },
+            ) {
+                CategoryForm(
+                    categoryViewModel = categoryViewModel
+                )
+            }
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {
+                        if (fabExpanded) {
+                            fabExpanded = false
+                        }
+                    }
+                ),
         ) {
             Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TagCapellaButton (
+                    TagCapellaButton(
                         onClick = {
                             selectedScreen.intValue = 0
                         },
@@ -239,7 +294,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Text("Tags")
                     }
-                    TagCapellaButton (
+                    TagCapellaButton(
                         onClick = {
                             selectedScreen.intValue = 1
                         },
@@ -248,8 +303,32 @@ class MainActivity : ComponentActivity() {
                         Text("Categories")
                     }
                 }
-                Box(
-                    modifier = Modifier.fillMaxSize()
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    floatingActionButton = {
+                        ExpandableFab(
+                            buttons = listOf {
+                                TextButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        showTagDialog.value = true
+                                    }
+                                ) {
+                                    Text("New Tag")
+                                }
+                                TextButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        showCategoryDialog.value = true
+                                    }
+                                ) {
+                                    Text("New Category")
+                                }
+                            },
+                            expanded = fabExpanded,
+                            onclick = { fabExpanded = true }
+                        )
+                    }
                 ) {
                     if (selectedScreen.intValue == 0) {
                         TagScreen()

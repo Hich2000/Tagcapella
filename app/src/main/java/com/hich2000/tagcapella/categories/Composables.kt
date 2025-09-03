@@ -69,7 +69,7 @@ fun CategoryScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxSize()
     ) {
         CategoryList(
             categoryCard = { category ->
