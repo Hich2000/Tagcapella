@@ -196,16 +196,10 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     val songList by songViewModel.songList.collectAsState()
-
-                    if (selectedScreen == NavItems.SongLibrary) {
-                        SongScreen(songList = songList)
-                    } else if (selectedScreen == NavItems.Tags) {
-                        TagScreen()
-                    } else if (selectedScreen == NavItems.Player) {
-                        MusicControls()
-                    } else if (selectedScreen == NavItems.Categories) {
-//                        CategoryScreen()
-                        TagCategoryScreen()
+                    when (selectedScreen) {
+                        NavItems.SongLibrary -> SongScreen(songList = songList)
+                        NavItems.Player -> MusicControls()
+                        NavItems.Tags -> TagCategoryScreen()
                     }
                 }
             }
