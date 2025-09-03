@@ -270,7 +270,10 @@ fun ExpandableFab(
             } else {
                 FloatingActionButton(
                     onClick = onclick,
-                    modifier = Modifier.padding(16.dp)
+                    containerColor = Color.Black,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .border(2.dp, Color.Gray)
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Expand")
                 }
