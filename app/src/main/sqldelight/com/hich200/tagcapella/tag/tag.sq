@@ -2,10 +2,10 @@ selectAll:
 SELECT id, tag, category FROM tag;
 
 insertTag:
-INSERT INTO tag (id, tag) VALUES (?, ?);
+INSERT INTO tag (id, tag, category) VALUES (?, ?, ?);
 
 updateTag:
-UPDATE tag SET tag = ? WHERE id = ?;
+UPDATE tag SET tag = ?, category = ? WHERE id = ?;
 
 deleteTag:
 DELETE FROM tag WHERE id = ?;
