@@ -395,7 +395,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     if (selectedScreen.intValue == 0) {
-                        TagScreen()
+                        TagScreen(showOnlyCategory = selectedCategory)
                     } else if (selectedScreen.intValue == 1) {
                         CategoryScreen()
                     }

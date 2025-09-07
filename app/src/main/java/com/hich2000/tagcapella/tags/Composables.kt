@@ -70,6 +70,7 @@ import com.hich2000.tagcapella.utils.TagCapellaButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
+    showOnlyCategory: Long? = null,
     songViewModel: SongViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel(),
 ) {
@@ -130,6 +131,7 @@ fun TagScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         TagList(
+            showOnlyCategory = showOnlyCategory,
             tagCard = { tag ->
                 var editCallback: (() -> Unit)? = null
                 var songCallback: (() -> Unit)? = null
@@ -163,7 +165,8 @@ fun TagScreen(
 @Composable
 fun TagList(
     tagCard: @Composable (tag: TagDTO) -> Unit,
-    tagViewModel: TagViewModel = hiltViewModel()
+    tagViewModel: TagViewModel = hiltViewModel(),
+    showOnlyCategory: Long? = null
 ) {
     val tagList by tagViewModel.tags.collectAsState()
     val columnScroll = rememberScrollState()
@@ -179,6 +182,9 @@ fun TagList(
                 .verticalScroll(columnScroll)
         ) {
             tagList.forEach { tag ->
+                if (showOnlyCategory !== null && tag.categoryId != showOnlyCategory) {
+                    return@forEach
+                }
                 tagCard(tag)
             }
         }
