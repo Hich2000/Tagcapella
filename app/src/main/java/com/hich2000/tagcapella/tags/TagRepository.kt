@@ -18,14 +18,14 @@ class TagRepository @Inject constructor(
             .toList()
     }
 
-    fun insertTag(newTag: String): TagDTO {
-        db.tagQueries.insertTag(null, newTag)
+    fun insertTag(newTag: String, category: Long?): TagDTO {
+        db.tagQueries.insertTag(id = null, tag = newTag, category = category)
         return db.tagQueries.lastInsertedTag { id, tag, category -> TagDTO(id, tag, category, database) }
             .executeAsOne()
     }
 
-    fun updateTag(id: Long, tag: String) {
-        db.tagQueries.updateTag(tag, id)
+    fun updateTag(id: Long, tag: String, category: Long?) {
+        db.tagQueries.updateTag(id = id, tag = tag, category = category)
         //todo add something here to check if the update was successful
     }
 

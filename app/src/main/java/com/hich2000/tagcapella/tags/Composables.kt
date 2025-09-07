@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -33,11 +34,15 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,10 +56,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
 import com.hich2000.tagcapella.songs.SongViewModel
@@ -297,9 +304,17 @@ fun TagCard(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
+fun TagForm(
+    tag: TagDTO? = null,
+    tagViewModel: TagViewModel,
+    categoryViewModel: CategoryViewModel = hiltViewModel()
+) {
     var textState by remember { mutableStateOf(if (tag is TagDTO) tag.tag else "") }
+    var dropdownState by remember { mutableStateOf(if (tag is TagDTO) tag.categoryId else null) }
+    val categories by categoryViewModel.categories.collectAsState()
+    var dropdownExpanded by remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier
@@ -311,8 +326,94 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .border(2.dp, Color.Gray)
+                .border(
+                    width = 2.dp,
+                    color = Color.Gray,
+                    shape = RectangleShape
+                )
         ) {
+
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 8.dp)
+            ) {
+                val dropdownWidth = this.maxWidth
+
+                ExposedDropdownMenuBox(
+                    expanded = dropdownExpanded,
+                    onExpandedChange = { dropdownExpanded = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor(
+                                type = MenuAnchorType.PrimaryEditable,
+                                enabled = true
+                            ),
+                        label = { Text("category") },
+                        onValueChange = {},
+                        readOnly = true,
+                        value = if (dropdownState == null) {
+                            "(no category)"
+                        } else {
+                            categories.find { category -> category.id == dropdownState }?.category
+                                ?: "(no category)"
+                        },
+                    )
+
+                    DropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false },
+                        shape = RectangleShape,
+                        modifier = Modifier
+                            .width(dropdownWidth)
+                            .border(
+                                2.dp, Color.Gray, shape = RectangleShape
+                            )
+                            .padding(0.dp)
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "(no category)",
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            },
+                            onClick = {
+                                dropdownState = null
+                                dropdownExpanded = false
+                            },
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(0.dp)
+                        )
+
+                        categories.forEach {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = it.category,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                },
+                                onClick = {
+                                    dropdownState = it.id
+                                    dropdownExpanded = false
+                                },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(0.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
             TextField(
                 value = textState,
                 onValueChange = { textState = it },
@@ -325,7 +426,7 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
             if (tag === null) {
                 TagCapellaButton(
                     onClick = {
-                        tagViewModel.insertTag(textState)
+                        tagViewModel.insertTag(textState, dropdownState)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -339,7 +440,8 @@ fun TagForm(tag: TagDTO? = null, tagViewModel: TagViewModel) {
                     onClick = {
                         tagViewModel.updateTag(
                             id = tag.id,
-                            tag = textState
+                            tag = textState,
+                            category = dropdownState
                         )
                     },
                     modifier = Modifier

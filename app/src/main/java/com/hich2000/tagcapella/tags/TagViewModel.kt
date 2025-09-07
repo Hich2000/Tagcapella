@@ -23,13 +23,13 @@ class TagViewModel @Inject constructor(
         return tagRepository.selectAllTags()
     }
 
-    fun insertTag(tag: String) {
-        tagRepository.insertTag(tag)
+    fun insertTag(tag: String, category: Long?) {
+        tagRepository.insertTag(newTag = tag, category = category)
         _tags.value = selectAllTags()
     }
 
-    fun updateTag(id: Long, tag: String) {
-        tagRepository.updateTag(id = id, tag = tag)
+    fun updateTag(id: Long, tag: String, category: Long?) {
+        tagRepository.updateTag(id = id, tag = tag, category = category)
         _tags.value = selectAllTags()
     }
 
