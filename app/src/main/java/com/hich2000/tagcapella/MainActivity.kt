@@ -16,7 +16,6 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,9 +26,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -242,9 +238,6 @@ class MainActivity : ComponentActivity() {
         val showTagDialog = remember { mutableStateOf(false) }
         val showCategoryDialog = remember { mutableStateOf(false) }
         var fabExpanded by remember { mutableStateOf(false) }
-        val categories by categoryViewModel.categories.collectAsState()
-        val scroll = rememberScrollState(0)
-        var selectedCategory: Long? by remember { mutableStateOf(null) }
 
         if (showTagDialog.value) {
             BasicAlertDialog(
@@ -311,62 +304,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                if (selectedScreen.intValue == 0 && categories.isNotEmpty()) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(scroll)
-                    ) {
-                        TagCapellaButton(
-                            onClick = {
-                                selectedCategory = null
-                            },
-                            modifier = Modifier
-                                .border(2.dp, Color.White, RectangleShape)
-                                .padding(0.dp)
-                                .width(120.dp),
-                            shape = RectangleShape,
-                        ) {
-                            Text(
-                                text = "All",
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
-                            )
-                        }
-
-                        categories.forEach { category ->
-
-                            val buttonModifier = Modifier
-                                .border(2.dp, Color.White, RectangleShape)
-                                .padding(0.dp)
-                            val finalModifier = if (category.category.length < 20) {
-                                buttonModifier.width(120.dp)
-                            } else {
-                                buttonModifier.wrapContentWidth()
-                            }
-
-                            TagCapellaButton(
-                                onClick = {
-                                    selectedCategory = category.id
-                                },
-                                modifier = finalModifier,
-                                shape = RectangleShape,
-                            ) {
-                                Text(
-                                    text = category.category,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 8.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     floatingActionButton = {
@@ -395,7 +332,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     if (selectedScreen.intValue == 0) {
-                        TagScreen(showOnlyCategory = selectedCategory)
+                        TagScreen()
                     } else if (selectedScreen.intValue == 1) {
                         CategoryScreen()
                     }

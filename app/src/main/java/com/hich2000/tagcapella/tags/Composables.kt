@@ -9,6 +9,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -70,7 +71,6 @@ import com.hich2000.tagcapella.utils.TagCapellaButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
-    showOnlyCategory: Long? = null,
     songViewModel: SongViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel(),
 ) {
@@ -131,7 +131,6 @@ fun TagScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         TagList(
-            showOnlyCategory = showOnlyCategory,
             tagCard = { tag ->
                 var editCallback: (() -> Unit)? = null
                 var songCallback: (() -> Unit)? = null
@@ -166,11 +165,13 @@ fun TagScreen(
 fun TagList(
     tagCard: @Composable (tag: TagDTO) -> Unit,
     tagViewModel: TagViewModel = hiltViewModel(),
-    showOnlyCategory: Long? = null
+    categoryViewModel: CategoryViewModel = hiltViewModel(),
 ) {
     val tagList by tagViewModel.tags.collectAsState()
     val columnScroll = rememberScrollState()
-
+    val categories by categoryViewModel.categories.collectAsState()
+    val scroll = rememberScrollState(0)
+    var selectedCategory: Long? by remember { mutableStateOf(null) }
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -178,16 +179,73 @@ fun TagList(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
                 )
                 .fillMaxSize()
-//                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
+            if (categories.isNotEmpty()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(scroll)
+                ) {
+                    TagCapellaButton(
+                        onClick = {
+                            selectedCategory = null
+                        },
+                        modifier = Modifier
+                            .border(2.dp, Color.White, RectangleShape)
+                            .padding(0.dp)
+                            .width(120.dp),
+                        shape = RectangleShape,
+                    ) {
+                        Text(
+                            text = "All",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                        )
+                    }
+
+                    categories.forEach { category ->
+
+                        val buttonModifier = Modifier
+                            .border(2.dp, Color.White, RectangleShape)
+                            .padding(0.dp)
+                        val finalModifier = if (category.category.length < 20) {
+                            buttonModifier.width(120.dp)
+                        } else {
+                            buttonModifier.wrapContentWidth()
+                        }
+
+                        TagCapellaButton(
+                            onClick = {
+                                selectedCategory = category.id
+                            },
+                            modifier = finalModifier,
+                            shape = RectangleShape,
+                        ) {
+                            Text(
+                                text = category.category,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+
             tagList.forEach { tag ->
-                if (showOnlyCategory !== null && tag.categoryId != showOnlyCategory) {
+                if (selectedCategory !== null && tag.categoryId != selectedCategory) {
                     return@forEach
                 }
                 tagCard(tag)
             }
         }
+
     }
 }
 

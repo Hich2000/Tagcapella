@@ -342,7 +342,6 @@ fun SongScreen(
                         tagCard = tagCardComposable,
                     )
 
-
                     TagCapellaButton(
                         onClick = {
                             coroutineScope.launch {
@@ -398,7 +397,7 @@ fun SongScreen(
                                     } else {
                                         Color.Black
                                     }
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     Color.Black
                                 },
                             )
@@ -409,7 +408,6 @@ fun SongScreen(
                     songToTag.value = song
                 },
                 onClick = {
-
                     tagCardComposable = { tag ->
                         if (tag.tag != "All") {
                             TagCard(
@@ -423,7 +421,7 @@ fun SongScreen(
                                     } else {
                                         Color.Black
                                     }
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     Color.Black
                                 },
                             )
