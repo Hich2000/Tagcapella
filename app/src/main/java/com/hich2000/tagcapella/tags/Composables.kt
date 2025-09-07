@@ -192,7 +192,6 @@ fun ExpandableFab(
     onclick: (() -> Unit)
 ) {
     Box(
-        modifier = Modifier,
         contentAlignment = Alignment.BottomEnd
     ) {
         AnimatedContent(
@@ -201,15 +200,14 @@ fun ExpandableFab(
                 fadeIn(tween(200)) + scaleIn(tween(200)) togetherWith
                         fadeOut(tween(200)) + scaleOut(tween(200))
             },
-            label = "FAB Expansion"
+            label = "FAB Expansion",
         ) { expanded ->
             if (expanded) {
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
                         .border(2.dp, Color.Gray)
-                        .padding(8.dp)
                         .width(200.dp)
+                        .background(Color.Black)
                 ) {
                     buttons.forEach { button ->
                         button()
@@ -221,7 +219,8 @@ fun ExpandableFab(
                     containerColor = Color.Black,
                     modifier = Modifier
                         .padding(16.dp)
-                        .border(2.dp, Color.Gray)
+                        .border(2.dp, Color.Gray),
+                    shape = RectangleShape
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Expand")
                 }
