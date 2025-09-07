@@ -16,6 +16,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -237,7 +242,9 @@ class MainActivity : ComponentActivity() {
         val showTagDialog = remember { mutableStateOf(false) }
         val showCategoryDialog = remember { mutableStateOf(false) }
         var fabExpanded by remember { mutableStateOf(false) }
-
+        val categories by categoryViewModel.categories.collectAsState()
+        val scroll = rememberScrollState(0)
+        var selectedCategory: Long? by remember { mutableStateOf(null) }
 
         if (showTagDialog.value) {
             BasicAlertDialog(
@@ -284,7 +291,10 @@ class MainActivity : ComponentActivity() {
                         onClick = {
                             selectedScreen.intValue = 0
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(2.dp, Color.White, RectangleShape),
+                        shape = RectangleShape,
                     ) {
                         Text("Tags")
                     }
@@ -292,11 +302,51 @@ class MainActivity : ComponentActivity() {
                         onClick = {
                             selectedScreen.intValue = 1
                         },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(2.dp, Color.White, RectangleShape),
+                        shape = RectangleShape,
                     ) {
                         Text("Categories")
                     }
                 }
+
+                if (selectedScreen.intValue == 0 && categories.isNotEmpty()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(scroll)
+                    ) {
+                        categories.forEach { category ->
+
+                            val buttonModifier = Modifier
+                                .border(2.dp, Color.White, RectangleShape)
+                                .padding(0.dp)
+                            val finalModifier = if (category.category.length < 20) {
+                                buttonModifier.width(120.dp)
+                            } else {
+                                buttonModifier.wrapContentWidth()
+                            }
+
+                            TagCapellaButton(
+                                onClick = {
+                                    selectedCategory = category.id
+                                },
+                                modifier = finalModifier,
+                                shape = RectangleShape,
+                            ) {
+                                Text(
+                                    text = category.category,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     floatingActionButton = {
