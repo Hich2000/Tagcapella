@@ -318,6 +318,25 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .horizontalScroll(scroll)
                     ) {
+                        TagCapellaButton(
+                            onClick = {
+                                selectedCategory = null
+                            },
+                            modifier = Modifier
+                                .border(2.dp, Color.White, RectangleShape)
+                                .padding(0.dp)
+                                .width(120.dp),
+                            shape = RectangleShape,
+                        ) {
+                            Text(
+                                text = "All",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                            )
+                        }
+
                         categories.forEach { category ->
 
                             val buttonModifier = Modifier
@@ -338,6 +357,7 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 Text(
                                     text = category.category,
+                                    textAlign = TextAlign.Center,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 8.dp)
