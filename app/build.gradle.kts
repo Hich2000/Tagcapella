@@ -16,12 +16,12 @@ sqldelight {
 
 android {
     namespace = "com.hich2000.tagcapella"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.hich2000.tagcapella"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

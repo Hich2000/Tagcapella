@@ -38,8 +38,8 @@ data class Song(val path: String, val database: Database) {
     }
 
     private fun getSongTags(): MutableList<TagDTO> {
-        val tags = db.songQueries.selectSongTags(path) { id, tag ->
-                TagDTO(id, tag, database)
+        val tags = db.songQueries.selectSongTags(path) { id, tag, category ->
+                TagDTO(id, tag, category, database)
             }.executeAsList()
 
         return tags.toMutableStateList()

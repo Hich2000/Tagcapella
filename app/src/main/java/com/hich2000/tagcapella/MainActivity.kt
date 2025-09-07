@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
@@ -14,6 +15,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,30 +26,43 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.hich2000.tagcapella.categories.CategoryForm
+import com.hich2000.tagcapella.categories.CategoryScreen
+import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.songs.SongViewModel
+import com.hich2000.tagcapella.tags.ExpandableFab
+import com.hich2000.tagcapella.tags.TagForm
 import com.hich2000.tagcapella.tags.TagScreen
+import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.NavItems
+import com.hich2000.tagcapella.utils.TagCapellaButton
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -135,7 +151,7 @@ class MainActivity : ComponentActivity() {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 bottomBar = {
-                    Row (
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
@@ -181,14 +197,10 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     val songList by songViewModel.songList.collectAsState()
-
-                    if (selectedScreen == NavItems.SongLibrary) {
-                        SongScreen(songList = songList)
-                    } else if (selectedScreen == NavItems.Tags) {
-                        //todo split my songRepository into a repository and viewmodel for DI purposes
-                        TagScreen()
-                    } else if (selectedScreen == NavItems.Player) {
-                        MusicControls()
+                    when (selectedScreen) {
+                        NavItems.SongLibrary -> SongScreen(songList = songList)
+                        NavItems.Player -> MusicControls()
+                        NavItems.Tags -> TagCategoryScreen()
                     }
                 }
             }
@@ -209,6 +221,120 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Text("Media permissions are necessary to use this application")
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @Composable
+    fun TagCategoryScreen(
+        tagViewModel: TagViewModel = hiltViewModel(),
+        categoryViewModel: CategoryViewModel = hiltViewModel()
+    ) {
+        val selectedScreen = remember { mutableIntStateOf(0) }
+        val showTagDialog = remember { mutableStateOf(false) }
+        val showCategoryDialog = remember { mutableStateOf(false) }
+        var fabExpanded by remember { mutableStateOf(false) }
+
+        if (showTagDialog.value) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    showTagDialog.value = false
+                },
+            ) {
+                TagForm(
+                    tagViewModel = tagViewModel
+                )
+            }
+        }
+
+        if (showCategoryDialog.value) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    showCategoryDialog.value = false
+                },
+            ) {
+                CategoryForm(
+                    categoryViewModel = categoryViewModel
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {
+                        if (fabExpanded) {
+                            fabExpanded = false
+                        }
+                    }
+                ),
+        ) {
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TagCapellaButton(
+                        onClick = {
+                            selectedScreen.intValue = 0
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(2.dp, Color.White, RectangleShape),
+                        shape = RectangleShape,
+                    ) {
+                        Text("Tags")
+                    }
+                    TagCapellaButton(
+                        onClick = {
+                            selectedScreen.intValue = 1
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .border(2.dp, Color.White, RectangleShape),
+                        shape = RectangleShape,
+                    ) {
+                        Text("Categories")
+                    }
+                }
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    floatingActionButton = {
+                        ExpandableFab(
+                            buttons = listOf {
+                                TextButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        showTagDialog.value = true
+                                    }
+                                ) {
+                                    Text("New Tag")
+                                }
+                                TextButton(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {
+                                        showCategoryDialog.value = true
+                                    }
+                                ) {
+                                    Text("New Category")
+                                }
+                            },
+                            expanded = fabExpanded,
+                            onclick = { fabExpanded = true }
+                        )
+                    }
+                ) {
+                    if (selectedScreen.intValue == 0) {
+                        TagScreen()
+                    } else if (selectedScreen.intValue == 1) {
+                        CategoryScreen()
                     }
                 }
             }
