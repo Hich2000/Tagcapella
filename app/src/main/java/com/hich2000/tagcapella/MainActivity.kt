@@ -35,6 +35,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -63,6 +65,7 @@ import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.NavItems
 import com.hich2000.tagcapella.utils.TagCapellaButton
+import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -146,6 +149,13 @@ class MainActivity : ComponentActivity() {
     fun TagcapellaApp() {
         var selectedScreen by remember { mutableStateOf(NavItems.Player) }
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            ToastEventBus.toastFlow.collect { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        }
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
             Scaffold(
