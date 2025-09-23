@@ -19,8 +19,6 @@ CREATE TABLE tag (
 
 CREATE INDEX tag_id ON tag (id);
 
-INSERT INTO tag (id, tag) VALUES (0, 'All');
-
 CREATE TABLE song_tag (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     song TEXT NOT NULL,
