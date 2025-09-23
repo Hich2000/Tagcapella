@@ -132,22 +132,16 @@ fun TagScreen(
     ) {
         TagList(
             tagCard = { tag ->
-                var editCallback: (() -> Unit)? = null
-                var songCallback: (() -> Unit)? = null
-                var deleteCallback: (() -> Unit)? = null
-
-                if (tag.tag != "All") {
-                    editCallback = {
-                        clickedTag.value = tag
-                        showTagDialog.value = true
-                    }
-                    songCallback = {
-                        clickedTag.value = tag
-                        showSongDialog.value = true
-                    }
-                    deleteCallback = {
-                        tagViewModel.deleteTag(tag.id)
-                    }
+                val editCallback = {
+                    clickedTag.value = tag
+                    showTagDialog.value = true
+                }
+                val songCallback = {
+                    clickedTag.value = tag
+                    showSongDialog.value = true
+                }
+                val deleteCallback = {
+                    tagViewModel.deleteTag(tag.id)
                 }
 
                 TagCard(

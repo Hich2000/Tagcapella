@@ -385,11 +385,10 @@ fun SongScreen(
                     }
 
                     tagCardComposable = { tag ->
-                        if (tag.tag != "All") {
-                            TagCard(
-                                tag = tag,
-                                onClick = onTagClick,
-                                backgroundColor =
+                        TagCard(
+                            tag = tag,
+                            onClick = onTagClick,
+                            backgroundColor =
                                 try {
                                     //todo don't rely on try catching here, make this nicer later on
                                     if (songToTag.value!!.songTagList.contains(tag)) {
@@ -400,8 +399,7 @@ fun SongScreen(
                                 } catch (_: Exception) {
                                     Color.Black
                                 },
-                            )
-                        }
+                        )
                     }
 
                     showTagDialog.value = true
@@ -409,11 +407,10 @@ fun SongScreen(
                 },
                 onClick = {
                     tagCardComposable = { tag ->
-                        if (tag.tag != "All") {
-                            TagCard(
-                                tag = tag,
-                                onClick = onTagClick,
-                                backgroundColor =
+                        TagCard(
+                            tag = tag,
+                            onClick = onTagClick,
+                            backgroundColor =
                                 try {
                                     //todo don't rely on try catching here, make this nicer later on
                                     if (songToTag.value!!.songTagList.contains(tag)) {
@@ -424,8 +421,7 @@ fun SongScreen(
                                 } catch (_: Exception) {
                                     Color.Black
                                 },
-                            )
-                        }
+                        )
                     }
 
                     //todo maybe find a way to make this nicer I guess.
@@ -458,11 +454,10 @@ fun SongScreen(
             if (showQueue) {
                 SmallFloatingActionButton(onClick = {
                     tagCardComposable = { tag ->
-                        if (tag.tag != "All") {
-                            TagCard(
-                                tag = tag,
-                                onClick = onTagClick,
-                                backgroundColor =
+                        TagCard(
+                            tag = tag,
+                            onClick = onTagClick,
+                            backgroundColor =
                                 if (includedTags.contains(tag)) {
                                     Color.hsl(112f, 0.5f, 0.3f)
                                 } else if (excludedTags.contains(tag)) {
@@ -470,8 +465,7 @@ fun SongScreen(
                                 } else {
                                     Color.Black
                                 },
-                            )
-                        }
+                        )
                     }
                     showTagDialog.value = true
                     onTagClick = { tag ->
