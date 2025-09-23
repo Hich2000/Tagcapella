@@ -1,9 +1,12 @@
 package com.hich2000.tagcapella.categories
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,13 +26,25 @@ class CategoryViewModel @Inject constructor(
     }
 
     fun insertCategory(category: String) {
-        categoryRepository.insertCategory(category)
-        _categories.value = selectAllCategories()
+        viewModelScope.launch {
+            try {
+                categoryRepository.insertCategory(category)
+                _categories.value = selectAllCategories()
+            } catch (_: Throwable) {
+                ToastEventBus.send("Category already exists with name: $category")
+            }
+        }
     }
 
     fun updateCategory(id: Long, category: String) {
-        categoryRepository.updateCategory(id = id, category = category)
-        _categories.value = selectAllCategories()
+        viewModelScope.launch {
+            try {
+                categoryRepository.updateCategory(id = id, category = category)
+                _categories.value = selectAllCategories()
+            } catch (_: Exception) {
+                ToastEventBus.send("Category already exists with name: $category")
+            }
+        }
     }
 
     fun deleteCategory(id: Long) {
