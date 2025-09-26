@@ -166,7 +166,13 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .height(56.dp)
                             .background(Color.Black)
-                            .border(2.dp, Color.Gray),
+                            .border(2.dp, Color.Gray)
+                            .clickable(
+                                //clickable modifier to block passthrough clicks to the bottom sheet below.
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = {}
+                            ),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
