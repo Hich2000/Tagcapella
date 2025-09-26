@@ -2,18 +2,16 @@ package com.hich2000.tagcapella.utils
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.reflect.KClass
+import androidx.core.content.edit
 
 @Singleton
 class SharedPreferenceManager @Inject constructor(
     application: Application
 ) {
-
     private val gson = Gson()
 
     private val sharedPreferences = application.getSharedPreferences(
@@ -21,72 +19,53 @@ class SharedPreferenceManager @Inject constructor(
         Context.MODE_PRIVATE
     )
 
-    private val putTypeHandlers: Map<KClass<*>, (SharedPreferences.Editor, String, Any) -> Unit> =
-        mapOf(
-            Int::class to { editor, key, value -> editor.putInt(key, value as Int) },
-            Boolean::class to { editor, key, value -> editor.putBoolean(key, value as Boolean) },
-            String::class to { editor, key, value -> editor.putString(key, value as String) },
-            Long::class to { editor, key, value -> editor.putLong(key, value as Long) },
-            List::class to { editor, key, value ->
-                if (value is List<*>) {
+    fun <T> savePreference(key: SharedPreferenceKey<T>, value: T) {
+        sharedPreferences.edit {
+            when (key) {
+                is SharedPreferenceKey.PlayerRepeatMode -> putInt(key.key, value as Int)
+                is SharedPreferenceKey.PlayerShuffleMode -> putBoolean(key.key, value as Boolean)
+                is SharedPreferenceKey.IncludedTags -> {
                     val json = gson.toJson(value)
-                    editor.putString(key, json)
-                } else {
-                    throw IllegalArgumentException("Expected List but got ${value::class}")
+                    putString(key.key, json)
                 }
+                is SharedPreferenceKey.ExcludedTags -> {
+                    val json = gson.toJson(value)
+                    putString(key.key, json)
+                }
+                is SharedPreferenceKey.LastSongPlayed -> putString(key.key, value as String)
+                is SharedPreferenceKey.LastSongPosition -> putLong(key.key, value as Long)
             }
-        )
+        }
+    }
 
-    private val getTypeHandlers: Map<KClass<*>, (SharedPreferences, String, Any) -> Any?> = mapOf(
-        Int::class to { store, key, defaultValue -> store.getInt(key, defaultValue as Int) },
-        Boolean::class to { store, key, defaultValue ->
-            store.getBoolean(
-                key,
-                defaultValue as Boolean
-            )
-        },
-        String::class to { store, key, defaultValue ->
-            store.getString(
-                key,
-                defaultValue as String
-            )
-        },
-        Long::class to { store, key, defaultValue ->
-            store.getLong(
-                key,
-                defaultValue as Long
-            )
-        },
-        List::class to { store, key, defaultValue -> // Retrieve List<String>
-            val json = store.getString(key, null)
-            try {
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getPreference(key: SharedPreferenceKey<T>, defaultValue: T): T {
+        return when (key) {
+            is SharedPreferenceKey.PlayerRepeatMode -> sharedPreferences.getInt(key.key, defaultValue as Int) as T
+            is SharedPreferenceKey.PlayerShuffleMode -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
+            is SharedPreferenceKey.IncludedTags -> {
+                val json = sharedPreferences.getString(key.key, null)
                 if (!json.isNullOrEmpty()) {
                     val type = object : TypeToken<List<String>>() {}.type
                     gson.fromJson<List<String>>(json, type) ?: defaultValue
                 } else {
                     defaultValue
                 }
-            } catch (e: Throwable) {
-                defaultValue
             }
-        }
-    )
 
-    fun savePreference(key: SharedPreferenceKeys, value: Any) {
-        val handler = putTypeHandlers[key.type]
-            ?: throw IllegalArgumentException("Unsupported type: ${key.type}")
-        val editor = sharedPreferences.edit()
-        handler(editor, key.key, value)
-        editor.apply()
-    }
+            is SharedPreferenceKey.ExcludedTags -> {
+                val json = sharedPreferences.getString(key.key, null)
+                if (!json.isNullOrEmpty()) {
+                    val type = object : TypeToken<List<String>>() {}.type
+                    gson.fromJson<List<String>>(json, type) ?: defaultValue
+                } else {
+                    defaultValue
+                }
+            }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Any> getPreference(
-        key: SharedPreferenceKeys,
-        defaultValue: T
-    ): T {
-        val handler = getTypeHandlers[key.type]
-            ?: throw IllegalArgumentException("Unsupported type: ${key.type}")
-        return handler(sharedPreferences, key.key, defaultValue) as T
+            is SharedPreferenceKey.LastSongPlayed -> sharedPreferences.getString(key.key, defaultValue as String) as T
+            is SharedPreferenceKey.LastSongPosition -> sharedPreferences.getLong(key.key, defaultValue as Long) as T
+
+        } as T
     }
 }
