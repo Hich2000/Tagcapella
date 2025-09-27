@@ -138,18 +138,22 @@ fun CategoryCard(
                 .background(backgroundColor)
         ) {
             Icon(
-                Icons.AutoMirrored.Filled.Label, contentDescription = "Label"
+                Icons.AutoMirrored.Filled.Label,
+                contentDescription = "Label",
+                modifier = Modifier.weight(0.15f)
             )
             Text(
                 category.category,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .weight(1f)
             )
 
             if (deleteCallback != null) {
                 IconButton(
-                    onClick = deleteCallback
+                    onClick = deleteCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Delete,
@@ -159,7 +163,8 @@ fun CategoryCard(
             }
             if (editCallback != null) {
                 IconButton(
-                    onClick = editCallback
+                    onClick = editCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Edit,
@@ -199,32 +204,40 @@ fun CategoryForm(
                     .padding(all = 8.dp)
             )
 
-            if (category === null) {
-                TagCapellaButton(
-                    onClick = {
-                        categoryViewModel.insertCategory(textState)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("add")
-                }
-            } else {
-                TagCapellaButton(
-                    onClick = {
-                        categoryViewModel.updateCategory(
-                            id = category.id,
-                            category = textState
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("update")
+            Box (
+                modifier = Modifier.padding(0.dp)
+            ) {
+                if (category === null) {
+                    TagCapellaButton(
+                        onClick = {
+                            categoryViewModel.insertCategory(textState)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .padding(0.dp)
+                    ) {
+                        Text("add")
+                    }
+                } else {
+                    TagCapellaButton(
+                        onClick = {
+                            categoryViewModel.updateCategory(
+                                id = category.id,
+                                category = textState
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .padding(0.dp)
+                    ) {
+                        Text("update")
+                    }
                 }
             }
         }

@@ -358,6 +358,7 @@ fun SongScreen(
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
                             .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary)
                     ) {
                         Text(text = "Save")
                     }

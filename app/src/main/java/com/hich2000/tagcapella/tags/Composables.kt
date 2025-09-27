@@ -491,33 +491,41 @@ fun TagForm(
                     .padding(all = 8.dp)
             )
 
-            if (tag === null) {
-                TagCapellaButton(
-                    onClick = {
-                        tagViewModel.insertTag(textState, dropdownState)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("add")
-                }
-            } else {
-                TagCapellaButton(
-                    onClick = {
-                        tagViewModel.updateTag(
-                            id = tag.id,
-                            tag = textState,
-                            category = dropdownState
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("update")
+            Box (
+                modifier = Modifier.padding(0.dp)
+            ) {
+                if (tag === null) {
+                    TagCapellaButton(
+                        onClick = {
+                            tagViewModel.insertTag(textState, dropdownState)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .padding(0.dp)
+                    ) {
+                        Text("add")
+                    }
+                } else {
+                    TagCapellaButton(
+                        onClick = {
+                            tagViewModel.updateTag(
+                                id = tag.id,
+                                tag = textState,
+                                category = dropdownState
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .padding(0.dp)
+                    ) {
+                        Text("update")
+                    }
                 }
             }
         }
