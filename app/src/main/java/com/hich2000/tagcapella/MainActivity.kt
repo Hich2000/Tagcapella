@@ -34,7 +34,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -285,10 +284,13 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier
                             .weight(1f)
+                            .background(MaterialTheme.colorScheme.primary)
                             .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape),
                         shape = RectangleShape,
                     ) {
-                        Text("Tags")
+                        Text(
+                            "Tags"
+                        )
                     }
                     TagCapellaButton(
                         onClick = {
@@ -308,19 +310,23 @@ class MainActivity : ComponentActivity() {
                     floatingActionButton = {
                         ExpandableFab(
                             buttons = listOf {
-                                TextButton(
-                                    modifier = Modifier.fillMaxWidth(),
+                                TagCapellaButton(
                                     onClick = {
                                         showTagDialog.value = true
-                                    }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .border(2.dp, MaterialTheme.colorScheme.secondary)
                                 ) {
                                     Text("New Tag")
                                 }
-                                TextButton(
-                                    modifier = Modifier.fillMaxWidth(),
+                                TagCapellaButton(
                                     onClick = {
                                         showCategoryDialog.value = true
-                                    }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .border(2.dp, MaterialTheme.colorScheme.secondary)
                                 ) {
                                     Text("New Category")
                                 }

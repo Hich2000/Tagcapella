@@ -23,8 +23,8 @@ fun TagCapellaButton(
         bottomEnd = 0.dp
     ),
     colors: ButtonColors = ButtonColors(
-        containerColor = MaterialTheme.colorScheme.secondary,
-        contentColor = MaterialTheme.colorScheme.primary,
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.secondary,
         disabledContainerColor = ButtonDefaults.buttonColors().disabledContainerColor,
         disabledContentColor = ButtonDefaults.buttonColors().disabledContentColor,
     ),

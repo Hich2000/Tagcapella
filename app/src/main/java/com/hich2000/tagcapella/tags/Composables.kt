@@ -10,7 +10,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -313,24 +312,28 @@ fun TagCard(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
                 .background(backgroundColor)
+                .padding(horizontal = 8.dp)
         ) {
             Icon(
-                Icons.AutoMirrored.Filled.Label, contentDescription = "Label"
+                Icons.AutoMirrored.Filled.Label,
+                contentDescription = "Label",
+                modifier = Modifier.weight(0.15f)
             )
             Text(
                 tag.tag,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .weight(1f)
             )
 
             if (deleteCallback != null) {
                 IconButton(
-                    onClick = deleteCallback
+                    onClick = deleteCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Delete,
@@ -340,7 +343,8 @@ fun TagCard(
             }
             if (editCallback != null) {
                 IconButton(
-                    onClick = editCallback
+                    onClick = editCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Edit,
@@ -350,14 +354,18 @@ fun TagCard(
             }
             if (songCallback != null) {
                 IconButton(
-                    onClick = songCallback
+                    onClick = songCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.MusicNote,
                         contentDescription = "Tag songs"
                     )
                 }
-                Text("($taggedSongCount)")
+                Text(
+                    "($taggedSongCount)",
+                    modifier = Modifier.weight(0.3f)
+                )
             }
         }
     }
