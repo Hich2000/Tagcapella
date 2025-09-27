@@ -50,17 +50,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
-import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
 import com.hich2000.tagcapella.tags.TagForm
 import com.hich2000.tagcapella.tags.TagScreen
-import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.NavItems
 import com.hich2000.tagcapella.utils.TagCapellaButton
@@ -239,10 +236,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
-    fun TagCategoryScreen(
-        tagViewModel: TagViewModel = hiltViewModel(),
-        categoryViewModel: CategoryViewModel = hiltViewModel()
-    ) {
+    fun TagCategoryScreen() {
         val selectedScreen = remember { mutableIntStateOf(0) }
         val showTagDialog = remember { mutableStateOf(false) }
         val showCategoryDialog = remember { mutableStateOf(false) }
@@ -254,9 +248,7 @@ class MainActivity : ComponentActivity() {
                     showTagDialog.value = false
                 },
             ) {
-                TagForm(
-                    tagViewModel = tagViewModel
-                )
+                TagForm()
             }
         }
 
@@ -266,9 +258,7 @@ class MainActivity : ComponentActivity() {
                     showCategoryDialog.value = false
                 },
             ) {
-                CategoryForm(
-                    categoryViewModel = categoryViewModel
-                )
+                CategoryForm()
             }
         }
 

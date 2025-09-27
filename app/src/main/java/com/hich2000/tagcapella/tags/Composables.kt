@@ -87,8 +87,7 @@ fun TagScreen(
             },
         ) {
             TagForm(
-                tag = clickedTag.value,
-                tagViewModel = tagViewModel
+                tag = clickedTag.value
             )
         }
     }
@@ -369,7 +368,7 @@ fun TagCard(
 @Composable
 fun TagForm(
     tag: TagDTO? = null,
-    tagViewModel: TagViewModel,
+    tagViewModel: TagViewModel = hiltViewModel(),
     categoryViewModel: CategoryViewModel = hiltViewModel()
 ) {
     var textState by remember { mutableStateOf(if (tag is TagDTO) tag.tag else "") }

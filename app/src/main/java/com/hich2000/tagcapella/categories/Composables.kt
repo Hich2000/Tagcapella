@@ -62,8 +62,7 @@ fun CategoryScreen(
             },
         ) {
             CategoryForm(
-                category = clickedCategory.value,
-                categoryViewModel = categoryViewModel
+                category = clickedCategory.value
             )
         }
     }
@@ -173,7 +172,10 @@ fun CategoryCard(
 }
 
 @Composable
-fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewModel) {
+fun CategoryForm(
+    category: CategoryDTO? = null,
+    categoryViewModel: CategoryViewModel = hiltViewModel()
+) {
     var textState by remember { mutableStateOf(if (category is CategoryDTO) category.category else "") }
 
     Surface(
