@@ -30,6 +30,7 @@ import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -48,7 +49,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -159,14 +159,15 @@ class MainActivity : ComponentActivity() {
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize(),
                 bottomBar = {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
-                            .background(Color.Black)
-                            .border(2.dp, Color.Gray)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary)
                             .clickable(
                                 //clickable modifier to block passthrough clicks to the bottom sheet below.
                                 interactionSource = remember { MutableInteractionSource() },
@@ -184,23 +185,16 @@ class MainActivity : ComponentActivity() {
                                     imageVector = it.icon,
                                     contentDescription = it.title,
                                     tint = if (selectedScreen == it) {
-                                        Color.White
+                                        MaterialTheme.colorScheme.onPrimary
                                     } else {
-                                        Color.Gray
+                                        MaterialTheme.colorScheme.onPrimary.copy(
+                                            alpha = 0.4f
+                                        )
                                     }
                                 )
                             }
                         }
                     }
-                },
-                topBar = {
-                    Text(
-                        "ayylmao",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(2.dp, Color.Gray),
-                        textAlign = TextAlign.Center
-                    )
                 }
             ) { innerPadding ->
                 Box(
