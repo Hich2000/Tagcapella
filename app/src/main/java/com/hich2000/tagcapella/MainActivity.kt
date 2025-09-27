@@ -45,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -185,9 +184,9 @@ class MainActivity : ComponentActivity() {
                                     imageVector = it.icon,
                                     contentDescription = it.title,
                                     tint = if (selectedScreen == it) {
-                                        MaterialTheme.colorScheme.onPrimary
+                                        MaterialTheme.colorScheme.tertiary
                                     } else {
-                                        MaterialTheme.colorScheme.onPrimary.copy(
+                                        MaterialTheme.colorScheme.tertiary.copy(
                                             alpha = 0.4f
                                         )
                                     }
@@ -296,7 +295,7 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .border(2.dp, Color.White, RectangleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape),
                         shape = RectangleShape,
                     ) {
                         Text("Tags")
@@ -307,7 +306,7 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .border(2.dp, Color.White, RectangleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape),
                         shape = RectangleShape,
                     ) {
                         Text("Categories")

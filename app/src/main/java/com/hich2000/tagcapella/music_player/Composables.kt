@@ -37,6 +37,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SmallFloatingActionButton
@@ -105,7 +106,7 @@ fun MusicControls(
             sheetShape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetContent = {
                 SongScreen(songList = songList, showQueue = true)
-            }
+            },
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -155,7 +156,7 @@ fun MusicControls(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .border(2.dp, Color.Gray)
+                        .border(2.dp, MaterialTheme.colorScheme.secondary)
                 ) {
                     //shuffle mode
                     IconButton(
@@ -331,7 +332,7 @@ fun SongScreen(
                 modifier = Modifier
                     .padding(top = 16.dp, bottom = 16.dp)
                     .fillMaxSize()
-                    .border(2.dp, Color.Gray)
+                    .border(2.dp, MaterialTheme.colorScheme.secondary)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -383,21 +384,21 @@ fun SongScreen(
                             }
                         }
                     }
-
                     tagCardComposable = { tag ->
+                        val isTagged = try {
+                            songToTag.value?.songTagList?.contains(tag) == true
+                        } catch (_: Exception) {
+                            false
+                        }
+
                         TagCard(
                             tag = tag,
                             onClick = onTagClick,
                             backgroundColor =
-                                try {
-                                    //todo don't rely on try catching here, make this nicer later on
-                                    if (songToTag.value!!.songTagList.contains(tag)) {
-                                        Color.hsl(112f, 0.5f, 0.3f)
-                                    } else {
-                                        Color.Black
-                                    }
-                                } catch (_: Exception) {
-                                    Color.Black
+                                if (isTagged) {
+                                    Color.hsl(112f, 0.5f, 0.3f)
+                                } else {
+                                    MaterialTheme.colorScheme.background
                                 },
                         )
                     }
@@ -407,19 +408,20 @@ fun SongScreen(
                 },
                 onClick = {
                     tagCardComposable = { tag ->
+                        val isTagged = try {
+                            songToTag.value?.songTagList?.contains(tag) == true
+                        } catch (_: Exception) {
+                            false
+                        }
+
                         TagCard(
                             tag = tag,
                             onClick = onTagClick,
                             backgroundColor =
-                                try {
-                                    //todo don't rely on try catching here, make this nicer later on
-                                    if (songToTag.value!!.songTagList.contains(tag)) {
-                                        Color.hsl(112f, 0.5f, 0.3f)
-                                    } else {
-                                        Color.Black
-                                    }
-                                } catch (_: Exception) {
-                                    Color.Black
+                                if (isTagged) {
+                                    Color.hsl(112f, 0.5f, 0.3f)
+                                } else {
+                                    MaterialTheme.colorScheme.background
                                 },
                         )
                     }
@@ -463,7 +465,7 @@ fun SongScreen(
                                 } else if (excludedTags.contains(tag)) {
                                     Color.Red
                                 } else {
-                                    Color.Black
+                                    MaterialTheme.colorScheme.background
                                 },
                         )
                     }
@@ -529,7 +531,7 @@ fun SongCard(
     song: Song,
     tagCallBack: (() -> Unit)? = null,
     onClick: () -> Unit = {},
-    backgroundColor: Color = Color.Black
+    backgroundColor: Color = MaterialTheme.colorScheme.primary
 ) {
     val scroll = rememberScrollState(0)
     val songTagCount by song.songTagCount
@@ -547,9 +549,9 @@ fun SongCard(
 
     Card(
         modifier = Modifier
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(Color.Gray)
+            .background(MaterialTheme.colorScheme.secondary)
             .height(50.dp),
         onClick = onClick
     ) {
@@ -557,7 +559,6 @@ fun SongCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxSize()
-                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
                 .background(backgroundColor)
                 .padding(horizontal = 8.dp)
         ) {

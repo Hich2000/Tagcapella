@@ -6,9 +6,9 @@ import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
@@ -23,8 +23,8 @@ fun TagCapellaButton(
         bottomEnd = 0.dp
     ),
     colors: ButtonColors = ButtonColors(
-        containerColor = Color.Gray,
-        contentColor = Color.Black,
+        containerColor = MaterialTheme.colorScheme.secondary,
+        contentColor = MaterialTheme.colorScheme.primary,
         disabledContainerColor = ButtonDefaults.buttonColors().disabledContainerColor,
         disabledContentColor = ButtonDefaults.buttonColors().disabledContentColor,
     ),
