@@ -103,12 +103,18 @@ fun TagScreen(
             SongList(
                 songList = songList,
                 songCard = { song ->
+                    val isTagged = try {
+                        clickedTag.value?.taggedSongList?.contains(song) == true
+                    } catch (_: Exception) {
+                        false
+                    }
+
                     SongCard(
                         song = song,
-                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
+                        backgroundColor = if (isTagged) {
                             Color.hsl(112f, 0.5f, 0.3f)
                         } else {
-                            Color.Black
+                            MaterialTheme.colorScheme.background
                         },
                         onClick = {
                             if (clickedTag.value!!.taggedSongList.contains(song)) {
@@ -187,7 +193,7 @@ fun TagList(
                             selectedCategory = null
                         },
                         modifier = Modifier
-                            .border(2.dp, Color.White, RectangleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape)
                             .padding(0.dp)
                             .width(120.dp),
                         shape = RectangleShape,
@@ -202,9 +208,8 @@ fun TagList(
                     }
 
                     categories.forEach { category ->
-
                         val buttonModifier = Modifier
-                            .border(2.dp, Color.White, RectangleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape)
                             .padding(0.dp)
                         val finalModifier = if (category.category.length < 20) {
                             buttonModifier.width(120.dp)
@@ -263,9 +268,9 @@ fun ExpandableFab(
             if (expanded) {
                 Column(
                     modifier = Modifier
-                        .border(2.dp, Color.Gray)
+                        .border(2.dp, MaterialTheme.colorScheme.secondary)
                         .width(200.dp)
-                        .background(Color.Black)
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
                     buttons.forEach { button ->
                         button()
@@ -274,10 +279,10 @@ fun ExpandableFab(
             } else {
                 FloatingActionButton(
                     onClick = onclick,
-                    containerColor = Color.Black,
+                    containerColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .padding(16.dp)
-                        .border(2.dp, Color.Gray),
+                        .border(2.dp, MaterialTheme.colorScheme.secondary),
                     shape = RectangleShape
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Expand")
@@ -294,16 +299,16 @@ fun TagCard(
     songCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
     onClick: (tag: TagDTO) -> Unit = {},
-    backgroundColor: Color = Color.Black
+    backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
 
     val taggedSongCount by tag.taggedSongCount
 
     Card(
         modifier = Modifier
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(Color.Gray)
+            .background(MaterialTheme.colorScheme.secondary)
             .height(50.dp),
         onClick = { onClick(tag) }
     ) {
@@ -312,7 +317,6 @@ fun TagCard(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
                 .background(backgroundColor)
         ) {
             Icon(
@@ -385,7 +389,7 @@ fun TagForm(
                 .padding(16.dp)
                 .border(
                     width = 2.dp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.secondary,
                     shape = RectangleShape
                 )
         ) {
@@ -428,7 +432,7 @@ fun TagForm(
                         modifier = Modifier
                             .width(dropdownWidth)
                             .border(
-                                2.dp, Color.Gray, shape = RectangleShape
+                                2.dp, MaterialTheme.colorScheme.secondary, shape = RectangleShape
                             )
                             .padding(0.dp)
                     ) {

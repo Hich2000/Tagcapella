@@ -106,7 +106,6 @@ fun CategoryList(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
                 )
                 .fillMaxSize()
-//                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
             categoryList.forEach { category ->
@@ -121,14 +120,14 @@ fun CategoryCard(
     category: CategoryDTO,
     editCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
-    backgroundColor: Color = Color.Black
+    backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
 
     Card(
         modifier = Modifier
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(Color.Gray)
+            .background(MaterialTheme.colorScheme.background)
             .height(50.dp),
     ) {
         Row(
@@ -187,7 +186,7 @@ fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewM
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .border(2.dp, Color.Gray)
+                .border(2.dp, MaterialTheme.colorScheme.secondary)
         ) {
             TextField(
                 value = textState,
