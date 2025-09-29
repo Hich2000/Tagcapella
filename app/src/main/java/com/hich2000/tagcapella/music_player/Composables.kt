@@ -587,36 +587,45 @@ fun SongCard(
             Icon(
                 Icons.Rounded.PlayArrow,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .weight(0.1f)
+                    .padding(0.dp)
+            )
+            Text(
+                mediaItem.mediaMetadata.title.toString(),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .horizontalScroll(scroll)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (tagCallBack != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .weight(0.4f)
+                        .padding(0.dp)
                 ) {
                     IconButton(
-                        onClick = tagCallBack
+                        onClick = tagCallBack,
+                        modifier = Modifier.padding(horizontal = 0.dp)
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Add tags",
-                            tint = MaterialTheme.colorScheme.secondary
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.padding(horizontal = 0.dp)
                         )
                     }
                     Text(
                         "($songTagCount)",
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(horizontal = 0.dp)
                     )
                 }
             }
-            Text(
-                mediaItem.mediaMetadata.title.toString(),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(scroll),
-                color = MaterialTheme.colorScheme.onBackground
-            )
         }
     }
 }
