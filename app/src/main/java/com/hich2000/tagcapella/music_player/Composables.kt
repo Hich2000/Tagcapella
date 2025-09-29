@@ -40,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -172,7 +173,8 @@ fun MusicControls(
                             if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
                         Icon(
                             icon,
-                            contentDescription = "Shuffle button"
+                            contentDescription = "Shuffle button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //skip previous
@@ -183,7 +185,8 @@ fun MusicControls(
                     ) {
                         Icon(
                             Icons.Default.SkipPrevious,
-                            contentDescription = "Skip to previous button"
+                            contentDescription = "Skip to previous button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //play/pause
@@ -196,7 +199,8 @@ fun MusicControls(
                         val contentDescription = if (isPlaying) "Pause" else "Play"
                         Icon(
                             icon,
-                            contentDescription = contentDescription
+                            contentDescription = contentDescription,
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //skip next
@@ -207,7 +211,8 @@ fun MusicControls(
                     ) {
                         Icon(
                             Icons.Default.SkipNext,
-                            contentDescription = "Skip to next button"
+                            contentDescription = "Skip to next button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //loop mode
@@ -234,7 +239,8 @@ fun MusicControls(
 
                         Icon(
                             icon,
-                            contentDescription = "Shuffle button"
+                            contentDescription = "Shuffle button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
 
@@ -301,7 +307,19 @@ fun PlaybackSlider(
                     (0f..1f)
                 },
                 onValueChange = onValueChange,
-                onValueChangeFinished = onValueChangeFinished
+                onValueChangeFinished = onValueChangeFinished,
+                colors = SliderColors(
+                    thumbColor = MaterialTheme.colorScheme.secondary,
+                    activeTrackColor = MaterialTheme.colorScheme.secondary,
+                    activeTickColor = Color.Unspecified,
+                    inactiveTrackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                    inactiveTickColor = Color.Unspecified,
+                    disabledThumbColor = Color.Unspecified,
+                    disabledActiveTrackColor = Color.Unspecified,
+                    disabledActiveTickColor = Color.Unspecified,
+                    disabledInactiveTrackColor = Color.Unspecified,
+                    disabledInactiveTickColor = Color.Unspecified,
+                )
             )
         }
     }
@@ -568,7 +586,8 @@ fun SongCard(
         ) {
             Icon(
                 Icons.Rounded.PlayArrow,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary
             )
 
             if (tagCallBack != null) {
@@ -581,6 +600,7 @@ fun SongCard(
                         Icon(
                             Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Add tags",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     Text(

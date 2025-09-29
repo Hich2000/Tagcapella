@@ -283,7 +283,11 @@ fun ExpandableFab(
                         .border(2.dp, MaterialTheme.colorScheme.tertiary),
                     shape = RectangleShape
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Expand")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Expand",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
                 }
             }
         }
@@ -320,7 +324,8 @@ fun TagCard(
             Icon(
                 Icons.AutoMirrored.Filled.Label,
                 contentDescription = "Label",
-                modifier = Modifier.weight(0.15f)
+                modifier = Modifier.weight(0.15f),
+                tint = MaterialTheme.colorScheme.secondary
             )
             Text(
                 tag.tag,
@@ -338,7 +343,8 @@ fun TagCard(
                 ) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete"
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -349,7 +355,8 @@ fun TagCard(
                 ) {
                     Icon(
                         Icons.Default.Edit,
-                        contentDescription = "Edit"
+                        contentDescription = "Edit",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -360,7 +367,8 @@ fun TagCard(
                 ) {
                     Icon(
                         Icons.Default.MusicNote,
-                        contentDescription = "Tag songs"
+                        contentDescription = "Tag songs",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
                 Text(

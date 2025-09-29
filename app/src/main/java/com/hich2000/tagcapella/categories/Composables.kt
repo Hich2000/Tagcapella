@@ -140,7 +140,8 @@ fun CategoryCard(
             Icon(
                 Icons.AutoMirrored.Filled.Label,
                 contentDescription = "Label",
-                modifier = Modifier.weight(0.15f)
+                modifier = Modifier.weight(0.15f),
+                tint = MaterialTheme.colorScheme.secondary
             )
             Text(
                 category.category,
@@ -158,7 +159,8 @@ fun CategoryCard(
                 ) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete"
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -169,7 +171,8 @@ fun CategoryCard(
                 ) {
                     Icon(
                         Icons.Default.Edit,
-                        contentDescription = "Edit"
+                        contentDescription = "Edit",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
