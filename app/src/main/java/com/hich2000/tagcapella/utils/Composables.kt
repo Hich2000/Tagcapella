@@ -24,7 +24,7 @@ fun TagCapellaButton(
         bottomEnd = 0.dp
     ),
     containerColor: Color = MaterialTheme.colorScheme.background,
-    contentColor: Color = Color.Unspecified,
+    contentColor: Color = MaterialTheme.colorScheme.onBackground,
     disabledContainerColor: Color = ButtonDefaults.buttonColors().disabledContainerColor,
     disabledContentColor: Color = ButtonDefaults.buttonColors().disabledContentColor,
     content: @Composable() (RowScope.() -> Unit)

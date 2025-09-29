@@ -147,7 +147,8 @@ fun CategoryCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .weight(1f)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (deleteCallback != null) {
@@ -201,7 +202,7 @@ fun CategoryForm(
                 label = { Text("Category") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 8.dp)
+                    .padding(all = 8.dp),
             )
 
             Box (

@@ -284,7 +284,10 @@ fun PlaybackSlider(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            Text("$formattedPosition/$formattedDuration")
+            Text(
+                "$formattedPosition/$formattedDuration",
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -582,6 +585,7 @@ fun SongCard(
                     }
                     Text(
                         "($songTagCount)",
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -590,7 +594,8 @@ fun SongCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(scroll)
+                    .horizontalScroll(scroll),
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

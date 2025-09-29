@@ -327,7 +327,8 @@ fun TagCard(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .weight(1f)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (deleteCallback != null) {
@@ -364,7 +365,8 @@ fun TagCard(
                 }
                 Text(
                     "($taggedSongCount)",
-                    modifier = Modifier.weight(0.3f)
+                    modifier = Modifier.weight(0.3f),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -448,7 +450,8 @@ fun TagForm(
                                 Text(
                                     text = "(no category)",
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             },
                             onClick = {
@@ -466,7 +469,8 @@ fun TagForm(
                                     Text(
                                         text = it.category,
                                         textAlign = TextAlign.Center,
-                                        modifier = Modifier.fillMaxSize()
+                                        modifier = Modifier.fillMaxSize(),
+                                        color = MaterialTheme.colorScheme.onBackground
                                     )
                                 },
                                 onClick = {
