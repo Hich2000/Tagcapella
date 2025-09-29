@@ -124,7 +124,7 @@ fun CategoryCard(
 
     Card(
         modifier = Modifier
-            .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .height(50.dp),
@@ -193,7 +193,7 @@ fun CategoryForm(
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .border(2.dp, MaterialTheme.colorScheme.secondary)
+                .border(2.dp, MaterialTheme.colorScheme.tertiary)
         ) {
             TextField(
                 value = textState,
@@ -216,7 +216,7 @@ fun CategoryForm(
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
                             .height(36.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             .padding(0.dp)
                     ) {
                         Text("add")
@@ -233,7 +233,7 @@ fun CategoryForm(
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
                             .height(36.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             .padding(0.dp)
                     ) {
                         Text("update")

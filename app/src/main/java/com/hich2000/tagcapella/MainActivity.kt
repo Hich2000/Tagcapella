@@ -162,7 +162,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .height(56.dp)
                             .background(MaterialTheme.colorScheme.primary)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             .clickable(
                                 //clickable modifier to block passthrough clicks to the bottom sheet below.
                                 interactionSource = remember { MutableInteractionSource() },
@@ -180,9 +180,9 @@ class MainActivity : ComponentActivity() {
                                     imageVector = it.icon,
                                     contentDescription = it.title,
                                     tint = if (selectedScreen == it) {
-                                        MaterialTheme.colorScheme.tertiary
+                                        MaterialTheme.colorScheme.secondary
                                     } else {
-                                        MaterialTheme.colorScheme.tertiary.copy(
+                                        MaterialTheme.colorScheme.secondary.copy(
                                             alpha = 0.4f
                                         )
                                     }
@@ -284,8 +284,7 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
                         shape = RectangleShape,
                     ) {
                         Text(
@@ -298,10 +297,12 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
                         shape = RectangleShape,
                     ) {
-                        Text("Categories")
+                        Text(
+                            "Categories"
+                        )
                     }
                 }
 
@@ -316,7 +317,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .border(2.dp, MaterialTheme.colorScheme.secondary)
+                                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                                 ) {
                                     Text("New Tag")
                                 }
@@ -326,7 +327,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .border(2.dp, MaterialTheme.colorScheme.secondary)
+                                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                                 ) {
                                     Text("New Category")
                                 }

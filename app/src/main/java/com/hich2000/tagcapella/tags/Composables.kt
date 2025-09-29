@@ -191,7 +191,7 @@ fun TagList(
                             selectedCategory = null
                         },
                         modifier = Modifier
-                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
                             .padding(0.dp)
                             .width(120.dp),
                         shape = RectangleShape,
@@ -201,13 +201,13 @@ fun TagList(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp)
+                                .padding(horizontal = 8.dp),
                         )
                     }
 
                     categories.forEach { category ->
                         val buttonModifier = Modifier
-                            .border(2.dp, MaterialTheme.colorScheme.secondary, RectangleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
                             .padding(0.dp)
                         val finalModifier = if (category.category.length < 20) {
                             buttonModifier.width(120.dp)
@@ -227,7 +227,7 @@ fun TagList(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = 8.dp),
                             )
                         }
                     }
@@ -266,7 +266,7 @@ fun ExpandableFab(
             if (expanded) {
                 Column(
                     modifier = Modifier
-                        .border(2.dp, MaterialTheme.colorScheme.secondary)
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                         .width(200.dp)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
@@ -280,7 +280,7 @@ fun ExpandableFab(
                     containerColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .padding(16.dp)
-                        .border(2.dp, MaterialTheme.colorScheme.secondary),
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary),
                     shape = RectangleShape
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Expand")
@@ -304,9 +304,9 @@ fun TagCard(
 
     Card(
         modifier = Modifier
-            .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondary)
+            .background(MaterialTheme.colorScheme.tertiary)
             .height(50.dp),
         onClick = { onClick(tag) }
     ) {
@@ -396,7 +396,7 @@ fun TagForm(
                 .padding(16.dp)
                 .border(
                     width = 2.dp,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     shape = RectangleShape
                 )
         ) {
@@ -439,7 +439,7 @@ fun TagForm(
                         modifier = Modifier
                             .width(dropdownWidth)
                             .border(
-                                2.dp, MaterialTheme.colorScheme.secondary, shape = RectangleShape
+                                2.dp, MaterialTheme.colorScheme.tertiary, shape = RectangleShape
                             )
                             .padding(0.dp)
                     ) {
@@ -503,7 +503,7 @@ fun TagForm(
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
                             .height(36.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             .padding(0.dp)
                     ) {
                         Text("add")
@@ -521,7 +521,7 @@ fun TagForm(
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
                             .height(36.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             .padding(0.dp)
                     ) {
                         Text("update")

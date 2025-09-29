@@ -156,7 +156,7 @@ fun MusicControls(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .border(2.dp, MaterialTheme.colorScheme.secondary)
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                 ) {
                     //shuffle mode
                     IconButton(
@@ -332,7 +332,7 @@ fun SongScreen(
                 modifier = Modifier
                     .padding(top = 16.dp, bottom = 16.dp)
                     .fillMaxSize()
-                    .border(2.dp, MaterialTheme.colorScheme.secondary)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -358,7 +358,7 @@ fun SongScreen(
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
                             .height(36.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.secondary)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
                     ) {
                         Text(text = "Save")
                     }
@@ -550,9 +550,9 @@ fun SongCard(
 
     Card(
         modifier = Modifier
-            .border(2.dp, MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondary)
+            .background(MaterialTheme.colorScheme.tertiary)
             .height(50.dp),
         onClick = onClick
     ) {

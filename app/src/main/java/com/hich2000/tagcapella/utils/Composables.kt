@@ -9,6 +9,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
@@ -22,19 +23,22 @@ fun TagCapellaButton(
         bottomStart = 0.dp,
         bottomEnd = 0.dp
     ),
-    colors: ButtonColors = ButtonColors(
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.secondary,
-        disabledContainerColor = ButtonDefaults.buttonColors().disabledContainerColor,
-        disabledContentColor = ButtonDefaults.buttonColors().disabledContentColor,
-    ),
+    containerColor: Color = MaterialTheme.colorScheme.background,
+    contentColor: Color = Color.Unspecified,
+    disabledContainerColor: Color = ButtonDefaults.buttonColors().disabledContainerColor,
+    disabledContentColor: Color = ButtonDefaults.buttonColors().disabledContentColor,
     content: @Composable() (RowScope.() -> Unit)
 ) {
     Button(
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),
         shape = shape,
-        colors = colors,
+        colors = ButtonColors(
+            containerColor,
+            contentColor,
+            disabledContainerColor,
+            disabledContentColor,
+        ),
         modifier = modifier
     ) {
         content()
