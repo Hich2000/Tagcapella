@@ -41,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -142,7 +143,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun TagcapellaApp() {
-        var selectedScreen by remember { mutableStateOf(NavItems.Player) }
+        var selectedScreen by rememberSaveable { mutableStateOf(NavItems.Player) }
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
         val context = LocalContext.current
 
@@ -236,7 +237,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     fun TagCategoryScreen() {
-        val selectedScreen = remember { mutableIntStateOf(0) }
+        val selectedScreen = rememberSaveable { mutableIntStateOf(0) }
         val showTagDialog = remember { mutableStateOf(false) }
         val showCategoryDialog = remember { mutableStateOf(false) }
         var fabExpanded by remember { mutableStateOf(false) }

@@ -213,6 +213,7 @@ fun TagList(
                             buttonModifier.width(120.dp)
                         } else {
                             buttonModifier.wrapContentWidth()
+                            buttonModifier.weight(1f)
                         }
 
                         TagCapellaButton(
