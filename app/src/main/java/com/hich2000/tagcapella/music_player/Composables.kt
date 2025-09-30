@@ -37,8 +37,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -105,7 +107,7 @@ fun MusicControls(
             sheetShape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetContent = {
                 SongScreen(songList = songList, showQueue = true)
-            }
+            },
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -155,7 +157,7 @@ fun MusicControls(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .border(2.dp, Color.Gray)
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                 ) {
                     //shuffle mode
                     IconButton(
@@ -171,7 +173,8 @@ fun MusicControls(
                             if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
                         Icon(
                             icon,
-                            contentDescription = "Shuffle button"
+                            contentDescription = "Shuffle button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //skip previous
@@ -182,7 +185,8 @@ fun MusicControls(
                     ) {
                         Icon(
                             Icons.Default.SkipPrevious,
-                            contentDescription = "Skip to previous button"
+                            contentDescription = "Skip to previous button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //play/pause
@@ -195,7 +199,8 @@ fun MusicControls(
                         val contentDescription = if (isPlaying) "Pause" else "Play"
                         Icon(
                             icon,
-                            contentDescription = contentDescription
+                            contentDescription = contentDescription,
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //skip next
@@ -206,7 +211,8 @@ fun MusicControls(
                     ) {
                         Icon(
                             Icons.Default.SkipNext,
-                            contentDescription = "Skip to next button"
+                            contentDescription = "Skip to next button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     //loop mode
@@ -233,7 +239,8 @@ fun MusicControls(
 
                         Icon(
                             icon,
-                            contentDescription = "Shuffle button"
+                            contentDescription = "Shuffle button",
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
 
@@ -283,7 +290,10 @@ fun PlaybackSlider(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            Text("$formattedPosition/$formattedDuration")
+            Text(
+                "$formattedPosition/$formattedDuration",
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -297,7 +307,19 @@ fun PlaybackSlider(
                     (0f..1f)
                 },
                 onValueChange = onValueChange,
-                onValueChangeFinished = onValueChangeFinished
+                onValueChangeFinished = onValueChangeFinished,
+                colors = SliderColors(
+                    thumbColor = MaterialTheme.colorScheme.secondary,
+                    activeTrackColor = MaterialTheme.colorScheme.secondary,
+                    activeTickColor = Color.Unspecified,
+                    inactiveTrackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
+                    inactiveTickColor = Color.Unspecified,
+                    disabledThumbColor = Color.Unspecified,
+                    disabledActiveTrackColor = Color.Unspecified,
+                    disabledActiveTickColor = Color.Unspecified,
+                    disabledInactiveTrackColor = Color.Unspecified,
+                    disabledInactiveTickColor = Color.Unspecified,
+                )
             )
         }
     }
@@ -331,7 +353,7 @@ fun SongScreen(
                 modifier = Modifier
                     .padding(top = 16.dp, bottom = 16.dp)
                     .fillMaxSize()
-                    .border(2.dp, Color.Gray)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary)
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -357,6 +379,7 @@ fun SongScreen(
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
                             .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
                     ) {
                         Text(text = "Save")
                     }
@@ -383,21 +406,21 @@ fun SongScreen(
                             }
                         }
                     }
-
                     tagCardComposable = { tag ->
+                        val isTagged = try {
+                            songToTag.value?.songTagList?.contains(tag) == true
+                        } catch (_: Exception) {
+                            false
+                        }
+
                         TagCard(
                             tag = tag,
                             onClick = onTagClick,
                             backgroundColor =
-                                try {
-                                    //todo don't rely on try catching here, make this nicer later on
-                                    if (songToTag.value!!.songTagList.contains(tag)) {
-                                        Color.hsl(112f, 0.5f, 0.3f)
-                                    } else {
-                                        Color.Black
-                                    }
-                                } catch (_: Exception) {
-                                    Color.Black
+                                if (isTagged) {
+                                    Color.hsl(112f, 0.5f, 0.3f)
+                                } else {
+                                    MaterialTheme.colorScheme.background
                                 },
                         )
                     }
@@ -407,19 +430,20 @@ fun SongScreen(
                 },
                 onClick = {
                     tagCardComposable = { tag ->
+                        val isTagged = try {
+                            songToTag.value?.songTagList?.contains(tag) == true
+                        } catch (_: Exception) {
+                            false
+                        }
+
                         TagCard(
                             tag = tag,
                             onClick = onTagClick,
                             backgroundColor =
-                                try {
-                                    //todo don't rely on try catching here, make this nicer later on
-                                    if (songToTag.value!!.songTagList.contains(tag)) {
-                                        Color.hsl(112f, 0.5f, 0.3f)
-                                    } else {
-                                        Color.Black
-                                    }
-                                } catch (_: Exception) {
-                                    Color.Black
+                                if (isTagged) {
+                                    Color.hsl(112f, 0.5f, 0.3f)
+                                } else {
+                                    MaterialTheme.colorScheme.background
                                 },
                         )
                     }
@@ -463,7 +487,7 @@ fun SongScreen(
                                 } else if (excludedTags.contains(tag)) {
                                     Color.Red
                                 } else {
-                                    Color.Black
+                                    MaterialTheme.colorScheme.background
                                 },
                         )
                     }
@@ -529,7 +553,7 @@ fun SongCard(
     song: Song,
     tagCallBack: (() -> Unit)? = null,
     onClick: () -> Unit = {},
-    backgroundColor: Color = Color.Black
+    backgroundColor: Color = MaterialTheme.colorScheme.primary
 ) {
     val scroll = rememberScrollState(0)
     val songTagCount by song.songTagCount
@@ -547,9 +571,9 @@ fun SongCard(
 
     Card(
         modifier = Modifier
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(Color.Gray)
+            .background(MaterialTheme.colorScheme.tertiary)
             .height(50.dp),
         onClick = onClick
     ) {
@@ -557,39 +581,51 @@ fun SongCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxSize()
-                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
                 .background(backgroundColor)
                 .padding(horizontal = 8.dp)
         ) {
             Icon(
                 Icons.Rounded.PlayArrow,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier
+                    .weight(0.1f)
+                    .padding(0.dp)
+            )
+            Text(
+                mediaItem.mediaMetadata.title.toString(),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .horizontalScroll(scroll)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (tagCallBack != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .weight(0.4f)
+                        .padding(0.dp)
                 ) {
                     IconButton(
-                        onClick = tagCallBack
+                        onClick = tagCallBack,
+                        modifier = Modifier.padding(horizontal = 0.dp)
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.Label,
                             contentDescription = "Add tags",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.padding(horizontal = 0.dp)
                         )
                     }
                     Text(
                         "($songTagCount)",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(horizontal = 0.dp)
                     )
                 }
             }
-            Text(
-                mediaItem.mediaMetadata.title.toString(),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(scroll)
-            )
         }
     }
 }

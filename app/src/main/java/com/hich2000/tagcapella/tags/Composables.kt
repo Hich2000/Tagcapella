@@ -10,7 +10,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -87,8 +86,7 @@ fun TagScreen(
             },
         ) {
             TagForm(
-                tag = clickedTag.value,
-                tagViewModel = tagViewModel
+                tag = clickedTag.value
             )
         }
     }
@@ -103,12 +101,18 @@ fun TagScreen(
             SongList(
                 songList = songList,
                 songCard = { song ->
+                    val isTagged = try {
+                        clickedTag.value?.taggedSongList?.contains(song) == true
+                    } catch (_: Exception) {
+                        false
+                    }
+
                     SongCard(
                         song = song,
-                        backgroundColor = if (clickedTag.value!!.taggedSongList.contains(song)) {
+                        backgroundColor = if (isTagged) {
                             Color.hsl(112f, 0.5f, 0.3f)
                         } else {
-                            Color.Black
+                            MaterialTheme.colorScheme.background
                         },
                         onClick = {
                             if (clickedTag.value!!.taggedSongList.contains(song)) {
@@ -187,7 +191,7 @@ fun TagList(
                             selectedCategory = null
                         },
                         modifier = Modifier
-                            .border(2.dp, Color.White, RectangleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
                             .padding(0.dp)
                             .width(120.dp),
                         shape = RectangleShape,
@@ -197,19 +201,19 @@ fun TagList(
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp)
+                                .padding(horizontal = 8.dp),
                         )
                     }
 
                     categories.forEach { category ->
-
                         val buttonModifier = Modifier
-                            .border(2.dp, Color.White, RectangleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
                             .padding(0.dp)
                         val finalModifier = if (category.category.length < 20) {
                             buttonModifier.width(120.dp)
                         } else {
                             buttonModifier.wrapContentWidth()
+                            buttonModifier.weight(1f)
                         }
 
                         TagCapellaButton(
@@ -224,7 +228,7 @@ fun TagList(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
+                                    .padding(horizontal = 8.dp),
                             )
                         }
                     }
@@ -263,9 +267,9 @@ fun ExpandableFab(
             if (expanded) {
                 Column(
                     modifier = Modifier
-                        .border(2.dp, Color.Gray)
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                         .width(200.dp)
-                        .background(Color.Black)
+                        .background(MaterialTheme.colorScheme.background)
                 ) {
                     buttons.forEach { button ->
                         button()
@@ -274,13 +278,17 @@ fun ExpandableFab(
             } else {
                 FloatingActionButton(
                     onClick = onclick,
-                    containerColor = Color.Black,
+                    containerColor = MaterialTheme.colorScheme.background,
                     modifier = Modifier
                         .padding(16.dp)
-                        .border(2.dp, Color.Gray),
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary),
                     shape = RectangleShape
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Expand")
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Expand",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
                 }
             }
         }
@@ -294,67 +302,81 @@ fun TagCard(
     songCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
     onClick: (tag: TagDTO) -> Unit = {},
-    backgroundColor: Color = Color.Black
+    backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
 
     val taggedSongCount by tag.taggedSongCount
 
     Card(
         modifier = Modifier
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(Color.Gray)
+            .background(MaterialTheme.colorScheme.tertiary)
             .height(50.dp),
         onClick = { onClick(tag) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .border(2.dp, Color.Red, shape = RoundedCornerShape(8.dp))
                 .background(backgroundColor)
+                .padding(horizontal = 8.dp)
         ) {
             Icon(
-                Icons.AutoMirrored.Filled.Label, contentDescription = "Label"
+                Icons.AutoMirrored.Filled.Label,
+                contentDescription = "Label",
+                modifier = Modifier.weight(0.15f),
+                tint = MaterialTheme.colorScheme.secondary
             )
             Text(
                 tag.tag,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (deleteCallback != null) {
                 IconButton(
-                    onClick = deleteCallback
+                    onClick = deleteCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete"
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
             if (editCallback != null) {
                 IconButton(
-                    onClick = editCallback
+                    onClick = editCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Edit,
-                        contentDescription = "Edit"
+                        contentDescription = "Edit",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
             if (songCallback != null) {
                 IconButton(
-                    onClick = songCallback
+                    onClick = songCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.MusicNote,
-                        contentDescription = "Tag songs"
+                        contentDescription = "Tag songs",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
-                Text("($taggedSongCount)")
+                Text(
+                    "($taggedSongCount)",
+                    modifier = Modifier.weight(0.3f),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
         }
     }
@@ -365,7 +387,7 @@ fun TagCard(
 @Composable
 fun TagForm(
     tag: TagDTO? = null,
-    tagViewModel: TagViewModel,
+    tagViewModel: TagViewModel = hiltViewModel(),
     categoryViewModel: CategoryViewModel = hiltViewModel()
 ) {
     var textState by remember { mutableStateOf(if (tag is TagDTO) tag.tag else "") }
@@ -385,7 +407,7 @@ fun TagForm(
                 .padding(16.dp)
                 .border(
                     width = 2.dp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.tertiary,
                     shape = RectangleShape
                 )
         ) {
@@ -428,7 +450,7 @@ fun TagForm(
                         modifier = Modifier
                             .width(dropdownWidth)
                             .border(
-                                2.dp, Color.Gray, shape = RectangleShape
+                                2.dp, MaterialTheme.colorScheme.tertiary, shape = RectangleShape
                             )
                             .padding(0.dp)
                     ) {
@@ -437,7 +459,8 @@ fun TagForm(
                                 Text(
                                     text = "(no category)",
                                     textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             },
                             onClick = {
@@ -455,7 +478,8 @@ fun TagForm(
                                     Text(
                                         text = it.category,
                                         textAlign = TextAlign.Center,
-                                        modifier = Modifier.fillMaxSize()
+                                        modifier = Modifier.fillMaxSize(),
+                                        color = MaterialTheme.colorScheme.onBackground
                                     )
                                 },
                                 onClick = {
@@ -480,33 +504,41 @@ fun TagForm(
                     .padding(all = 8.dp)
             )
 
-            if (tag === null) {
-                TagCapellaButton(
-                    onClick = {
-                        tagViewModel.insertTag(textState, dropdownState)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("add")
-                }
-            } else {
-                TagCapellaButton(
-                    onClick = {
-                        tagViewModel.updateTag(
-                            id = tag.id,
-                            tag = textState,
-                            category = dropdownState
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("update")
+            Box (
+                modifier = Modifier.padding(0.dp)
+            ) {
+                if (tag === null) {
+                    TagCapellaButton(
+                        onClick = {
+                            tagViewModel.insertTag(textState, dropdownState)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                            .padding(0.dp)
+                    ) {
+                        Text("add")
+                    }
+                } else {
+                    TagCapellaButton(
+                        onClick = {
+                            tagViewModel.updateTag(
+                                id = tag.id,
+                                tag = textState,
+                                category = dropdownState
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                            .padding(0.dp)
+                    ) {
+                        Text("update")
+                    }
                 }
             }
         }

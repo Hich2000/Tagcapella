@@ -62,8 +62,7 @@ fun CategoryScreen(
             },
         ) {
             CategoryForm(
-                category = clickedCategory.value,
-                categoryViewModel = categoryViewModel
+                category = clickedCategory.value
             )
         }
     }
@@ -106,7 +105,6 @@ fun CategoryList(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
                 )
                 .fillMaxSize()
-//                .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
                 .verticalScroll(columnScroll)
         ) {
             categoryList.forEach { category ->
@@ -121,14 +119,14 @@ fun CategoryCard(
     category: CategoryDTO,
     editCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
-    backgroundColor: Color = Color.Black
+    backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
 
     Card(
         modifier = Modifier
-            .border(2.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
+            .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .background(Color.Gray)
+            .background(MaterialTheme.colorScheme.background)
             .height(50.dp),
     ) {
         Row(
@@ -140,32 +138,41 @@ fun CategoryCard(
                 .background(backgroundColor)
         ) {
             Icon(
-                Icons.AutoMirrored.Filled.Label, contentDescription = "Label"
+                Icons.AutoMirrored.Filled.Label,
+                contentDescription = "Label",
+                modifier = Modifier.weight(0.15f),
+                tint = MaterialTheme.colorScheme.secondary
             )
             Text(
                 category.category,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .weight(1f),
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (deleteCallback != null) {
                 IconButton(
-                    onClick = deleteCallback
+                    onClick = deleteCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete"
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
             if (editCallback != null) {
                 IconButton(
-                    onClick = editCallback
+                    onClick = editCallback,
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Edit,
-                        contentDescription = "Edit"
+                        contentDescription = "Edit",
+                        tint = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -174,7 +181,10 @@ fun CategoryCard(
 }
 
 @Composable
-fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewModel) {
+fun CategoryForm(
+    category: CategoryDTO? = null,
+    categoryViewModel: CategoryViewModel = hiltViewModel()
+) {
     var textState by remember { mutableStateOf(if (category is CategoryDTO) category.category else "") }
 
     Surface(
@@ -187,7 +197,7 @@ fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewM
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .border(2.dp, Color.Gray)
+                .border(2.dp, MaterialTheme.colorScheme.tertiary)
         ) {
             TextField(
                 value = textState,
@@ -195,35 +205,43 @@ fun CategoryForm(category: CategoryDTO? = null, categoryViewModel: CategoryViewM
                 label = { Text("Category") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(all = 8.dp)
+                    .padding(all = 8.dp),
             )
 
-            if (category === null) {
-                TagCapellaButton(
-                    onClick = {
-                        categoryViewModel.insertCategory(textState)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("add")
-                }
-            } else {
-                TagCapellaButton(
-                    onClick = {
-                        categoryViewModel.updateCategory(
-                            id = category.id,
-                            category = textState
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .height(36.dp)
-                ) {
-                    Text("update")
+            Box (
+                modifier = Modifier.padding(0.dp)
+            ) {
+                if (category === null) {
+                    TagCapellaButton(
+                        onClick = {
+                            categoryViewModel.insertCategory(textState)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                            .padding(0.dp)
+                    ) {
+                        Text("add")
+                    }
+                } else {
+                    TagCapellaButton(
+                        onClick = {
+                            categoryViewModel.updateCategory(
+                                id = category.id,
+                                category = textState
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .height(36.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                            .padding(0.dp)
+                    ) {
+                        Text("update")
+                    }
                 }
             }
         }

@@ -30,10 +30,10 @@ import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,27 +41,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
-import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
 import com.hich2000.tagcapella.tags.TagForm
 import com.hich2000.tagcapella.tags.TagScreen
-import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.NavItems
 import com.hich2000.tagcapella.utils.TagCapellaButton
@@ -147,7 +143,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun TagcapellaApp() {
-        var selectedScreen by remember { mutableStateOf(NavItems.Player) }
+        var selectedScreen by rememberSaveable { mutableStateOf(NavItems.Player) }
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
         val context = LocalContext.current
 
@@ -159,14 +155,21 @@ class MainActivity : ComponentActivity() {
 
         if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
             Scaffold(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize(),
                 bottomBar = {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
-                            .background(Color.Black)
-                            .border(2.dp, Color.Gray),
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                            .clickable(
+                                //clickable modifier to block passthrough clicks to the bottom sheet below.
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = {}
+                            ),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -178,23 +181,16 @@ class MainActivity : ComponentActivity() {
                                     imageVector = it.icon,
                                     contentDescription = it.title,
                                     tint = if (selectedScreen == it) {
-                                        Color.White
+                                        MaterialTheme.colorScheme.secondary
                                     } else {
-                                        Color.Gray
+                                        MaterialTheme.colorScheme.secondary.copy(
+                                            alpha = 0.4f
+                                        )
                                     }
                                 )
                             }
                         }
                     }
-                },
-                topBar = {
-                    Text(
-                        "ayylmao",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(2.dp, Color.Gray),
-                        textAlign = TextAlign.Center
-                    )
                 }
             ) { innerPadding ->
                 Box(
@@ -240,11 +236,8 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
-    fun TagCategoryScreen(
-        tagViewModel: TagViewModel = hiltViewModel(),
-        categoryViewModel: CategoryViewModel = hiltViewModel()
-    ) {
-        val selectedScreen = remember { mutableIntStateOf(0) }
+    fun TagCategoryScreen() {
+        val selectedScreen = rememberSaveable { mutableIntStateOf(0) }
         val showTagDialog = remember { mutableStateOf(false) }
         val showCategoryDialog = remember { mutableStateOf(false) }
         var fabExpanded by remember { mutableStateOf(false) }
@@ -255,9 +248,7 @@ class MainActivity : ComponentActivity() {
                     showTagDialog.value = false
                 },
             ) {
-                TagForm(
-                    tagViewModel = tagViewModel
-                )
+                TagForm()
             }
         }
 
@@ -267,9 +258,7 @@ class MainActivity : ComponentActivity() {
                     showCategoryDialog.value = false
                 },
             ) {
-                CategoryForm(
-                    categoryViewModel = categoryViewModel
-                )
+                CategoryForm()
             }
         }
 
@@ -296,10 +285,12 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .border(2.dp, Color.White, RectangleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
                         shape = RectangleShape,
                     ) {
-                        Text("Tags")
+                        Text(
+                            "Tags"
+                        )
                     }
                     TagCapellaButton(
                         onClick = {
@@ -307,10 +298,12 @@ class MainActivity : ComponentActivity() {
                         },
                         modifier = Modifier
                             .weight(1f)
-                            .border(2.dp, Color.White, RectangleShape),
+                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
                         shape = RectangleShape,
                     ) {
-                        Text("Categories")
+                        Text(
+                            "Categories"
+                        )
                     }
                 }
 
@@ -319,19 +312,23 @@ class MainActivity : ComponentActivity() {
                     floatingActionButton = {
                         ExpandableFab(
                             buttons = listOf {
-                                TextButton(
-                                    modifier = Modifier.fillMaxWidth(),
+                                TagCapellaButton(
                                     onClick = {
                                         showTagDialog.value = true
-                                    }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                                 ) {
                                     Text("New Tag")
                                 }
-                                TextButton(
-                                    modifier = Modifier.fillMaxWidth(),
+                                TagCapellaButton(
                                     onClick = {
                                         showCategoryDialog.value = true
-                                    }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
                                 ) {
                                     Text("New Category")
                                 }
