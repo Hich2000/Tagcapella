@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
 import com.hich2000.tagcapella.music_player.MusicControls
@@ -207,6 +208,7 @@ class MainActivity : ComponentActivity() {
                         NavItems.SongLibrary -> SongScreen(songList = songList)
                         NavItems.Player -> MusicControls()
                         NavItems.Tags -> TagCategoryScreen()
+                        NavItems.Settings -> SettingsScreen()
                     }
                 }
             }

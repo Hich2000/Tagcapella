@@ -3,6 +3,7 @@ package com.hich2000.tagcapella.utils
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -23,5 +24,9 @@ enum class NavItems(
     Tags (
         title = "Tags",
         icon = Icons.AutoMirrored.Filled.Label
+    ),
+    Settings (
+        title = "Settings",
+        icon = Icons.Default.MoreVert
     )
 }
