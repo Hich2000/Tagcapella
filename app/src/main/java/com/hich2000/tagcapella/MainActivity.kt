@@ -50,6 +50,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.categories.CategoryForm
@@ -146,7 +150,6 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TagcapellaApp() {
         val navController = rememberNavController()
-        var selectedScreen by rememberSaveable { mutableStateOf(NavItems.Player) }
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
         val context = LocalContext.current
 
@@ -160,41 +163,7 @@ class MainActivity : ComponentActivity() {
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize(),
-                bottomBar = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
-                            .clickable(
-                                //clickable modifier to block passthrough clicks to the bottom sheet below.
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {}
-                            ),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        NavItems.entries.forEach {
-                            IconButton(
-                                onClick = { selectedScreen = it },
-                            ) {
-                                Icon(
-                                    imageVector = it.icon,
-                                    contentDescription = it.title,
-                                    tint = if (selectedScreen == it) {
-                                        MaterialTheme.colorScheme.secondary
-                                    } else {
-                                        MaterialTheme.colorScheme.secondary.copy(
-                                            alpha = 0.4f
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
+                bottomBar = {BottomNavBar(navController)}
             ) { innerPadding ->
                 Box(
                     modifier = Modifier
@@ -206,11 +175,23 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     val songList by songViewModel.songList.collectAsState()
-                    when (selectedScreen) {
-                        NavItems.SongLibrary -> SongScreen(songList = songList)
-                        NavItems.Player -> MusicControls()
-                        NavItems.Tags -> TagCategoryScreen()
-                        NavItems.Settings -> SettingsScreen()
+                    NavHost(
+                        navController = navController,
+                        startDestination = NavItems.Player.title,
+
+                    ) {
+                        composable(NavItems.Player.title) {
+                            MusicControls()
+                        }
+                        composable(NavItems.SongLibrary.title) {
+                            SongScreen(songList = songList)
+                        }
+                        composable(NavItems.Tags.title) {
+                            TagCategoryScreen()
+                        }
+                        composable(NavItems.Settings.title) {
+                            SettingsScreen()
+                        }
                     }
                 }
             }
@@ -232,6 +213,56 @@ class MainActivity : ComponentActivity() {
                             Text("Media permissions are necessary to use this application")
                         }
                     }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun BottomNavBar(navController: NavController) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                .clickable(
+                    //clickable modifier to block passthrough clicks to the bottom sheet below.
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {}
+                ),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavItems.entries.forEach {
+                IconButton(
+                    onClick = {
+                        if (currentRoute != it.title) {
+                            navController.navigate(it.title) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    },
+                ) {
+                    Icon(
+                        imageVector = it.icon,
+                        contentDescription = it.title,
+                        tint = if (currentRoute == it.title) {
+                            MaterialTheme.colorScheme.secondary
+                        } else {
+                            MaterialTheme.colorScheme.secondary.copy(
+                                alpha = 0.4f
+                            )
+                        }
+                    )
                 }
             }
         }
