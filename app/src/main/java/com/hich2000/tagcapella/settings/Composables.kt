@@ -10,17 +10,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hich2000.tagcapella.utils.LocalNavController
 import com.hich2000.tagcapella.utils.TagCapellaButton
 
 @Composable
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
+    val navController = LocalNavController.current
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TagCapellaButton(
-            onClick = {},
+            onClick = {
+//                now I can use the navController like this
+//                navController.navigate(NavItems.Player.title)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .border(2.dp, MaterialTheme.colorScheme.tertiary)

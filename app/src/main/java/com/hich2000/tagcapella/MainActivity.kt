@@ -35,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,16 +56,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
+import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
 import com.hich2000.tagcapella.tags.TagForm
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
+import com.hich2000.tagcapella.utils.LocalNavController
 import com.hich2000.tagcapella.utils.NavItems
 import com.hich2000.tagcapella.utils.TagCapellaButton
 import com.hich2000.tagcapella.utils.ToastEventBus
@@ -175,22 +177,24 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                 ) {
                     val songList by songViewModel.songList.collectAsState()
-                    NavHost(
-                        navController = navController,
-                        startDestination = NavItems.Player.title,
+                    CompositionLocalProvider(LocalNavController provides navController) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = NavItems.Player.title,
 
-                    ) {
-                        composable(NavItems.Player.title) {
-                            MusicControls()
-                        }
-                        composable(NavItems.SongLibrary.title) {
-                            SongScreen(songList = songList)
-                        }
-                        composable(NavItems.Tags.title) {
-                            TagCategoryScreen()
-                        }
-                        composable(NavItems.Settings.title) {
-                            SettingsScreen()
+                            ) {
+                            composable(NavItems.Player.title) {
+                                MusicControls()
+                            }
+                            composable(NavItems.SongLibrary.title) {
+                                SongScreen(songList = songList)
+                            }
+                            composable(NavItems.Tags.title) {
+                                TagCategoryScreen()
+                            }
+                            composable(NavItems.Settings.title) {
+                                SettingsScreen()
+                            }
                         }
                     }
                 }
