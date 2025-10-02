@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.compose.rememberNavController
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
@@ -144,6 +145,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun TagcapellaApp() {
+        val navController = rememberNavController()
         var selectedScreen by rememberSaveable { mutableStateOf(NavItems.Player) }
         val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
         val context = LocalContext.current
