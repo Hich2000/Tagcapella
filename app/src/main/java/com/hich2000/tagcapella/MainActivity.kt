@@ -68,7 +68,7 @@ import com.hich2000.tagcapella.tags.TagForm
 import com.hich2000.tagcapella.tags.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.LocalNavController
-import com.hich2000.tagcapella.utils.NavItems
+import com.hich2000.tagcapella.utils.NavItem
 import com.hich2000.tagcapella.utils.TagCapellaButton
 import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.AndroidEntryPoint
@@ -181,23 +181,23 @@ class MainActivity : ComponentActivity() {
                     CompositionLocalProvider(LocalNavController provides navController) {
                         NavHost(
                             navController = navController,
-                            startDestination = NavItems.Player.title,
+                            startDestination = NavItem.Player.title,
                         ) {
-                            composable(NavItems.Player.title) {
+                            composable(NavItem.Player.title) {
                                 MusicControls()
                             }
-                            composable(NavItems.SongLibrary.title) {
+                            composable(NavItem.SongLibrary.title) {
                                 SongScreen(songList = songList)
                             }
-                            composable(NavItems.Tags.title) {
+                            composable(NavItem.Tags.title) {
                                 TagCategoryScreen()
                             }
 
                             navigation(
-                                startDestination = NavItems.Settings.Main.title,
-                                route = NavItems.Settings.title
+                                startDestination = NavItem.Settings.Main.title,
+                                route = NavItem.Settings.title
                             ) {
-                                composable(NavItems.Settings.Main.title) {
+                                composable(NavItem.Settings.Main.title) {
                                     SettingsScreen()
                                 }
                             }
@@ -248,7 +248,7 @@ class MainActivity : ComponentActivity() {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NavItems.navItems.forEach {
+            NavItem.navItems.forEach {
                 IconButton(
                     onClick = {
                         if (currentRoute != it.title) {

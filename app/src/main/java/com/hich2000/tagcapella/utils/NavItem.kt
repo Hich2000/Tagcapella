@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.ui.graphics.vector.ImageVector
 
 // Bottom Navigation Screen Enum (To track selected screen)
-sealed class NavItems(
+sealed class NavItem(
     val title: String,
     val icon: ImageVector? = null,
     val navBar: Boolean = false
@@ -21,38 +21,38 @@ sealed class NavItems(
     }
 
     companion object {
-        var navItems = listOf<NavItems>()
+        var navItems = listOf<NavItem>()
             private set
     }
 
-    object Player : NavItems(
+    object Player : NavItem(
         title = "Player",
         icon = Icons.Default.MusicNote,
         navBar = true
     )
 
-    object SongLibrary : NavItems(
+    object SongLibrary : NavItem(
         title = "Song Library",
         icon = Icons.Default.Folder,
         navBar = true
     )
 
-    object Tags : NavItems(
+    object Tags : NavItem(
         title = "Tags",
         icon = Icons.AutoMirrored.Filled.Label,
         navBar = true
     )
 
-    object Settings : NavItems(
+    object Settings : NavItem(
         title = "Settings",
         icon = Icons.Default.MoreVert,
         navBar = true
     ) {
         //because these ones are nested they will not show up in the navbar
-        object Main: NavItems(
+        object Main: NavItem(
             title = "${title}/Main"
         )
-        object Folders : NavItems(
+        object Folders : NavItem(
             title = "${title}/Folders"
         )
     }
