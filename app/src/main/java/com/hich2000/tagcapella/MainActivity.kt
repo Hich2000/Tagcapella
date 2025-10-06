@@ -241,7 +241,7 @@ class MainActivity : ComponentActivity() {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NavItems.entries.forEach {
+            NavItems.navItems.forEach {
                 IconButton(
                     onClick = {
                         if (currentRoute != it.title) {

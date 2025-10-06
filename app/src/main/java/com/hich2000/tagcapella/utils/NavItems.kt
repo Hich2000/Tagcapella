@@ -8,24 +8,36 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.ui.graphics.vector.ImageVector
 
 // Bottom Navigation Screen Enum (To track selected screen)
-enum class NavItems(
+sealed class NavItems(
     val title: String,
     val icon: ImageVector
 ) {
 
-    Player(
+    init {
+        navItems += this
+    }
+
+    companion object {
+        var navItems = listOf<NavItems>()
+            private set
+    }
+
+    object Player : NavItems(
         title = "Player",
         icon = Icons.Default.MusicNote
-    ),
-    SongLibrary (
+    )
+
+    object SongLibrary : NavItems(
         title = "Song Library",
         icon = Icons.Default.Folder
-    ),
-    Tags (
+    )
+
+    object Tags : NavItems(
         title = "Tags",
         icon = Icons.AutoMirrored.Filled.Label
-    ),
-    Settings (
+    )
+
+    object Settings : NavItems(
         title = "Settings",
         icon = Icons.Default.MoreVert
     )
