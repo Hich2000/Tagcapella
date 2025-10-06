@@ -10,11 +10,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 // Bottom Navigation Screen Enum (To track selected screen)
 sealed class NavItems(
     val title: String,
-    val icon: ImageVector
+    val icon: ImageVector? = null,
+    val navBar: Boolean = false
 ) {
 
     init {
-        navItems += this
+        if (navBar) {
+            navItems += this
+        }
     }
 
     companion object {
@@ -24,21 +27,33 @@ sealed class NavItems(
 
     object Player : NavItems(
         title = "Player",
-        icon = Icons.Default.MusicNote
+        icon = Icons.Default.MusicNote,
+        navBar = true
     )
 
     object SongLibrary : NavItems(
         title = "Song Library",
-        icon = Icons.Default.Folder
+        icon = Icons.Default.Folder,
+        navBar = true
     )
 
     object Tags : NavItems(
         title = "Tags",
-        icon = Icons.AutoMirrored.Filled.Label
+        icon = Icons.AutoMirrored.Filled.Label,
+        navBar = true
     )
 
     object Settings : NavItems(
         title = "Settings",
-        icon = Icons.Default.MoreVert
-    )
+        icon = Icons.Default.MoreVert,
+        navBar = true
+    ) {
+        //because these ones are nested they will not show up in the navbar
+        object Main: NavItems(
+            title = "${title}/Main"
+        )
+        object Folders : NavItems(
+            title = "${title}/Folders"
+        )
+    }
 }

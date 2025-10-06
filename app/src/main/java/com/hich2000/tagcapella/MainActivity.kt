@@ -56,6 +56,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
 import com.hich2000.tagcapella.music_player.MusicControls
@@ -191,8 +192,14 @@ class MainActivity : ComponentActivity() {
                             composable(NavItems.Tags.title) {
                                 TagCategoryScreen()
                             }
-                            composable(NavItems.Settings.title) {
-                                SettingsScreen()
+
+                            navigation(
+                                startDestination = NavItems.Settings.Main.title,
+                                route = NavItems.Settings.title
+                            ) {
+                                composable(NavItems.Settings.Main.title) {
+                                    SettingsScreen()
+                                }
                             }
                         }
                     }
@@ -255,17 +262,19 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                 ) {
-                    Icon(
-                        imageVector = it.icon,
-                        contentDescription = it.title,
-                        tint = if (currentRoute == it.title) {
-                            MaterialTheme.colorScheme.secondary
-                        } else {
-                            MaterialTheme.colorScheme.secondary.copy(
-                                alpha = 0.4f
-                            )
-                        }
-                    )
+                    it.icon?.let { imageVector ->
+                        Icon(
+                            imageVector = imageVector,
+                            contentDescription = it.title,
+                            tint = if (currentRoute == it.title) {
+                                MaterialTheme.colorScheme.secondary
+                            } else {
+                                MaterialTheme.colorScheme.secondary.copy(
+                                    alpha = 0.4f
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }
