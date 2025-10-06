@@ -165,7 +165,7 @@ class MainActivity : ComponentActivity() {
             Scaffold(
                 modifier = Modifier
                     .fillMaxSize(),
-                bottomBar = {BottomNavBar(navController)}
+                bottomBar = { BottomNavBar(navController) }
             ) { innerPadding ->
                 Box(
                     modifier = Modifier
@@ -181,8 +181,7 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             navController = navController,
                             startDestination = NavItems.Player.title,
-
-                            ) {
+                        ) {
                             composable(NavItems.Player.title) {
                                 MusicControls()
                             }
