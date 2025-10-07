@@ -108,6 +108,9 @@ dependencies {
 
     //gson
     implementation(libs.google.gson)
+
+    //documentfile
+    implementation(libs.androidx.documentfile)
 }
 
 // Configure KAPT for Hilt
