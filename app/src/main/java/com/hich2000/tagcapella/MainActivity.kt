@@ -61,6 +61,7 @@ import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
+import com.hich2000.tagcapella.settings.FolderScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
@@ -192,13 +193,15 @@ class MainActivity : ComponentActivity() {
                             composable(NavItem.Tags.title) {
                                 TagCategoryScreen()
                             }
-
                             navigation(
                                 startDestination = NavItem.Settings.Main.title,
                                 route = NavItem.Settings.title
                             ) {
                                 composable(NavItem.Settings.Main.title) {
                                     SettingsScreen()
+                                }
+                                composable(NavItem.Settings.Folders.title) {
+                                    FolderScreen()
                                 }
                             }
                         }
