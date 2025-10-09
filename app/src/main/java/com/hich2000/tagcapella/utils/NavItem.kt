@@ -48,10 +48,10 @@ sealed class NavItem(
         icon = Icons.Default.MoreVert,
         navBar = true
     ) {
-        //because these ones are nested they will not show up in the navbar
-        object Main: NavItem(
+        object Main : NavItem(
             title = "${title}/Main"
         )
+
         object Folders : NavItem(
             title = "${title}/Folders"
         )
