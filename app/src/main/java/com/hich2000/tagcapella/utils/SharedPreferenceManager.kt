@@ -24,6 +24,9 @@ class SharedPreferenceManager @Inject constructor(
             when (key) {
                 is SharedPreferenceKey.PlayerRepeatMode -> putInt(key.key, value as Int)
                 is SharedPreferenceKey.PlayerShuffleMode -> putBoolean(key.key, value as Boolean)
+                is SharedPreferenceKey.LastSongPlayed -> putString(key.key, value as String)
+                is SharedPreferenceKey.LastSongPosition -> putLong(key.key, value as Long)
+                is SharedPreferenceKey.PermissionsAlreadyRequested -> putBoolean(key.key, value as Boolean)
                 is SharedPreferenceKey.IncludedTags -> {
                     val json = gson.toJson(value)
                     putString(key.key, json)
@@ -32,9 +35,10 @@ class SharedPreferenceManager @Inject constructor(
                     val json = gson.toJson(value)
                     putString(key.key, json)
                 }
-                is SharedPreferenceKey.LastSongPlayed -> putString(key.key, value as String)
-                is SharedPreferenceKey.LastSongPosition -> putLong(key.key, value as Long)
-                is SharedPreferenceKey.PermissionsAlreadyRequested -> putBoolean(key.key, value as Boolean)
+                is SharedPreferenceKey.FoldersToScan -> {
+                    val json = gson.toJson(value)
+                    putString(key.key, json)
+                }
             }
         }
     }
@@ -44,6 +48,9 @@ class SharedPreferenceManager @Inject constructor(
         return when (key) {
             is SharedPreferenceKey.PlayerRepeatMode -> sharedPreferences.getInt(key.key, defaultValue as Int) as T
             is SharedPreferenceKey.PlayerShuffleMode -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
+            is SharedPreferenceKey.LastSongPlayed -> sharedPreferences.getString(key.key, defaultValue as String) as T
+            is SharedPreferenceKey.LastSongPosition -> sharedPreferences.getLong(key.key, defaultValue as Long) as T
+            is SharedPreferenceKey.PermissionsAlreadyRequested -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
             is SharedPreferenceKey.IncludedTags -> {
                 val json = sharedPreferences.getString(key.key, null)
                 if (!json.isNullOrEmpty()) {
@@ -53,7 +60,6 @@ class SharedPreferenceManager @Inject constructor(
                     defaultValue
                 }
             }
-
             is SharedPreferenceKey.ExcludedTags -> {
                 val json = sharedPreferences.getString(key.key, null)
                 if (!json.isNullOrEmpty()) {
@@ -63,10 +69,15 @@ class SharedPreferenceManager @Inject constructor(
                     defaultValue
                 }
             }
-
-            is SharedPreferenceKey.LastSongPlayed -> sharedPreferences.getString(key.key, defaultValue as String) as T
-            is SharedPreferenceKey.LastSongPosition -> sharedPreferences.getLong(key.key, defaultValue as Long) as T
-            is SharedPreferenceKey.PermissionsAlreadyRequested -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
+            is SharedPreferenceKey.FoldersToScan -> {
+                val json = sharedPreferences.getString(key.key, null)
+                if (json.isNullOrEmpty()) {
+                    val type = object : TypeToken<List<String>>() {}.type
+                    gson.fromJson<List<String>>(json, type) ?: defaultValue
+                } else {
+                    defaultValue
+                }
+            }
 
         } as T
     }
