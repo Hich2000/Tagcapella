@@ -72,8 +72,8 @@ import com.hich2000.tagcapella.categories.CategoryScreen
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.settings.FolderScreen
-import com.hich2000.tagcapella.settings.ScanFoldersViewModel
 import com.hich2000.tagcapella.settings.SettingsScreen
+import com.hich2000.tagcapella.songs.FolderScanManager
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
 import com.hich2000.tagcapella.tags.TagForm
@@ -100,12 +100,11 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
     @Inject
-    lateinit var scanFoldersViewModel: ScanFoldersViewModel
+    lateinit var folderScanManager: FolderScanManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
 
         mediaPermissionGranted.intValue = ContextCompat.checkSelfPermission(
             this,
@@ -167,7 +166,7 @@ class MainActivity : ComponentActivity() {
         } else {
             PackageManager.PERMISSION_DENIED
         }
-        scanFoldersViewModel.addFolder("/Music")
+        folderScanManager.addFolder("Music/")
     }
 
     @Composable

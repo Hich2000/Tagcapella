@@ -71,7 +71,7 @@ class SharedPreferenceManager @Inject constructor(
             }
             is SharedPreferenceKey.FoldersToScan -> {
                 val json = sharedPreferences.getString(key.key, null)
-                if (json.isNullOrEmpty()) {
+                if (!json.isNullOrEmpty()) {
                     val type = object : TypeToken<List<String>>() {}.type
                     gson.fromJson<List<String>>(json, type) ?: defaultValue
                 } else {
