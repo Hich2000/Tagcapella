@@ -1,9 +1,0 @@
-package com.hich2000.tagcapella.settings
-
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-
-@HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
-}

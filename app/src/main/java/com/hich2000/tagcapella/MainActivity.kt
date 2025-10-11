@@ -72,6 +72,7 @@ import com.hich2000.tagcapella.categories.CategoryScreen
 import com.hich2000.tagcapella.music_player.MusicControls
 import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.settings.FolderScreen
+import com.hich2000.tagcapella.settings.ScanFoldersViewModel
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
@@ -98,6 +99,8 @@ class MainActivity : ComponentActivity() {
     private val songViewModel: SongViewModel by viewModels()
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
+    @Inject
+    lateinit var scanFoldersViewModel: ScanFoldersViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -158,6 +161,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun updateMediaPermissionGranted(isGranted: Boolean) {
+        mediaPermissionGranted.intValue = if (isGranted) {
+            PackageManager.PERMISSION_GRANTED
+        } else {
+            PackageManager.PERMISSION_DENIED
+        }
+        scanFoldersViewModel.addFolder("/Music")
+    }
+
     @Composable
     fun RequestPermissionScreen() {
         var permissionAlreadyRequested = remember {
@@ -183,19 +195,11 @@ class MainActivity : ComponentActivity() {
                 true
             )
             permissionAlreadyRequested = true
-            mediaPermissionGranted.intValue = if (isGranted) {
-                PackageManager.PERMISSION_GRANTED
-            } else {
-                PackageManager.PERMISSION_DENIED
-            }
+            updateMediaPermissionGranted(isGranted)
         }
 
         ObservePermissionOnResume(permission) { isGranted ->
-            mediaPermissionGranted.intValue = if (isGranted) {
-                PackageManager.PERMISSION_GRANTED
-            } else {
-                PackageManager.PERMISSION_DENIED
-            }
+            updateMediaPermissionGranted(isGranted)
         }
 
         Scaffold(
@@ -213,7 +217,7 @@ class MainActivity : ComponentActivity() {
                 )
                 TagCapellaButton(
                     onClick = {
-                        if (mediaPermissionGranted.intValue != PackageManager.PERMISSION_GRANTED && !permissionAlreadyRequested) {
+                        if (!permissionAlreadyRequested) {
                             permissionLauncher.launch(permission)
                         } else {
                             val intent =
