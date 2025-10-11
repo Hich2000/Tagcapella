@@ -34,6 +34,7 @@ class SharedPreferenceManager @Inject constructor(
                 }
                 is SharedPreferenceKey.LastSongPlayed -> putString(key.key, value as String)
                 is SharedPreferenceKey.LastSongPosition -> putLong(key.key, value as Long)
+                is SharedPreferenceKey.PermissionsAlreadyRequested -> putBoolean(key.key, value as Boolean)
             }
         }
     }
@@ -65,6 +66,7 @@ class SharedPreferenceManager @Inject constructor(
 
             is SharedPreferenceKey.LastSongPlayed -> sharedPreferences.getString(key.key, defaultValue as String) as T
             is SharedPreferenceKey.LastSongPosition -> sharedPreferences.getLong(key.key, defaultValue as Long) as T
+            is SharedPreferenceKey.PermissionsAlreadyRequested -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
 
         } as T
     }
