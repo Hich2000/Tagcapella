@@ -166,7 +166,7 @@ class MainActivity : ComponentActivity() {
         } else {
             PackageManager.PERMISSION_DENIED
         }
-        folderScanManager.addFolder("Music/")
+        folderScanManager.addScanFolder("Music/")
     }
 
     @Composable

@@ -19,7 +19,7 @@ class FolderScanManager @Inject constructor(
 ) {
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    val folders = mutableStateListOf<String>()
+    val foldersToScan = mutableStateListOf<String>()
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized: StateFlow<Boolean> = _isInitialized
 
@@ -33,25 +33,33 @@ class FolderScanManager @Inject constructor(
         val list = withContext(Dispatchers.IO) {
             sharedPreferenceManager.getPreference(SharedPreferenceKey.FoldersToScan, emptyList())
         }
-        folders.clear()
-        folders.addAll(list)
+        foldersToScan.clear()
+        foldersToScan.addAll(list)
         _isInitialized.value = true
     }
 
-    fun addFolder(folder: String): Boolean {
+    fun addScanFolder(folder: String): Boolean {
         //check if the folder already exists in the list first
-        if (folders.contains(folder)) {
+        if (foldersToScan.contains(folder)) {
             return true
         }
 
-        if (folders.add(folder)) {
+        if (foldersToScan.add(folder)) {
             sharedPreferenceManager.savePreference(
                 SharedPreferenceKey.FoldersToScan,
-                folders
+                foldersToScan
             )
             return true
         }
 
         return false
+    }
+
+    fun removeScanFolder(index: Int) {
+        try {
+            foldersToScan.removeAt(index)
+        } catch (_: IndexOutOfBoundsException) {
+            return
+        }
     }
 }

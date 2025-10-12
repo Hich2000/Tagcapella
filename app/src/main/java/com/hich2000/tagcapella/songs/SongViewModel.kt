@@ -28,7 +28,7 @@ class SongViewModel @Inject constructor(
     private fun initializeSongList() {
         viewModelScope.launch {
             folderScanManager.isInitialized.first { it }
-            _songList.value = songRepository.scanMusicFolder(folderScanManager.folders)
+            _songList.value = songRepository.scanMusicFolder(folderScanManager.foldersToScan)
             _isInitialized.value = true
         }
     }

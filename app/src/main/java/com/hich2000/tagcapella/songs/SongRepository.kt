@@ -44,7 +44,7 @@ class SongRepository @Inject constructor(
         repositoryScope.launch {
             folderScanManager.isInitialized.first { it }
             val scannedSongs: MutableList<Song> =
-                scanMusicFolder(folderScanManager.folders)
+                scanMusicFolder(folderScanManager.foldersToScan)
             setSongList(scannedSongs)
             _isInitialized.value = true
         }
