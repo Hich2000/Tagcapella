@@ -14,9 +14,7 @@ class SongViewModel @Inject constructor(
     private val songRepository: SongRepository,
     private val folderScanManager: FolderScanManager
 ) : ViewModel() {
-
-    private val _songList = MutableStateFlow<List<Song>>(emptyList())
-    val songList: StateFlow<List<Song>> get() = _songList
+    val songList: StateFlow<List<Song>> get() = songRepository.songList
 
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized: StateFlow<Boolean> get() = _isInitialized
@@ -28,7 +26,7 @@ class SongViewModel @Inject constructor(
     private fun initializeSongList() {
         viewModelScope.launch {
             folderScanManager.isInitialized.first { it }
-            _songList.value = songRepository.scanMusicFolder(folderScanManager.foldersToScan)
+            songRepository.triggerScan()
             _isInitialized.value = true
         }
     }

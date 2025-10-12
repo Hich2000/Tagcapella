@@ -97,8 +97,10 @@ class MainActivity : ComponentActivity() {
 
     private val mediaPermissionGranted = mutableIntStateOf(PackageManager.PERMISSION_DENIED)
     private val songViewModel: SongViewModel by viewModels()
+
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
+
     @Inject
     lateinit var folderScanManager: FolderScanManager
 
@@ -237,7 +239,6 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TagcapellaApp() {
         val navController = rememberNavController()
-        val mediaPermissionGranted by mediaPermissionGranted
         val context = LocalContext.current
 
         LaunchedEffect(Unit) {
@@ -246,67 +247,46 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
-            Scaffold(
+
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize(),
+            bottomBar = { BottomNavBar(navController) }
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
-                bottomBar = { BottomNavBar(navController) }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(
-                            top = innerPadding.calculateTopPadding(),
-                            start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                            bottom = innerPadding.calculateBottomPadding()
-                        )
-                        .fillMaxSize()
-                ) {
-                    val songList by songViewModel.songList.collectAsState()
-                    CompositionLocalProvider(LocalNavController provides navController) {
-                        NavHost(
-                            navController = navController,
-                            startDestination = NavItem.Player.title,
-                        ) {
-                            composable(NavItem.Player.title) {
-                                MusicControls()
-                            }
-                            composable(NavItem.SongLibrary.title) {
-                                SongScreen(songList = songList)
-                            }
-                            composable(NavItem.Tags.title) {
-                                TagCategoryScreen()
-                            }
-                            navigation(
-                                startDestination = NavItem.Settings.Main.title,
-                                route = NavItem.Settings.title
-                            ) {
-                                composable(NavItem.Settings.Main.title) {
-                                    SettingsScreen()
-                                }
-                                composable(NavItem.Settings.Folders.title) {
-                                    FolderScreen()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
+                    .fillMaxSize()
+            ) {
+                val songList by songViewModel.songList.collectAsState()
+                CompositionLocalProvider(LocalNavController provides navController) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = NavItem.Player.title,
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center
+                        composable(NavItem.Player.title) {
+                            MusicControls()
+                        }
+                        composable(NavItem.SongLibrary.title) {
+                            SongScreen(songList = songList)
+                        }
+                        composable(NavItem.Tags.title) {
+                            TagCategoryScreen()
+                        }
+                        navigation(
+                            startDestination = NavItem.Settings.Main.title,
+                            route = NavItem.Settings.title
                         ) {
-                            Text("Media permissions are necessary to use this application")
+                            composable(NavItem.Settings.Main.title) {
+                                SettingsScreen()
+                            }
+                            composable(NavItem.Settings.Folders.title) {
+                                FolderScreen()
+                            }
                         }
                     }
                 }

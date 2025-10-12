@@ -2,8 +2,6 @@ package com.hich2000.tagcapella.songs
 
 import android.content.Context
 import android.provider.MediaStore
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.utils.Database
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,8 +31,8 @@ class SongRepository @Inject constructor(
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     // List of all songs in the scanned directory
-    private var _songList = mutableStateListOf<Song>()
-    val songList: SnapshotStateList<Song> get() = _songList
+    private val _songList = MutableStateFlow<List<Song>>(emptyList())
+    val songList: StateFlow<List<Song>> get() = _songList
 
     // State to indicate if initializing has completed
     private val _isInitialized = MutableStateFlow(false)
@@ -42,17 +40,20 @@ class SongRepository @Inject constructor(
 
     init {
         repositoryScope.launch {
-            folderScanManager.isInitialized.first { it }
-            val scannedSongs: MutableList<Song> =
-                scanMusicFolder(folderScanManager.foldersToScan)
-            setSongList(scannedSongs)
-            _isInitialized.value = true
+            triggerScan()
         }
     }
 
     fun setSongList(songList: List<Song>) {
-        _songList.clear()
-        _songList.addAll(songList)
+        _songList.value = songList
+    }
+
+    suspend fun triggerScan() {
+        folderScanManager.isInitialized.first { it }
+        val scannedSongs: MutableList<Song> =
+            scanMusicFolder(folderScanManager.foldersToScan)
+        setSongList(scannedSongs)
+        _isInitialized.value = true
     }
 
     // Suspend function to fetch the list of songs from the directory asynchronously
@@ -112,7 +113,7 @@ class SongRepository @Inject constructor(
 
         //if the include tag list is empty we add the entire songlist otherwise we query only the included tags
         if (includeTags.isEmpty()) {
-            filteredSongList.addAll(_songList)
+            filteredSongList.addAll(_songList.value)
         } else {
             filteredSongList.addAll(db.songQueries.filterSongList(includeIds) { _, path ->
                 Song(
