@@ -262,6 +262,7 @@ class MainActivity : ComponentActivity() {
                     )
                     .fillMaxSize()
             ) {
+                val folders by folderScanManager.foldersToScan.collectAsState()
                 val songList by songViewModel.songList.collectAsState()
                 CompositionLocalProvider(LocalNavController provides navController) {
                     NavHost(

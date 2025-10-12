@@ -4,13 +4,14 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.hich2000.tagcapella.songs.FolderScanManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class FolderScanViewModel @Inject constructor(
     private val folderScanManager: FolderScanManager
 ) : ViewModel() {
-    val foldersToScan = folderScanManager.foldersToScan
+    val foldersToScan: StateFlow<List<String>> get() = folderScanManager.foldersToScan
 
     fun addScanFolder(contentUri: Uri): Boolean {
         val folderPath: String? = contentUri.path?.split(":")?.last()

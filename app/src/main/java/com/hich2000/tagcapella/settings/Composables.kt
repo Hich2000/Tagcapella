@@ -14,6 +14,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,6 +49,8 @@ fun FolderScreen(
     folderScanViewModel: FolderScanViewModel = hiltViewModel()
 ) {
 
+    val folders by folderScanViewModel.foldersToScan.collectAsState()
+
     //this is how to request the system for permission for specific folders
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
@@ -56,7 +60,7 @@ fun FolderScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        folderScanViewModel.foldersToScan.forEachIndexed { index, folder ->
+        folders.forEachIndexed { index, folder ->
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {

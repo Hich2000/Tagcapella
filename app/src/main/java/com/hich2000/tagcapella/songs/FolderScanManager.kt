@@ -1,6 +1,5 @@
 package com.hich2000.tagcapella.songs
 
-import androidx.compose.runtime.mutableStateListOf
 import com.hich2000.tagcapella.utils.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +18,14 @@ class FolderScanManager @Inject constructor(
 ) {
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    val foldersToScan = mutableStateListOf<String>()
+
+
+    private val _songList = MutableStateFlow<List<Song>>(emptyList())
+    val songList: StateFlow<List<Song>> get() = _songList
+
+    private val _foldersToScan = MutableStateFlow<List<String>>(emptyList())
+    val foldersToScan: StateFlow<List<String>> get() = _foldersToScan
+
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized: StateFlow<Boolean> = _isInitialized
 
@@ -33,37 +39,53 @@ class FolderScanManager @Inject constructor(
         val list = withContext(Dispatchers.IO) {
             sharedPreferenceManager.getPreference(SharedPreferenceKey.FoldersToScan, emptyList())
         }
-        foldersToScan.clear()
-        foldersToScan.addAll(list)
+        _foldersToScan.value = list
         _isInitialized.value = true
     }
 
     fun addScanFolder(folder: String): Boolean {
         //check if the folder already exists in the list first
-        if (foldersToScan.contains(folder)) {
+        if (foldersToScan.value.contains(folder)) {
             return true
         }
 
-        if (foldersToScan.add(folder)) {
+        //fallback mechanism
+        val currentList = _foldersToScan.value
+
+        try {
+            _foldersToScan.value = foldersToScan.value + folder
             sharedPreferenceManager.savePreference(
                 SharedPreferenceKey.FoldersToScan,
-                foldersToScan
+                _foldersToScan.value
             )
             return true
+        } catch (_: Exception) {
+            _foldersToScan.value = currentList
+            sharedPreferenceManager.savePreference(
+                SharedPreferenceKey.FoldersToScan,
+                currentList
+            )
+            return false
         }
-
-        return false
     }
 
     fun removeScanFolder(index: Int) {
+        val fallBackList = _foldersToScan.value
+
         try {
-            foldersToScan.removeAt(index)
+            val mutableList = fallBackList.toMutableList()
+            mutableList.removeAt(index)
+            _foldersToScan.value = mutableList
             sharedPreferenceManager.savePreference(
                 SharedPreferenceKey.FoldersToScan,
-                foldersToScan
+                _foldersToScan.value
             )
         } catch (_: IndexOutOfBoundsException) {
-            return
+            _foldersToScan.value = fallBackList
+            sharedPreferenceManager.savePreference(
+                SharedPreferenceKey.FoldersToScan,
+                _foldersToScan.value
+            )
         }
     }
 }

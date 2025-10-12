@@ -51,7 +51,7 @@ class SongRepository @Inject constructor(
     suspend fun triggerScan() {
         folderScanManager.isInitialized.first { it }
         val scannedSongs: MutableList<Song> =
-            scanMusicFolder(folderScanManager.foldersToScan)
+            scanMusicFolder(folderScanManager.foldersToScan.value)
         setSongList(scannedSongs)
         _isInitialized.value = true
     }
@@ -95,9 +95,6 @@ class SongRepository @Inject constructor(
                     )
                 }
             }
-
-
-
 
             //return the song list after they have been saved in the database
             return@withContext songList
