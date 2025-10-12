@@ -99,14 +99,13 @@ fun MusicControls(
 
         //bottomsheet stuff
         val sheetState = rememberBottomSheetScaffoldState()
-        val songList by mediaControllerViewModel.currentPlaylist.collectAsState()
 
         BottomSheetScaffold(
             scaffoldState = sheetState,
             sheetPeekHeight = 40.dp,
             sheetShape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetContent = {
-                SongScreen(songList = songList, showQueue = true)
+                SongScreen(showQueue = true)
             },
         ) { innerPadding ->
             Column(
@@ -328,7 +327,6 @@ fun PlaybackSlider(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
-    songList: List<Song> = emptyList(),
     showQueue: Boolean = false,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel()
@@ -389,7 +387,6 @@ fun SongScreen(
     }
 
     SongList(
-        songList = songList,
         songCard = { song ->
             SongCard(
                 song = song,
@@ -513,7 +510,6 @@ fun SongScreen(
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
-    songList: List<Song> = emptyList(),
     floatingActionButton: @Composable () -> Unit = {},
     songCard: @Composable (song: Song) -> Unit,
     mediaController: MusicPlayerViewModel = hiltViewModel(),
@@ -523,6 +519,7 @@ fun SongList(
     // Use the state variable to determine if the MediaController and song list are initialized
     val isMediaControllerInitialized by mediaController.isMediaControllerInitialized.collectAsState()
     val isSongListInitialized by songViewModel.isInitialized.collectAsState()
+    val songList by songViewModel.songList.collectAsState()
 
     Scaffold(
         floatingActionButton = floatingActionButton

@@ -21,6 +21,7 @@ class SongViewModel @Inject constructor(
 
     init {
         initializeSongList()
+        observeSongListChanges()
     }
 
     private fun initializeSongList() {
@@ -28,6 +29,15 @@ class SongViewModel @Inject constructor(
             folderScanManager.isInitialized.first { it }
             songRepository.triggerScan()
             _isInitialized.value = true
+        }
+    }
+
+    private fun observeSongListChanges() {
+        viewModelScope.launch {
+            folderScanManager.foldersToScan
+                .collect {
+                    initializeSongList()
+                }
         }
     }
 }

@@ -17,7 +17,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +42,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -74,7 +72,6 @@ import com.hich2000.tagcapella.music_player.SongScreen
 import com.hich2000.tagcapella.settings.FolderScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.songs.FolderScanManager
-import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
 import com.hich2000.tagcapella.tags.TagForm
 import com.hich2000.tagcapella.tags.TagScreen
@@ -96,7 +93,6 @@ class MyApp : Application()
 class MainActivity : ComponentActivity() {
 
     private val mediaPermissionGranted = mutableIntStateOf(PackageManager.PERMISSION_DENIED)
-    private val songViewModel: SongViewModel by viewModels()
 
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
@@ -262,8 +258,6 @@ class MainActivity : ComponentActivity() {
                     )
                     .fillMaxSize()
             ) {
-                val folders by folderScanManager.foldersToScan.collectAsState()
-                val songList by songViewModel.songList.collectAsState()
                 CompositionLocalProvider(LocalNavController provides navController) {
                     NavHost(
                         navController = navController,
@@ -273,7 +267,7 @@ class MainActivity : ComponentActivity() {
                             MusicControls()
                         }
                         composable(NavItem.SongLibrary.title) {
-                            SongScreen(songList = songList)
+                            SongScreen()
                         }
                         composable(NavItem.Tags.title) {
                             TagCategoryScreen()

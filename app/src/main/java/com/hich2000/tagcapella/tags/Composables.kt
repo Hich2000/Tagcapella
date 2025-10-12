@@ -64,19 +64,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.utils.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
-    songViewModel: SongViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel(),
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
     val showSongDialog = remember { mutableStateOf(false) }
-    val songList by songViewModel.songList.collectAsState()
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -99,7 +96,6 @@ fun TagScreen(
             },
         ) {
             SongList(
-                songList = songList,
                 songCard = { song ->
                     val isTagged = try {
                         clickedTag.value?.taggedSongList?.contains(song) == true
