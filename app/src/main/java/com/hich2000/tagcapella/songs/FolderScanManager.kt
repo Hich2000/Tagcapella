@@ -58,6 +58,10 @@ class FolderScanManager @Inject constructor(
     fun removeScanFolder(index: Int) {
         try {
             foldersToScan.removeAt(index)
+            sharedPreferenceManager.savePreference(
+                SharedPreferenceKey.FoldersToScan,
+                foldersToScan
+            )
         } catch (_: IndexOutOfBoundsException) {
             return
         }
