@@ -61,9 +61,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.C
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongViewModel
@@ -74,38 +71,60 @@ import com.hich2000.tagcapella.tags.TagViewModel
 import com.hich2000.tagcapella.utils.TagCapellaButton
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.Path
+import kotlin.io.path.nameWithoutExtension
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MusicControls(
-    mediaControllerViewModel: MusicPlayerViewModel = hiltViewModel(),
+    musicPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
 ) {
     // Use the state variable to determine if the MediaController and songlist are initialized
-    val isMediaControllerInitialized by mediaControllerViewModel.isMediaControllerInitialized.collectAsState()
+    val isMediaControllerInitialized by musicPlayerViewModel.isMediaControllerInitialized.collectAsState()
 
     if (isMediaControllerInitialized) {
         //observe the isPlaying state for ui changes
-        val isPlaying by mediaControllerViewModel.isPlaying.collectAsState()
+        val isPlaying by musicPlayerViewModel.isPlaying.collectAsState()
         //observe the shuffleModeEnabled state for ui changes
-        val shuffleModeEnabled by mediaControllerViewModel.shuffleModeEnabled.collectAsState()
+        val shuffleModeEnabled by musicPlayerViewModel.shuffleModeEnabled.collectAsState()
         //observe the loopMode state for ui changes
-        val repeatMode by mediaControllerViewModel.repeatMode.collectAsState()
+        val repeatMode by musicPlayerViewModel.repeatMode.collectAsState()
 
-        val playbackPosition by mediaControllerViewModel.playbackPosition.collectAsState()
-        val playbackDuration by mediaControllerViewModel.playbackDuration.collectAsState()
+        val playbackPosition by musicPlayerViewModel.playbackPosition.collectAsState()
+        val playbackDuration by musicPlayerViewModel.playbackDuration.collectAsState()
 
         //get the mediaController itself
-        val mediaController = mediaControllerViewModel.mediaController
+        val mediaController = musicPlayerViewModel.mediaController
 
         //bottomsheet stuff
         val sheetState = rememberBottomSheetScaffoldState()
+        val songList by musicPlayerViewModel.currentPlaylist.collectAsState()
 
         BottomSheetScaffold(
             scaffoldState = sheetState,
             sheetPeekHeight = 40.dp,
             sheetShape = CutCornerShape(topStart = 16.dp, topEnd = 16.dp),
             sheetContent = {
-                SongScreen(showQueue = true)
+                SongList(
+                    songList = songList,
+                    songCard = { song ->
+                        SongCard(
+                            song = song,
+                            tagCallBack = {},
+                            onClick = {
+                                val index = songList.indexOfFirst { listItem ->
+                                    listItem == song
+                                }
+
+                                mediaController.seekTo(
+                                    index,
+                                    0
+                                )
+                            }
+                        )
+                    },
+                    floatingActionButton = {}
+                )
             },
         ) { innerPadding ->
             Column(
@@ -142,7 +161,7 @@ fun MusicControls(
                         },
                         onValueChangeFinished = {
                             isUserInteracting = false
-                            mediaControllerViewModel.setPlaybackPosition(
+                            musicPlayerViewModel.setPlaybackPosition(
                                 sliderPosition.toLong(),
                                 true
                             )
@@ -327,9 +346,9 @@ fun PlaybackSlider(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
-    showQueue: Boolean = false,
     mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
-    tagViewModel: TagViewModel = hiltViewModel()
+    tagViewModel: TagViewModel = hiltViewModel(),
+    songViewModel: SongViewModel = hiltViewModel()
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
     val songToTag = remember { mutableStateOf<Song?>(null) }
@@ -339,6 +358,9 @@ fun SongScreen(
 
     val includedTags by mediaPlayerViewModel.includedTags.collectAsState()
     val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
+    val songListInitialized by songViewModel.isInitialized.collectAsState()
+    val songList by songViewModel.songList.collectAsState()
+    val tags by tagViewModel.tags.collectAsState()
 
     if (showTagDialog.value) {
         Dialog(
@@ -359,6 +381,7 @@ fun SongScreen(
                         .fillMaxSize()
                 ) {
                     TagList(
+                        tagList = tags,
                         tagCard = tagCardComposable,
                     )
 
@@ -386,7 +409,15 @@ fun SongScreen(
         }
     }
 
+    if (!songListInitialized) {
+        CircularProgressIndicator(
+            modifier = Modifier.fillMaxSize()
+        )
+        return
+    }
+
     SongList(
+        songList = songList,
         songCard = { song ->
             SongCard(
                 song = song,
@@ -445,63 +476,54 @@ fun SongScreen(
                         )
                     }
 
-                    //todo maybe find a way to make this nicer I guess.
-                    if (showQueue) {
-                        val index = mediaPlayerViewModel.currentPlaylist.value.indexOf(song)
-                        if (index >= 0) {
-                            mediaPlayerViewModel.mediaController.seekTo(index, C.TIME_UNSET)
-                        }
-                    } else {
-                        //todo extract this copy and pasted code into a variable or something
-                        onTagClick = { tag ->
-                            if (songToTag.value!!.songTagList.contains(tag)) {
-                                songToTag.value!!.path.let {
-                                    tagViewModel.deleteSongTag(tag, songToTag.value!!)
-                                }
-                            } else {
-                                songToTag.value!!.path.let {
-                                    tagViewModel.addSongTag(tag, songToTag.value!!)
-                                }
+                    //todo extract this copy and pasted code into a variable or something
+                    onTagClick = { tag ->
+                        if (songToTag.value!!.songTagList.contains(tag)) {
+                            songToTag.value!!.path.let {
+                                tagViewModel.deleteSongTag(tag, songToTag.value!!)
+                            }
+                        } else {
+                            songToTag.value!!.path.let {
+                                tagViewModel.addSongTag(tag, songToTag.value!!)
                             }
                         }
-
-                        showTagDialog.value = true
-                        songToTag.value = song
                     }
+
+                    showTagDialog.value = true
+                    songToTag.value = song
+
                 }
             )
         },
         floatingActionButton = {
-            if (showQueue) {
-                SmallFloatingActionButton(onClick = {
-                    tagCardComposable = { tag ->
-                        TagCard(
-                            tag = tag,
-                            onClick = onTagClick,
-                            backgroundColor =
-                                if (includedTags.contains(tag)) {
-                                    Color.hsl(112f, 0.5f, 0.3f)
-                                } else if (excludedTags.contains(tag)) {
-                                    Color.Red
-                                } else {
-                                    MaterialTheme.colorScheme.background
-                                },
-                        )
-                    }
-                    showTagDialog.value = true
-                    onTagClick = { tag ->
-                        if (includedTags.contains(tag)) {
-                            mediaPlayerViewModel.removeIncludedTag(tag)
-                            mediaPlayerViewModel.addExcludedTag(tag)
-                        } else if (excludedTags.contains(tag)) {
-                            mediaPlayerViewModel.removeExcludedTag(tag)
-                        } else {
-                            mediaPlayerViewModel.addIncludedTag(tag)
-                        }
-                    }
-                }) {
-                    Icon(Icons.Default.Queue, contentDescription = "New queue")
+            SmallFloatingActionButton(onClick = {
+                tagCardComposable = { tag ->
+                    TagCard(
+                        tag = tag,
+                        onClick = onTagClick,
+                        backgroundColor =
+                            if (includedTags.contains(tag)) {
+                                Color.hsl(112f, 0.5f, 0.3f)
+                            } else if (excludedTags.contains(tag)) {
+                                Color.Red
+                            } else {
+                                MaterialTheme.colorScheme.background
+                            },
+                    )
                 }
+                showTagDialog.value = true
+                onTagClick = { tag ->
+                    if (includedTags.contains(tag)) {
+                        mediaPlayerViewModel.removeIncludedTag(tag)
+                        mediaPlayerViewModel.addExcludedTag(tag)
+                    } else if (excludedTags.contains(tag)) {
+                        mediaPlayerViewModel.removeExcludedTag(tag)
+                    } else {
+                        mediaPlayerViewModel.addIncludedTag(tag)
+                    }
+                }
+            }) {
+                Icon(Icons.Default.Queue, contentDescription = "New queue")
             }
         }
     )
@@ -510,17 +532,10 @@ fun SongScreen(
 @Composable
 fun SongList(
     modifier: Modifier = Modifier,
+    songList: List<Song> = emptyList(),
     floatingActionButton: @Composable () -> Unit = {},
     songCard: @Composable (song: Song) -> Unit,
-    mediaController: MusicPlayerViewModel = hiltViewModel(),
-    songViewModel: SongViewModel = hiltViewModel()
 ) {
-
-    // Use the state variable to determine if the MediaController and song list are initialized
-    val isMediaControllerInitialized by mediaController.isMediaControllerInitialized.collectAsState()
-    val isSongListInitialized by songViewModel.isInitialized.collectAsState()
-    val songList by songViewModel.songList.collectAsState()
-
     Scaffold(
         floatingActionButton = floatingActionButton
     ) { innerPadding ->
@@ -530,16 +545,8 @@ fun SongList(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
                 )
         ) {
-            if (!isMediaControllerInitialized || !isSongListInitialized) {
-                item {
-                    CircularProgressIndicator(
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            } else {
-                items(songList) { song ->
-                    songCard(song)
-                }
+            items(songList) { song ->
+                songCard(song)
             }
         }
     }
@@ -554,17 +561,7 @@ fun SongCard(
 ) {
     val scroll = rememberScrollState(0)
     val songTagCount by song.songTagCount
-
-    val mediaItem = MediaItem.Builder()
-        .setMediaId(song.path)
-        .setUri(song.path)
-        .setMediaMetadata(
-            MediaMetadata.Builder()
-                .setTitle(song.title)
-                .setDisplayTitle(song.title)
-                .build()
-        )
-        .build()
+    val songPath = Path(song.path)
 
     Card(
         modifier = Modifier
@@ -590,7 +587,7 @@ fun SongCard(
                     .padding(0.dp)
             )
             Text(
-                mediaItem.mediaMetadata.title.toString(),
+                songPath.nameWithoutExtension,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .horizontalScroll(scroll)

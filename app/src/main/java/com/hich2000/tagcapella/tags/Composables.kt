@@ -64,16 +64,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
+import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.utils.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
+    songViewModel: SongViewModel = hiltViewModel(),
     tagViewModel: TagViewModel = hiltViewModel(),
 ) {
     val showTagDialog = remember { mutableStateOf(false) }
     val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
     val showSongDialog = remember { mutableStateOf(false) }
+    val songList by songViewModel.songList.collectAsState()
+    val tagList by tagViewModel.tags.collectAsState()
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -96,6 +100,7 @@ fun TagScreen(
             },
         ) {
             SongList(
+                songList = songList,
                 songCard = { song ->
                     val isTagged = try {
                         clickedTag.value?.taggedSongList?.contains(song) == true
@@ -131,6 +136,7 @@ fun TagScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         TagList(
+            tagList = tagList,
             tagCard = { tag ->
                 val editCallback = {
                     clickedTag.value = tag
@@ -157,15 +163,15 @@ fun TagScreen(
 
 @Composable
 fun TagList(
+    tagList: List<TagDTO> = emptyList(),
     tagCard: @Composable (tag: TagDTO) -> Unit,
-    tagViewModel: TagViewModel = hiltViewModel(),
     categoryViewModel: CategoryViewModel = hiltViewModel(),
 ) {
-    val tagList by tagViewModel.tags.collectAsState()
     val columnScroll = rememberScrollState()
     val categories by categoryViewModel.categories.collectAsState()
     val scroll = rememberScrollState(0)
     var selectedCategory: Long? by remember { mutableStateOf(null) }
+
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
