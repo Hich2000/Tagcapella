@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -23,7 +22,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Queue
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Shuffle
@@ -41,7 +39,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -59,16 +56,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.TagCard
 import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.TagList
+import com.hich2000.tagcapella.tags.TagDialog
 import com.hich2000.tagcapella.tags.TagViewModel
-import com.hich2000.tagcapella.utils.TagCapellaButton
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
@@ -350,7 +345,7 @@ fun SongScreen(
     tagViewModel: TagViewModel = hiltViewModel(),
     songViewModel: SongViewModel = hiltViewModel()
 ) {
-    val showTagDialog = remember { mutableStateOf(false) }
+    val showTagDialog by tagViewModel.showDialog.collectAsState()
     val songToTag = remember { mutableStateOf<Song?>(null) }
     var onTagClick by remember { mutableStateOf<(TagDTO) -> Unit>({}) }
     var tagCardComposable by remember { mutableStateOf<@Composable (tag: TagDTO) -> Unit>({}) }
@@ -360,53 +355,21 @@ fun SongScreen(
     val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
     val songListInitialized by songViewModel.isInitialized.collectAsState()
     val songList by songViewModel.songList.collectAsState()
-    val tags by tagViewModel.tags.collectAsState()
 
-    if (showTagDialog.value) {
-        Dialog(
-            onDismissRequest = {
-                showTagDialog.value = false
-            },
-        ) {
-            Card(
-                shape = CutCornerShape(0.dp),
-                modifier = Modifier
-                    .padding(top = 16.dp, bottom = 16.dp)
-                    .fillMaxSize()
-                    .border(2.dp, MaterialTheme.colorScheme.tertiary)
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    TagList(
-                        tagList = tags,
-                        tagCard = tagCardComposable,
+    if (showTagDialog) {
+        TagDialog(
+            onButtonPress = {
+                coroutineScope.launch {
+                    val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
+                        includedTags,
+                        excludedTags
                     )
-
-                    TagCapellaButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
-                                    includedTags,
-                                    excludedTags
-                                )
-                                mediaPlayerViewModel.preparePlaylist(filteredSongList)
-                                showTagDialog.value = false
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                            .height(36.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
-                    ) {
-                        Text(text = "Save")
-                    }
+                    mediaPlayerViewModel.preparePlaylist(filteredSongList)
+                    tagViewModel.closeDialog()
                 }
-            }
-        }
+            },
+            tagCardComposable = tagCardComposable
+        )
     }
 
     if (!songListInitialized) {
@@ -453,7 +416,7 @@ fun SongScreen(
                         )
                     }
 
-                    showTagDialog.value = true
+                    tagViewModel.openDialog()
                     songToTag.value = song
                 },
                 onClick = {
@@ -489,43 +452,13 @@ fun SongScreen(
                         }
                     }
 
-                    showTagDialog.value = true
+                    tagViewModel.openDialog()
                     songToTag.value = song
 
                 }
             )
         },
-        floatingActionButton = {
-            SmallFloatingActionButton(onClick = {
-                tagCardComposable = { tag ->
-                    TagCard(
-                        tag = tag,
-                        onClick = onTagClick,
-                        backgroundColor =
-                            if (includedTags.contains(tag)) {
-                                Color.hsl(112f, 0.5f, 0.3f)
-                            } else if (excludedTags.contains(tag)) {
-                                Color.Red
-                            } else {
-                                MaterialTheme.colorScheme.background
-                            },
-                    )
-                }
-                showTagDialog.value = true
-                onTagClick = { tag ->
-                    if (includedTags.contains(tag)) {
-                        mediaPlayerViewModel.removeIncludedTag(tag)
-                        mediaPlayerViewModel.addExcludedTag(tag)
-                    } else if (excludedTags.contains(tag)) {
-                        mediaPlayerViewModel.removeExcludedTag(tag)
-                    } else {
-                        mediaPlayerViewModel.addIncludedTag(tag)
-                    }
-                }
-            }) {
-                Icon(Icons.Default.Queue, contentDescription = "New queue")
-            }
-        }
+        floatingActionButton = {}
     )
 }
 

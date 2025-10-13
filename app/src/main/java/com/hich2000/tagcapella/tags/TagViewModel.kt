@@ -18,6 +18,9 @@ class TagViewModel @Inject constructor(
     private var _tags = MutableStateFlow<List<TagDTO>>(emptyList())
     val tags: StateFlow<List<TagDTO>> get() = _tags
 
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog: StateFlow<Boolean> get() = _showDialog
+
     init {
         _tags.value = selectAllTags()
     }
@@ -60,5 +63,13 @@ class TagViewModel @Inject constructor(
 
     fun deleteSongTag(tag: TagDTO, song: Song) {
         tagRepository.deleteSongTag(tag = tag, song = song)
+    }
+
+    fun openDialog() {
+        _showDialog.value = true
+    }
+
+    fun closeDialog() {
+        _showDialog.value = false
     }
 }

@@ -14,13 +14,21 @@ class TagRepository @Inject constructor(
     private val db: TagcapellaDb = database.db
 
     fun selectAllTags(): List<TagDTO> {
-        return db.tagQueries.selectAll { id, tag, category -> TagDTO(id, tag, category, database) }.executeAsList()
-            .toList()
+        return db.tagQueries.selectAll { id, tag, category -> TagDTO(id, tag, category, database) }
+            .executeAsList()
+            .map { it.copy() }
     }
 
     fun insertTag(newTag: String, category: Long?): TagDTO {
         db.tagQueries.insertTag(id = null, tag = newTag, category = category)
-        return db.tagQueries.lastInsertedTag { id, tag, category -> TagDTO(id, tag, category, database) }
+        return db.tagQueries.lastInsertedTag { id, tag, category ->
+            TagDTO(
+                id,
+                tag,
+                category,
+                database
+            )
+        }
             .executeAsOne()
     }
 

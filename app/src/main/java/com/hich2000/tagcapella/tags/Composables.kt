@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -60,6 +61,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.SongCard
@@ -506,7 +508,7 @@ fun TagForm(
                     .padding(all = 8.dp)
             )
 
-            Box (
+            Box(
                 modifier = Modifier.padding(0.dp)
             ) {
                 if (tag === null) {
@@ -547,3 +549,50 @@ fun TagForm(
     }
 }
 
+
+@Composable
+fun TagDialog(
+    onButtonPress: () -> Unit = {},
+    tagCardComposable: @Composable (tag: TagDTO) -> Unit,
+    tagViewModel: TagViewModel = hiltViewModel(),
+) {
+    val tags by tagViewModel.tags.collectAsState()
+
+    Dialog(
+        onDismissRequest = {
+            tagViewModel.closeDialog()
+        },
+    ) {
+        Card(
+            shape = CutCornerShape(0.dp),
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 16.dp)
+                .fillMaxSize()
+                .border(2.dp, MaterialTheme.colorScheme.tertiary)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                TagList(
+                    tagList = tags,
+                    tagCard = tagCardComposable,
+                )
+
+                TagCapellaButton(
+                    onClick = {
+                        onButtonPress()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .height(36.dp)
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                ) {
+                    Text(text = "Save")
+                }
+            }
+        }
+    }
+}
