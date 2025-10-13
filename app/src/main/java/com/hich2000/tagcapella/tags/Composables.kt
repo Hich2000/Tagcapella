@@ -104,11 +104,8 @@ fun TagScreen(
             SongList(
                 songList = songList,
                 songCard = { song ->
-                    val isTagged = try {
-                        clickedTag.value?.taggedSongList?.contains(song) == true
-                    } catch (_: Exception) {
-                        false
-                    }
+                    val taggedSongs = clickedTag.value?.let { tagViewModel.getTaggedSongs(it) }
+                    val isTagged = taggedSongs?.contains(song) ?: false
 
                     SongCard(
                         song = song,
@@ -118,7 +115,7 @@ fun TagScreen(
                             MaterialTheme.colorScheme.background
                         },
                         onClick = {
-                            if (clickedTag.value!!.taggedSongList.contains(song)) {
+                            if (taggedSongs?.contains(song) ?: false) {
                                 song.path.let {
                                     tagViewModel.deleteSongTag(clickedTag.value!!, song)
                                 }
@@ -306,11 +303,9 @@ fun TagCard(
     songCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
     onClick: (tag: TagDTO) -> Unit = {},
-    backgroundColor: Color = MaterialTheme.colorScheme.background
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    tagViewModel: TagViewModel = hiltViewModel()
 ) {
-
-    val taggedSongCount by tag.taggedSongCount
-
     Card(
         modifier = Modifier
             .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
@@ -377,7 +372,7 @@ fun TagCard(
                     )
                 }
                 Text(
-                    "($taggedSongCount)",
+                    "(${tagViewModel.getTaggedSongs(tag).count()})",
                     modifier = Modifier.weight(0.3f),
                     color = MaterialTheme.colorScheme.onBackground
                 )

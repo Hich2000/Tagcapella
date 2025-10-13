@@ -72,4 +72,8 @@ class TagViewModel @Inject constructor(
     fun closeDialog() {
         _showDialog.value = false
     }
+
+    fun getTaggedSongs(tag: TagDTO): MutableList<Song>  {
+        return tagRepository.getTaggedSongs(tag)
+    }
 }

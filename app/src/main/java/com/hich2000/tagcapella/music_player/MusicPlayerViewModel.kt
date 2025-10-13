@@ -14,7 +14,7 @@ import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
 import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.TagDTOFactory
+import com.hich2000.tagcapella.tags.TagRepository
 import com.hich2000.tagcapella.utils.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,8 +31,8 @@ class MusicPlayerViewModel @Inject constructor(
     private val mediaControllerManager: MediaControllerManager,
     private val songRepository: SongRepository,
     private val sharedPreferenceManager: SharedPreferenceManager,
-    private val tagDTOFactory: TagDTOFactory,
-    private val application: Application
+    private val application: Application,
+    private val tagRepository: TagRepository
 ) : ViewModel() {
 
     private lateinit var _mediaController: MediaController
@@ -69,12 +69,6 @@ class MusicPlayerViewModel @Inject constructor(
     private lateinit var audioOutputChangeReceiver: BroadcastReceiver
 
     init {
-        var test = sharedPreferenceManager.getPreference(
-            SharedPreferenceKey.PlayerRepeatMode,
-            Player.REPEAT_MODE_ALL
-        )
-        println(test)
-
         viewModelScope.launch {
             // Register the receiver to detect changes in audio output
             audioOutputChangeReceiver = object : BroadcastReceiver() {
@@ -120,8 +114,8 @@ class MusicPlayerViewModel @Inject constructor(
                 )
 
                 //use the list of ids to make a list of DTOs
-                _includedTags.value = includedTagIds.map { tagDTOFactory.getTagById(it)!! }
-                _excludedTags.value = excludedTagIds.map { tagDTOFactory.getTagById(it)!! }
+                _includedTags.value = includedTagIds.map { tagRepository.getTagById(it)!! }
+                _excludedTags.value = excludedTagIds.map { tagRepository.getTagById(it)!! }
                 val playlist = getFilteredPlaylist(_includedTags.value, _excludedTags.value)
                 _currentPlaylist.value = playlist
 

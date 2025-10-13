@@ -7,7 +7,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import com.hich2000.tagcapella.utils.Database
 import com.hich2000.tagcapella.tags.TagDTO
-import java.io.File
 
 data class Song(val path: String, val database: Database) {
 
@@ -27,10 +26,6 @@ data class Song(val path: String, val database: Database) {
             return _songTagCount
         }
 
-    val title: String
-        get() = File(path).nameWithoutExtension
-
-
     fun reloadTagList() {
         _songTagList.clear()
         _songTagList.addAll(getSongTags())
@@ -39,7 +34,7 @@ data class Song(val path: String, val database: Database) {
 
     private fun getSongTags(): MutableList<TagDTO> {
         val tags = db.songQueries.selectSongTags(path) { id, tag, category ->
-                TagDTO(id, tag, category, database)
+                TagDTO(id, tag, category)
             }.executeAsList()
 
         return tags.toMutableStateList()
