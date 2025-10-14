@@ -356,6 +356,13 @@ fun SongScreen(
     val songListInitialized by songViewModel.isInitialized.collectAsState()
     val songList by songViewModel.songList.collectAsState()
 
+    val tagList by tagViewModel.tags.collectAsState()
+    LaunchedEffect(tagList) {
+        println("ayo3")
+        println(tagList)
+        println("TagViewModel in SongScreen: ${tagViewModel.hashCode()}")
+    }
+
     if (showTagDialog) {
         TagDialog(
             onButtonPress = {

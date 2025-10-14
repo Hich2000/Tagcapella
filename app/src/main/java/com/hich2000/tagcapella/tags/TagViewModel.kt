@@ -15,25 +15,15 @@ class TagViewModel @Inject constructor(
     private val tagRepository: TagRepository,
 ) : ViewModel() {
 
-    private var _tags = MutableStateFlow<List<TagDTO>>(emptyList())
-    val tags: StateFlow<List<TagDTO>> get() = _tags
+    val tags: StateFlow<List<TagDTO>> get() = tagRepository.tags
 
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> get() = _showDialog
-
-    init {
-        _tags.value = selectAllTags()
-    }
-
-    private fun selectAllTags(): List<TagDTO> {
-        return tagRepository.selectAllTags()
-    }
 
     fun insertTag(tag: String, category: Long?) {
         viewModelScope.launch {
             try {
                 tagRepository.insertTag(newTag = tag, category = category)
-                _tags.value = selectAllTags()
             } catch (_: Throwable) {
                 ToastEventBus.send("Tag already exists with name: $tag")
             }
@@ -44,7 +34,6 @@ class TagViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 tagRepository.updateTag(id = id, tag = tag, category = category)
-                _tags.value = selectAllTags()
             } catch (_: Throwable) {
                 ToastEventBus.send("Tag already exists with name: $tag")
             }
@@ -52,9 +41,10 @@ class TagViewModel @Inject constructor(
     }
 
     fun deleteTag(id: Long) {
-        val deleteIndex = _tags.value.indexOfFirst { it.id == id }
-        tagRepository.deleteTag(_tags.value[deleteIndex].id)
-        _tags.value = selectAllTags()
+        viewModelScope.launch {
+            val deleteIndex = tags.value.indexOfFirst { it.id == id }
+            tagRepository.deleteTag(tags.value[deleteIndex].id)
+        }
     }
 
     fun addSongTag(tag: TagDTO, song: Song) {
@@ -73,7 +63,7 @@ class TagViewModel @Inject constructor(
         _showDialog.value = false
     }
 
-    fun getTaggedSongs(tag: TagDTO): MutableList<Song>  {
+    fun getTaggedSongs(tag: TagDTO): MutableList<Song> {
         return tagRepository.getTaggedSongs(tag)
     }
 }
