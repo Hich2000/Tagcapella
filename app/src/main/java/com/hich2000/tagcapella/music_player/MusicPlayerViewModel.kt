@@ -66,6 +66,9 @@ class MusicPlayerViewModel @Inject constructor(
     private val _playbackDuration = MutableStateFlow(0L)
     val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
+    private val _showDialog = MutableStateFlow(false)
+    val showDialog: StateFlow<Boolean> get() = _showDialog
+
     private lateinit var audioOutputChangeReceiver: BroadcastReceiver
 
     init {
@@ -268,5 +271,12 @@ class MusicPlayerViewModel @Inject constructor(
         }
     }
 
+    fun openDialog() {
+        _showDialog.value = true
+    }
+
+    fun closeDialog() {
+        _showDialog.value = false
+    }
 }
 

@@ -49,7 +49,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,12 +80,6 @@ fun TagScreen(
     val showSongDialog = remember { mutableStateOf(false) }
     val songList by songViewModel.songList.collectAsState()
     val tagList by tagViewModel.tags.collectAsState()
-
-    LaunchedEffect(tagList) {
-        println("ayo1")
-        println(tagList)
-        println("TagViewModel in SongScreen: ${tagViewModel.hashCode()}")
-    }
 
     if (showTagDialog.value) {
         BasicAlertDialog(
@@ -564,11 +557,6 @@ fun TagDialog(
         },
     ) {
         val tagList by tagViewModel.tags.collectAsState()
-        LaunchedEffect(tagList) {
-            println("ayo2")
-            println(tagList)
-            println("TagViewModel in SongScreen: ${tagViewModel.hashCode()}")
-        }
 
         Card(
             shape = CutCornerShape(0.dp),

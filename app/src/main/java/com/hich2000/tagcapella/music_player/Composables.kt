@@ -22,6 +22,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Queue
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Shuffle
@@ -33,6 +34,7 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,6 +81,8 @@ fun MusicControls(
     val isMediaControllerInitialized by musicPlayerViewModel.isMediaControllerInitialized.collectAsState()
 
     if (isMediaControllerInitialized) {
+        val coroutineScope = rememberCoroutineScope()
+
         //observe the isPlaying state for ui changes
         val isPlaying by musicPlayerViewModel.isPlaying.collectAsState()
         //observe the shuffleModeEnabled state for ui changes
@@ -94,6 +99,45 @@ fun MusicControls(
         //bottomsheet stuff
         val sheetState = rememberBottomSheetScaffoldState()
         val songList by musicPlayerViewModel.currentPlaylist.collectAsState()
+        val showDialog by musicPlayerViewModel.showDialog.collectAsState()
+
+        val includedTags by musicPlayerViewModel.includedTags.collectAsState()
+        val excludedTags by musicPlayerViewModel.excludedTags.collectAsState()
+
+        if (showDialog) {
+            TagDialog(
+                onButtonPress = {
+                    coroutineScope.launch {
+                        val newPlaylist = musicPlayerViewModel.getFilteredPlaylist(includedTags, excludedTags)
+                        musicPlayerViewModel.preparePlaylist(newPlaylist)
+                        musicPlayerViewModel.closeDialog()
+                    }
+                },
+                tagCardComposable = { tag ->
+                    TagCard(
+                        tag = tag,
+                        onClick = {
+                            if (includedTags.contains(tag)) {
+                                musicPlayerViewModel.removeIncludedTag(tag)
+                                musicPlayerViewModel.addExcludedTag(tag)
+                            } else if (excludedTags.contains(tag)) {
+                                musicPlayerViewModel.removeExcludedTag(tag)
+                            } else {
+                                musicPlayerViewModel.addIncludedTag(tag)
+                            }
+                        },
+                        backgroundColor =
+                            if (includedTags.contains(tag)) {
+                                Color.hsl(112f, 0.5f, 0.3f)
+                            } else if (excludedTags.contains(tag)) {
+                                Color.Red
+                            } else {
+                                MaterialTheme.colorScheme.background
+                            },
+                    )
+                }
+            )
+        }
 
         BottomSheetScaffold(
             scaffoldState = sheetState,
@@ -118,7 +162,22 @@ fun MusicControls(
                             }
                         )
                     },
-                    floatingActionButton = {}
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = { musicPlayerViewModel.openDialog() },
+                            containerColor = MaterialTheme.colorScheme.background,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .border(2.dp, MaterialTheme.colorScheme.tertiary),
+                            shape = RectangleShape
+                        ) {
+                            Icon(
+                                Icons.Default.Queue,
+                                contentDescription = "Queue",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                    }
                 )
             },
         ) { innerPadding ->
@@ -355,13 +414,6 @@ fun SongScreen(
     val excludedTags by mediaPlayerViewModel.excludedTags.collectAsState()
     val songListInitialized by songViewModel.isInitialized.collectAsState()
     val songList by songViewModel.songList.collectAsState()
-
-    val tagList by tagViewModel.tags.collectAsState()
-    LaunchedEffect(tagList) {
-        println("ayo3")
-        println(tagList)
-        println("TagViewModel in SongScreen: ${tagViewModel.hashCode()}")
-    }
 
     if (showTagDialog) {
         TagDialog(
