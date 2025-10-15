@@ -2,20 +2,20 @@ package com.hich2000.tagcapella.songs
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import com.hich2000.tagcapella.utils.Database
 import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.utils.Database
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 data class Song(val path: String, val database: Database) {
 
     private var db = database.db
 
-    private var _songTagList = mutableStateListOf<TagDTO>()
-    val songTagList: SnapshotStateList<TagDTO>
+    private var _songTagList = MutableStateFlow<List<TagDTO>>(emptyList())
+    val songTagList: StateFlow<List<TagDTO>>
         get() {
-            if (_songTagList.isEmpty()) reloadTagList()
+            if (_songTagList.value.isEmpty()) reloadTagList()
             return _songTagList
         }
 
@@ -27,8 +27,8 @@ data class Song(val path: String, val database: Database) {
         }
 
     fun reloadTagList() {
-        _songTagList.clear()
-        _songTagList.addAll(getSongTags())
+        _songTagList.value = emptyList()
+        _songTagList.value = getSongTags()
         _songTagCount.intValue = getSongTagCount()
     }
 
@@ -41,6 +41,6 @@ data class Song(val path: String, val database: Database) {
     }
 
     private fun getSongTagCount(): Int {
-        return _songTagList.size
+        return _songTagList.value.size
     }
 }

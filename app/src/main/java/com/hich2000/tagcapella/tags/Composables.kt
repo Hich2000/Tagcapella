@@ -66,30 +66,28 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.utils.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
-    songViewModel: SongViewModel = hiltViewModel(),
-    tagViewModel: TagViewModel = hiltViewModel(),
+    tagScreenViewModel: TagScreenViewModel = hiltViewModel()
 ) {
-    val showTagDialog = remember { mutableStateOf(false) }
-    val clickedTag = remember { mutableStateOf<TagDTO?>(null) }
+    val showTagDialog by tagScreenViewModel.showDialog.collectAsState()
+    val clickedTag by tagScreenViewModel.clickedTag.collectAsState()
     val showSongDialog = remember { mutableStateOf(false) }
-    val songList by songViewModel.songList.collectAsState()
-    val tagList by tagViewModel.tags.collectAsState()
+    val songList by tagScreenViewModel.songs.collectAsState()
+    val tagList by tagScreenViewModel.tags.collectAsState()
 
-    if (showTagDialog.value) {
+    if (showTagDialog) {
         BasicAlertDialog(
             onDismissRequest = {
-                showTagDialog.value = false
-                clickedTag.value = null
+                tagScreenViewModel.closeDialog()
+                tagScreenViewModel.setClickedTag(null)
             },
         ) {
             TagForm(
-                tag = clickedTag.value
+                tag = clickedTag
             )
         }
     }
@@ -98,14 +96,16 @@ fun TagScreen(
         BasicAlertDialog(
             onDismissRequest = {
                 showSongDialog.value = false
-                clickedTag.value = null
+                tagScreenViewModel.setClickedTag(null)
             },
         ) {
             SongList(
                 songList = songList,
                 songCard = { song ->
-                    val taggedSongs = clickedTag.value?.let { tagViewModel.getTaggedSongs(it) }
-                    val isTagged = taggedSongs?.contains(song) ?: false
+                    val songTags by song.songTagList.collectAsState()
+                    val isTagged: Boolean = songTags.any { songTag ->
+                        songTag.id == clickedTag?.id
+                    }
 
                     SongCard(
                         song = song,
@@ -115,14 +115,10 @@ fun TagScreen(
                             MaterialTheme.colorScheme.background
                         },
                         onClick = {
-                            if (taggedSongs?.contains(song) ?: false) {
-                                song.path.let {
-                                    tagViewModel.deleteSongTag(clickedTag.value!!, song)
-                                }
+                            if (isTagged) {
+                                tagScreenViewModel.deleteSongTag(clickedTag!!, song)
                             } else {
-                                song.path.let {
-                                    tagViewModel.addSongTag(clickedTag.value!!, song)
-                                }
+                                tagScreenViewModel.addSongTag(clickedTag!!, song)
                             }
                         }
                     )
@@ -138,15 +134,15 @@ fun TagScreen(
             tagList = tagList,
             tagCard = { tag ->
                 val editCallback = {
-                    clickedTag.value = tag
-                    showTagDialog.value = true
+                    tagScreenViewModel.setClickedTag(tag)
+                    tagScreenViewModel.openDialog()
                 }
                 val songCallback = {
-                    clickedTag.value = tag
+                    tagScreenViewModel.setClickedTag(tag)
                     showSongDialog.value = true
                 }
                 val deleteCallback = {
-                    tagViewModel.deleteTag(tag.id)
+                    tagScreenViewModel.deleteTag(tag.id)
                 }
 
                 TagCard(

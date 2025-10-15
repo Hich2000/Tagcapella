@@ -122,7 +122,7 @@ class SongRepository @Inject constructor(
 
         //now we remove the excluded tags and songs who's path does not exist anymore
         filteredSongList.removeAll { song ->
-            song.songTagList.any { it in excludeTags } or !File(song.path).exists()
+            song.songTagList.value.any { it in excludeTags } or !File(song.path).exists()
         }
 
         return filteredSongList

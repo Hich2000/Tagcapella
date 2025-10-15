@@ -446,7 +446,7 @@ fun SongScreen(
                 tagCallBack = {
                     //todo extract this copy and pasted code into a variable or something
                     onTagClick = { tag ->
-                        if (songToTag.value!!.songTagList.contains(tag)) {
+                        if (songToTag.value!!.songTagList.value.contains(tag)) {
                             songToTag.value!!.path.let {
                                 tagViewModel.deleteSongTag(tag, songToTag.value!!)
                             }
@@ -457,11 +457,8 @@ fun SongScreen(
                         }
                     }
                     tagCardComposable = { tag ->
-                        val isTagged = try {
-                            songToTag.value?.songTagList?.contains(tag) == true
-                        } catch (_: Exception) {
-                            false
-                        }
+                        val isTagged = songToTag.value?.songTagList?.value?.contains(tag) ?: false
+
 
                         TagCard(
                             tag = tag,
@@ -480,11 +477,8 @@ fun SongScreen(
                 },
                 onClick = {
                     tagCardComposable = { tag ->
-                        val isTagged = try {
-                            songToTag.value?.songTagList?.contains(tag) == true
-                        } catch (_: Exception) {
-                            false
-                        }
+                        val isTagged = songToTag.value?.songTagList?.value?.contains(tag) ?: false
+
 
                         TagCard(
                             tag = tag,
@@ -500,7 +494,7 @@ fun SongScreen(
 
                     //todo extract this copy and pasted code into a variable or something
                     onTagClick = { tag ->
-                        if (songToTag.value!!.songTagList.contains(tag)) {
+                        if (songToTag.value!!.songTagList.value.contains(tag)) {
                             songToTag.value!!.path.let {
                                 tagViewModel.deleteSongTag(tag, songToTag.value!!)
                             }
