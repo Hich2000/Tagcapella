@@ -54,8 +54,8 @@ class SharedPreferenceManager @Inject constructor(
             is SharedPreferenceKey.IncludedTags -> {
                 val json = sharedPreferences.getString(key.key, null)
                 if (!json.isNullOrEmpty()) {
-                    val type = object : TypeToken<List<String>>() {}.type
-                    gson.fromJson<List<String>>(json, type) ?: defaultValue
+                    val type = object : TypeToken<T>() {}.type
+                    gson.fromJson<T>(json, type) ?: defaultValue
                 } else {
                     defaultValue
                 }
@@ -63,8 +63,8 @@ class SharedPreferenceManager @Inject constructor(
             is SharedPreferenceKey.ExcludedTags -> {
                 val json = sharedPreferences.getString(key.key, null)
                 if (!json.isNullOrEmpty()) {
-                    val type = object : TypeToken<List<String>>() {}.type
-                    gson.fromJson<List<String>>(json, type) ?: defaultValue
+                    val type = object : TypeToken<T>() {}.type
+                    gson.fromJson<T>(json, type) ?: defaultValue
                 } else {
                     defaultValue
                 }
@@ -72,13 +72,13 @@ class SharedPreferenceManager @Inject constructor(
             is SharedPreferenceKey.FoldersToScan -> {
                 val json = sharedPreferences.getString(key.key, null)
                 if (!json.isNullOrEmpty()) {
-                    val type = object : TypeToken<List<String>>() {}.type
-                    gson.fromJson<List<String>>(json, type) ?: defaultValue
+                    val type = object : TypeToken<T>() {}.type
+                    gson.fromJson<T>(json, type) ?: defaultValue
                 } else {
                     defaultValue
                 }
             }
 
-        } as T
+        }
     }
 }
