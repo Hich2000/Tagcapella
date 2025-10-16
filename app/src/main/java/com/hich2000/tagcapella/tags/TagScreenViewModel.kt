@@ -19,7 +19,7 @@ class TagScreenViewModel @Inject constructor(
     val tags: StateFlow<List<TagDTO>> get() = tagRepository.tags
     val songs: StateFlow<List<Song>> get() = songRepository.songList
 
-    val _clickedTag = MutableStateFlow<TagDTO?>(null)
+    private val _clickedTag = MutableStateFlow<TagDTO?>(null)
     val clickedTag: StateFlow<TagDTO?> get() = _clickedTag
 
     private val _showDialog = MutableStateFlow(false)
