@@ -1,9 +1,11 @@
-package com.hich2000.tagcapella.tags
+package com.hich2000.tagcapella.tags.tagScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
+import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.tags.TagRepository
 import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

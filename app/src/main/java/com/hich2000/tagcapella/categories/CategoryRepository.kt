@@ -2,6 +2,8 @@ package com.hich2000.tagcapella.categories
 
 import com.hich200.tagcapella.TagcapellaDb
 import com.hich2000.tagcapella.utils.Database
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,6 +14,17 @@ class CategoryRepository @Inject constructor(
 
     private val db: TagcapellaDb = database.db
 
+    private var _categories = MutableStateFlow<List<CategoryDTO>>(emptyList())
+    val categories: StateFlow<List<CategoryDTO>> get() = _categories
+
+    init {
+        initCategoryList()
+    }
+
+    fun initCategoryList() {
+        _categories.value = selectAllCategories()
+    }
+
     fun selectAllCategories(): List<CategoryDTO> {
         return db.categoryQueries.selectAll { id, category -> CategoryDTO(id, category, database) }.executeAsList()
             .toList()
@@ -19,17 +32,18 @@ class CategoryRepository @Inject constructor(
 
     fun insertCategory(newCategory: String): CategoryDTO {
         db.categoryQueries.insertCategory(newCategory)
+        initCategoryList()
         return db.categoryQueries.lastInsertedCategory { id, category -> CategoryDTO(id, category, database) }
             .executeAsOne()
     }
 
     fun updateCategory(id: Long, category: String) {
         db.categoryQueries.updateCategory(category, id)
-        //todo add something here to check if the update was successful
+        initCategoryList()
     }
 
     fun deleteCategory(id: Long) {
         db.categoryQueries.deleteCategory(id)
-        //todo add something here to check if the delete was successful
+        initCategoryList()
     }
 }

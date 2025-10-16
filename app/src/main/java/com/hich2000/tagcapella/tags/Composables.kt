@@ -9,12 +9,10 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,10 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Add
@@ -33,7 +29,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -44,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -58,191 +52,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryViewModel
-import com.hich2000.tagcapella.music_player.SongCard
-import com.hich2000.tagcapella.music_player.SongList
+import com.hich2000.tagcapella.tags.tagList.TagList
 import com.hich2000.tagcapella.utils.TagCapellaButton
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TagScreen(
-    tagScreenViewModel: TagScreenViewModel = hiltViewModel()
-) {
-    val showTagDialog by tagScreenViewModel.showDialog.collectAsState()
-    val clickedTag by tagScreenViewModel.clickedTag.collectAsState()
-    val showSongDialog = remember { mutableStateOf(false) }
-    val songList by tagScreenViewModel.songs.collectAsState()
-    val tagList by tagScreenViewModel.tags.collectAsState()
-
-    if (showTagDialog) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                tagScreenViewModel.closeDialog()
-                tagScreenViewModel.setClickedTag(null)
-            },
-        ) {
-            TagForm(
-                tag = clickedTag
-            )
-        }
-    }
-
-    if (showSongDialog.value) {
-        BasicAlertDialog(
-            onDismissRequest = {
-                showSongDialog.value = false
-                tagScreenViewModel.setClickedTag(null)
-            },
-        ) {
-            SongList(
-                songList = songList,
-                songCard = { song ->
-                    val songTags by song.songTagList.collectAsState()
-                    val isTagged: Boolean = songTags.any { songTag ->
-                        songTag.id == clickedTag?.id
-                    }
-
-                    SongCard(
-                        song = song,
-                        backgroundColor = if (isTagged) {
-                            Color.hsl(112f, 0.5f, 0.3f)
-                        } else {
-                            MaterialTheme.colorScheme.background
-                        },
-                        onClick = {
-                            if (isTagged) {
-                                tagScreenViewModel.deleteSongTag(clickedTag!!, song)
-                            } else {
-                                tagScreenViewModel.addSongTag(clickedTag!!, song)
-                            }
-                        }
-                    )
-                }
-            )
-        }
-    }
-
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        TagList(
-            tagList = tagList,
-            tagCard = { tag ->
-                val editCallback = {
-                    tagScreenViewModel.setClickedTag(tag)
-                    tagScreenViewModel.openDialog()
-                }
-                val songCallback = {
-                    tagScreenViewModel.setClickedTag(tag)
-                    showSongDialog.value = true
-                }
-                val deleteCallback = {
-                    tagScreenViewModel.deleteTag(tag.id)
-                }
-
-                TagCard(
-                    tag = tag,
-                    editCallback = editCallback,
-                    songCallback = songCallback,
-                    deleteCallback = deleteCallback
-                )
-            }
-        )
-    }
-}
-
-@Composable
-fun TagList(
-    tagList: List<TagDTO> = emptyList(),
-    tagCard: @Composable (tag: TagDTO) -> Unit,
-    categoryViewModel: CategoryViewModel = hiltViewModel(),
-) {
-    val columnScroll = rememberScrollState()
-    val categories by categoryViewModel.categories.collectAsState()
-    val scroll = rememberScrollState(0)
-    var selectedCategory: Long? by remember { mutableStateOf(null) }
-
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
-                )
-                .fillMaxSize()
-                .verticalScroll(columnScroll)
-        ) {
-            if (categories.isNotEmpty()) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(scroll)
-                ) {
-                    TagCapellaButton(
-                        onClick = {
-                            selectedCategory = null
-                        },
-                        modifier = Modifier
-                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
-                            .padding(0.dp)
-                            .width(120.dp),
-                        shape = RectangleShape,
-                    ) {
-                        Text(
-                            text = "All",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
-                        )
-                    }
-
-                    categories.forEach { category ->
-                        val buttonModifier = Modifier
-                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
-                            .padding(0.dp)
-                        val finalModifier = if (category.category.length < 20) {
-                            buttonModifier.width(120.dp)
-                        } else {
-                            buttonModifier.wrapContentWidth()
-                            buttonModifier.weight(1f)
-                        }
-
-                        TagCapellaButton(
-                            onClick = {
-                                selectedCategory = category.id
-                            },
-                            modifier = finalModifier,
-                            shape = RectangleShape,
-                        ) {
-                            Text(
-                                text = category.category,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                            )
-                        }
-                    }
-                }
-            }
-
-
-            tagList.forEach { tag ->
-                if (selectedCategory !== null && tag.categoryId != selectedCategory) {
-                    return@forEach
-                }
-                tagCard(tag)
-            }
-        }
-
-    }
-}
 
 @Composable
 fun ExpandableFab(

@@ -77,7 +77,7 @@ import com.hich2000.tagcapella.songs.FolderScanManager
 import com.hich2000.tagcapella.songs.SongViewModel
 import com.hich2000.tagcapella.tags.ExpandableFab
 import com.hich2000.tagcapella.tags.TagForm
-import com.hich2000.tagcapella.tags.TagScreen
+import com.hich2000.tagcapella.tags.tagScreen.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.LocalNavController
 import com.hich2000.tagcapella.utils.NavItem
