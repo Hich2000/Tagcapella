@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.utils
+package com.hich2000.tagcapella.utils.sharedPreferences
 
 sealed class SharedPreferenceKey<T>(
     val key: String

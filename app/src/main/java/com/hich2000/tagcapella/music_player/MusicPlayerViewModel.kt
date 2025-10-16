@@ -15,8 +15,8 @@ import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagRepository
-import com.hich2000.tagcapella.utils.SharedPreferenceKey
-import com.hich2000.tagcapella.utils.SharedPreferenceManager
+import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
+import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

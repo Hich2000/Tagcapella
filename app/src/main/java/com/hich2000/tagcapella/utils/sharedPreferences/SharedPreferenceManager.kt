@@ -1,12 +1,12 @@
-package com.hich2000.tagcapella.utils
+package com.hich2000.tagcapella.utils.sharedPreferences
 
 import android.app.Application
 import android.content.Context
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 import javax.inject.Singleton
-import androidx.core.content.edit
 
 @Singleton
 class SharedPreferenceManager @Inject constructor(

@@ -36,7 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.categories.CategoryViewModel
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagViewModel
-import com.hich2000.tagcapella.utils.TagCapellaButton
+import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

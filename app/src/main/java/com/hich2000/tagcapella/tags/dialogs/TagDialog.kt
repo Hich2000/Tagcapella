@@ -20,7 +20,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.tagList.TagList
-import com.hich2000.tagcapella.utils.TagCapellaButton
+import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable
 fun TagDialog(

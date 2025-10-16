@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.utils
+package com.hich2000.tagcapella.utils.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label

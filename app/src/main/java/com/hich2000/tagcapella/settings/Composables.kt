@@ -19,9 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.utils.LocalNavController
-import com.hich2000.tagcapella.utils.NavItem
-import com.hich2000.tagcapella.utils.TagCapellaButton
+import com.hich2000.tagcapella.utils.navigation.LocalNavController
+import com.hich2000.tagcapella.utils.navigation.NavItem
+import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable
 fun SettingsScreen() {

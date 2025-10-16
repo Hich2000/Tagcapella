@@ -44,7 +44,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.utils.TagCapellaButton
+import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

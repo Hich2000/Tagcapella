@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.utils.TagCapellaButton
+import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable
 fun TagList(

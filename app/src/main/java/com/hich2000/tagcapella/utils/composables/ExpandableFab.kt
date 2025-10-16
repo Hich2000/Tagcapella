@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.utils
+package com.hich2000.tagcapella.utils.composables
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween

@@ -1,7 +1,7 @@
 package com.hich2000.tagcapella.songs
 
-import com.hich2000.tagcapella.utils.SharedPreferenceKey
-import com.hich2000.tagcapella.utils.SharedPreferenceManager
+import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
+import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
