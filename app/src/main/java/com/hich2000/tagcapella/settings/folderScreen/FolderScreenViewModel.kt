@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.settings
+package com.hich2000.tagcapella.settings.folderScreen
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class FolderScanViewModel @Inject constructor(
+class FolderScreenViewModel @Inject constructor(
     private val folderScanManager: FolderScanManager
-) : ViewModel() {
+): ViewModel() {
     val foldersToScan: StateFlow<List<String>> get() = folderScanManager.foldersToScan
 
     fun addScanFolder(contentUri: Uri): Boolean {
@@ -24,5 +24,4 @@ class FolderScanViewModel @Inject constructor(
     fun removeScanFolder(index: Int) {
         folderScanManager.removeScanFolder(index)
     }
-
 }

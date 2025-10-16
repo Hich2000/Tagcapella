@@ -1,8 +1,7 @@
-package com.hich2000.tagcapella.settings
+package com.hich2000.tagcapella.settings.folderScreen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,63 +16,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.utils.navigation.LocalNavController
-import com.hich2000.tagcapella.utils.navigation.NavItem
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable
-fun SettingsScreen() {
-    val navController = LocalNavController.current
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        TagCapellaButton(
-            onClick = {
-//                now I can use the navController like this
-                navController.navigate(NavItem.Settings.Folders.title)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(2.dp, MaterialTheme.colorScheme.tertiary)
-        ) {
-            Text("Music folders")
-        }
-    }
-}
-
-@Composable
 fun FolderScreen(
-    folderScanViewModel: FolderScanViewModel = hiltViewModel()
+    folderScreenViewModel: FolderScreenViewModel = hiltViewModel()
 ) {
 
-    val folders by folderScanViewModel.foldersToScan.collectAsState()
+    val folders by folderScreenViewModel.foldersToScan.collectAsState()
 
     //this is how to request the system for permission for specific folders
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
-            uri?.let { folderScanViewModel.addScanFolder(uri) }
+            uri?.let { folderScreenViewModel.addScanFolder(uri) }
         }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.Companion.fillMaxSize()
     ) {
         folders.forEachIndexed { index, folder ->
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.Companion.fillMaxWidth()
             ) {
                 Text(
                     folder,
-                    modifier = Modifier
+                    modifier = Modifier.Companion
                         .weight(0.9f)
                 )
                 IconButton(
                     onClick = {
-                        folderScanViewModel.removeScanFolder(index)
+                        folderScreenViewModel.removeScanFolder(index)
                     },
-                    modifier = Modifier.weight(0.1f)
+                    modifier = Modifier.Companion.weight(0.1f)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -87,7 +62,7 @@ fun FolderScreen(
             onClick = {
                 launcher.launch(null)
             },
-            modifier = Modifier
+            modifier = Modifier.Companion
                 .fillMaxWidth()
         ) {
             Text("Add folder to scan")
