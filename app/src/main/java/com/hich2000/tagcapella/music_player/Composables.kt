@@ -63,9 +63,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongViewModel
-import com.hich2000.tagcapella.tags.TagCard
+import com.hich2000.tagcapella.tags.tagList.TagCard
 import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.TagDialog
+import com.hich2000.tagcapella.tags.dialogs.TagDialog
 import com.hich2000.tagcapella.tags.TagViewModel
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit

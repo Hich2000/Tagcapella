@@ -15,8 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music_player.SongCard
 import com.hich2000.tagcapella.music_player.SongList
-import com.hich2000.tagcapella.tags.TagCard
-import com.hich2000.tagcapella.tags.TagForm
+import com.hich2000.tagcapella.tags.tagList.TagCard
+import com.hich2000.tagcapella.tags.tagList.TagForm
 import com.hich2000.tagcapella.tags.tagList.TagList
 
 @OptIn(ExperimentalMaterial3Api::class)
