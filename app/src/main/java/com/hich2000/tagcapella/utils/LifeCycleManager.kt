@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.utils
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.hich2000.tagcapella.music.MediaControllerManager
+import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
 import javax.inject.Inject
 
 class LifeCycleManager @Inject constructor(
