@@ -272,7 +272,7 @@ class MediaControllerManager @Inject constructor(
         _currentPlaylist.value = playlist
     }
 
-    fun handleStartStop() {
+    fun togglePlayback() {
         mediaController.apply {
             if (_isPlaying.value) {
                 _mediaController.value?.pause()

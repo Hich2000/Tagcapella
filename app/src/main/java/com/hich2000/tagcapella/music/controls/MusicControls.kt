@@ -57,30 +57,23 @@ fun MusicControls(
     // Use the state variable to determine if the MediaController and songlist are initialized
     val isMediaControllerInitialized by musicPlayerViewModel.isMediaControllerInitialized.collectAsState()
 
+    val coroutineScope = rememberCoroutineScope()
+    val mediaController by musicPlayerViewModel.mediaController.collectAsState()
+    val playbackPosition by musicPlayerViewModel.playbackPosition.collectAsState()
+    val playbackDuration by musicPlayerViewModel.playbackDuration.collectAsState()
+    val isPlaying by musicPlayerViewModel.isPlaying.collectAsState()
+    val shuffleModeEnabled by musicPlayerViewModel.shuffleModeEnabled.collectAsState()
+    val repeatMode by musicPlayerViewModel.repeatMode.collectAsState()
+
+    //bottomsheet stuff
+    val sheetState = rememberBottomSheetScaffoldState()
+    val songList by musicPlayerViewModel.currentPlaylist.collectAsState()
+    val showDialog by musicPlayerViewModel.showDialog.collectAsState()
+
+    val includedTags by musicPlayerViewModel.includedTags.collectAsState()
+    val excludedTags by musicPlayerViewModel.excludedTags.collectAsState()
+
     if (isMediaControllerInitialized) {
-        val coroutineScope = rememberCoroutineScope()
-
-        //observe the isPlaying state for ui changes
-        val isPlaying by musicPlayerViewModel.isPlaying.collectAsState()
-        //observe the shuffleModeEnabled state for ui changes
-        val shuffleModeEnabled by musicPlayerViewModel.shuffleModeEnabled.collectAsState()
-        //observe the loopMode state for ui changes
-        val repeatMode by musicPlayerViewModel.repeatMode.collectAsState()
-
-        val playbackPosition by musicPlayerViewModel.playbackPosition.collectAsState()
-        val playbackDuration by musicPlayerViewModel.playbackDuration.collectAsState()
-
-        //get the mediaController itself
-        val mediaController by musicPlayerViewModel.mediaController.collectAsState()
-
-        //bottomsheet stuff
-        val sheetState = rememberBottomSheetScaffoldState()
-        val songList by musicPlayerViewModel.currentPlaylist.collectAsState()
-        val showDialog by musicPlayerViewModel.showDialog.collectAsState()
-
-        val includedTags by musicPlayerViewModel.includedTags.collectAsState()
-        val excludedTags by musicPlayerViewModel.excludedTags.collectAsState()
-
         if (showDialog) {
             TagDialog(
                 onButtonPress = {
