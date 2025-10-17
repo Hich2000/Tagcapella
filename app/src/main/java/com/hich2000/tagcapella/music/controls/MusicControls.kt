@@ -71,7 +71,7 @@ fun MusicControls(
         val playbackDuration by musicPlayerViewModel.playbackDuration.collectAsState()
 
         //get the mediaController itself
-        val mediaController = musicPlayerViewModel.mediaController
+        val mediaController by musicPlayerViewModel.mediaController.collectAsState()
 
         //bottomsheet stuff
         val sheetState = rememberBottomSheetScaffoldState()
@@ -133,7 +133,7 @@ fun MusicControls(
                                     listItem == song
                                 }
 
-                                mediaController.seekTo(
+                                mediaController?.seekTo(
                                     index,
                                     0
                                 )
@@ -213,9 +213,9 @@ fun MusicControls(
                     IconButton(
                         onClick = {
                             if (shuffleModeEnabled) {
-                                mediaController.shuffleModeEnabled = false
+                                mediaController?.shuffleModeEnabled = false
                             } else {
-                                mediaController.shuffleModeEnabled = true
+                                mediaController?.shuffleModeEnabled = true
                             }
                         }
                     ) {
@@ -230,7 +230,7 @@ fun MusicControls(
                     //skip previous
                     IconButton(
                         onClick = {
-                            mediaController.seekToPrevious()
+                            mediaController?.seekToPrevious()
                         }
                     ) {
                         Icon(
@@ -242,7 +242,7 @@ fun MusicControls(
                     //play/pause
                     IconButton(
                         onClick = {
-                            if (isPlaying) mediaController.pause() else mediaController.play()
+                            if (isPlaying) mediaController?.pause() else mediaController?.play()
                         }
                     ) {
                         val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
@@ -256,7 +256,7 @@ fun MusicControls(
                     //skip next
                     IconButton(
                         onClick = {
-                            mediaController.seekToNext()
+                            mediaController?.seekToNext()
                         }
                     ) {
                         Icon(
@@ -269,11 +269,11 @@ fun MusicControls(
                     IconButton(
                         onClick = {
                             if (repeatMode == Player.REPEAT_MODE_OFF) {
-                                mediaController.repeatMode = Player.REPEAT_MODE_ALL
+                                mediaController?.repeatMode = Player.REPEAT_MODE_ALL
                             } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                                mediaController.repeatMode = Player.REPEAT_MODE_ONE
+                                mediaController?.repeatMode = Player.REPEAT_MODE_ONE
                             } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                                mediaController.repeatMode = Player.REPEAT_MODE_OFF
+                                mediaController?.repeatMode = Player.REPEAT_MODE_OFF
                             }
                         }
                     ) {

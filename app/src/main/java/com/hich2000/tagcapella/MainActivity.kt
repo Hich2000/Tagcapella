@@ -17,7 +17,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +42,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -69,35 +69,42 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hich2000.tagcapella.categories.CategoryForm
 import com.hich2000.tagcapella.categories.CategoryScreen
-import com.hich2000.tagcapella.music.controls.MusicControls
 import com.hich2000.tagcapella.music.SongScreen
-import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
+import com.hich2000.tagcapella.music.controls.MusicControls
 import com.hich2000.tagcapella.settings.SettingsScreen
+import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
 import com.hich2000.tagcapella.songs.FolderScanManager
-import com.hich2000.tagcapella.songs.SongViewModel
-import com.hich2000.tagcapella.utils.composables.ExpandableFab
 import com.hich2000.tagcapella.tags.tagList.TagForm
 import com.hich2000.tagcapella.tags.tagScreen.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
+import com.hich2000.tagcapella.utils.LifeCycleManager
+import com.hich2000.tagcapella.utils.ToastEventBus
+import com.hich2000.tagcapella.utils.composables.ExpandableFab
+import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 import com.hich2000.tagcapella.utils.navigation.LocalNavController
 import com.hich2000.tagcapella.utils.navigation.NavItem
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
-import com.hich2000.tagcapella.utils.composables.TagCapellaButton
-import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
-import kotlin.getValue
 
 @HiltAndroidApp
-class MyApp : Application()
+class MyApp : Application(), LifecycleObserver {
+
+    @Inject
+    lateinit var appLifeCycleManager: LifeCycleManager
+
+    override fun onCreate() {
+        super.onCreate()
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifeCycleManager)
+    }
+}
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val mediaPermissionGranted = mutableIntStateOf(PackageManager.PERMISSION_DENIED)
-    private val songViewModel: SongViewModel by viewModels()
 
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
@@ -263,7 +270,6 @@ class MainActivity : ComponentActivity() {
                     )
                     .fillMaxSize()
             ) {
-                val songList by songViewModel.songList.collectAsState()
                 CompositionLocalProvider(LocalNavController provides navController) {
                     NavHost(
                         navController = navController,
