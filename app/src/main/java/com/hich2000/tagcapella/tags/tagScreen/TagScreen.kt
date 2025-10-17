@@ -13,8 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.music_player.SongCard
-import com.hich2000.tagcapella.music_player.SongList
+import com.hich2000.tagcapella.music.SongCard
+import com.hich2000.tagcapella.music.SongList
 import com.hich2000.tagcapella.tags.tagList.TagCard
 import com.hich2000.tagcapella.tags.tagList.TagForm
 import com.hich2000.tagcapella.tags.tagList.TagList

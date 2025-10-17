@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music_player
+package com.hich2000.tagcapella.music
 
 import android.app.Application
 import android.content.ComponentName

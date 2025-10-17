@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music_player
+package com.hich2000.tagcapella.music
 
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
