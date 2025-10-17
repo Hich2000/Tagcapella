@@ -205,11 +205,7 @@ fun MusicControls(
                     //shuffle mode
                     IconButton(
                         onClick = {
-                            if (shuffleModeEnabled) {
-                                mediaController?.shuffleModeEnabled = false
-                            } else {
-                                mediaController?.shuffleModeEnabled = true
-                            }
+                            mediaController?.shuffleModeEnabled = !shuffleModeEnabled
                         }
                     ) {
                         val icon =
@@ -235,7 +231,7 @@ fun MusicControls(
                     //play/pause
                     IconButton(
                         onClick = {
-                            if (isPlaying) mediaController?.pause() else mediaController?.play()
+                            musicPlayerViewModel.togglePlayback()
                         }
                     ) {
                         val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow

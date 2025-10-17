@@ -66,6 +66,11 @@ class MusicPlayerViewModel @Inject constructor(
         mediaControllerManager.addIncludedTag(tag)
     }
 
+    fun togglePlayback()
+    {
+        mediaControllerManager.togglePlayback()
+    }
+
     fun removeIncludedTag(tag: TagDTO) {
         mediaControllerManager.removeIncludedTag(tag)
     }
