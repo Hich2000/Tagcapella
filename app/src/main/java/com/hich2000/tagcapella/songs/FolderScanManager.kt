@@ -19,10 +19,6 @@ class FolderScanManager @Inject constructor(
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-
-    private val _songList = MutableStateFlow<List<Song>>(emptyList())
-    val songList: StateFlow<List<Song>> get() = _songList
-
     private val _foldersToScan = MutableStateFlow<List<String>>(emptyList())
     val foldersToScan: StateFlow<List<String>> get() = _foldersToScan
 
