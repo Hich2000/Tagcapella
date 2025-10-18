@@ -30,6 +30,7 @@ data class Song(val path: String, val database: Database) {
         _songTagList.value = emptyList()
         _songTagList.value = getSongTags()
         _songTagCount.intValue = getSongTagCount()
+
     }
 
     private fun getSongTags(): MutableList<TagDTO> {
