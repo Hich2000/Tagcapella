@@ -16,7 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music.songScreen.SongCard
 import com.hich2000.tagcapella.music.songScreen.SongList
 import com.hich2000.tagcapella.tags.tagList.TagCard
-import com.hich2000.tagcapella.tags.tagList.TagForm
+import com.hich2000.tagcapella.tags.forms.TagForm
 import com.hich2000.tagcapella.tags.tagList.TagList
 
 @OptIn(ExperimentalMaterial3Api::class)
