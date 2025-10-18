@@ -12,8 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music.MusicPlayerViewModel
-import com.hich2000.tagcapella.music.SongCard
-import com.hich2000.tagcapella.music.SongList
 import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.dialogs.TagDialog
 import com.hich2000.tagcapella.tags.tagList.TagCard
