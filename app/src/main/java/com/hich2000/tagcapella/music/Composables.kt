@@ -66,6 +66,9 @@ fun SongScreen(
     val songListInitialized by songViewModel.isInitialized.collectAsState()
     val songList by songViewModel.songList.collectAsState()
 
+    println("here")
+    println(songList.first().songTagList.collectAsState().value)
+
     if (showTagDialog) {
         TagDialog(
             onButtonPress = {
@@ -110,7 +113,6 @@ fun SongScreen(
                     tagCardComposable = { tag ->
                         val isTagged = songToTag.value?.songTagList?.value?.contains(tag) ?: false
 
-
                         TagCard(
                             tag = tag,
                             onClick = onTagClick,
@@ -129,7 +131,6 @@ fun SongScreen(
                 onClick = {
                     tagCardComposable = { tag ->
                         val isTagged = songToTag.value?.songTagList?.value?.contains(tag) ?: false
-
 
                         TagCard(
                             tag = tag,
@@ -158,7 +159,6 @@ fun SongScreen(
 
                     tagViewModel.openDialog()
                     songToTag.value = song
-
                 }
             )
         },

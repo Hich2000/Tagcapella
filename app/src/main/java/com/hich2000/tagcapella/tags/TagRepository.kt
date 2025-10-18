@@ -33,13 +33,12 @@ class TagRepository @Inject constructor(
     }
 
     fun initTagList() {
-        _tags.value = selectAllTags()
-    }
-
-    private fun selectAllTags(): List<TagDTO> {
-        return db.tagQueries.selectAll { id, tag, category -> TagDTO(id, tag, category) }
+        val tagList = db.tagQueries.selectAll { id, tag, category -> TagDTO(id, tag, category) }
             .executeAsList()
-            .map { it.copy() }
+        tagList.forEach { tag ->
+            tag.taggedSongs = getTaggedSongs(tag)
+        }
+        _tags.value =  tagList
     }
 
     fun insertTag(newTag: String, category: Long?): TagDTO {
@@ -69,12 +68,14 @@ class TagRepository @Inject constructor(
         if (!getTaggedSongs(tag).contains(song)) {
             song.path.let { db.tagQueries.addSongTag(it, tag.id) }
             song.reloadTagList()
+            initTagList()
         }
     }
 
     fun deleteSongTag(tag: TagDTO, song: Song) {
         song.path.let { db.tagQueries.deleteSongTag(tag.id, it) }
         song.reloadTagList()
+        initTagList()
     }
 
     fun getTaggedSongs(tag: TagDTO): MutableList<Song>  {

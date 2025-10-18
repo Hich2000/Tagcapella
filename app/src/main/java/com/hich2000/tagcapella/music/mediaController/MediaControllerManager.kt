@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music
+package com.hich2000.tagcapella.music.mediaController
 
 import android.app.Application
 import android.content.BroadcastReceiver
@@ -15,6 +15,7 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.hich2000.tagcapella.music.PlaybackService
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
 import com.hich2000.tagcapella.tags.TagDTO
@@ -37,9 +38,11 @@ class MediaControllerManager @Inject constructor(
     private val application: Application,
     private val sharedPreferenceManager: SharedPreferenceManager,
     private val tagRepository: TagRepository,
-    private val songRepository: SongRepository
+    private val songRepository: SongRepository,
+    private val playerStateManager: PlayerStateManager
 ) {
 
+    //todo figure out how scopes work and rework this away from main thread
     private val repositoryScope = CoroutineScope(Dispatchers.Main)
 
     private val _mediaController: MutableStateFlow<MediaController?> =
@@ -47,26 +50,17 @@ class MediaControllerManager @Inject constructor(
     val mediaController: StateFlow<MediaController?> get() = _mediaController
 
     // State management
-    private val _shuffleModeEnabled = MutableStateFlow(false)
-    val shuffleModeEnabled: StateFlow<Boolean> get() = _shuffleModeEnabled
-
-    private val _repeatMode = MutableStateFlow(Player.REPEAT_MODE_ALL)
-    val repeatMode: StateFlow<Int> get() = _repeatMode
-
-    private val _isPlaying = MutableStateFlow(false)
-    val isPlaying: StateFlow<Boolean> get() = _isPlaying
+    val shuffleModeEnabled: StateFlow<Boolean> get() = playerStateManager.shuffleModeEnabled
+    val repeatMode: StateFlow<Int> get() = playerStateManager.repeatMode
+    val isPlaying: StateFlow<Boolean> get() = playerStateManager.isPlaying
+    val playbackPosition: StateFlow<Long> get() = playerStateManager.playbackPosition
+    val playbackDuration: StateFlow<Long> get() = playerStateManager.playbackDuration
 
     private val _isMediaControllerInitialized = MutableStateFlow(false)
     val isMediaControllerInitialized: StateFlow<Boolean> get() = _isMediaControllerInitialized
 
     private val _currentPlaylist = MutableStateFlow<List<Song>>(emptyList())
     val currentPlaylist: StateFlow<List<Song>> get() = _currentPlaylist
-
-    private val _playbackPosition = MutableStateFlow(0L)
-    val playbackPosition: StateFlow<Long> get() = _playbackPosition
-
-    private val _playbackDuration = MutableStateFlow(0L)
-    val playbackDuration: StateFlow<Long> get() = _playbackDuration
 
     private var _includedTags = MutableStateFlow<List<TagDTO>>(emptyList())
     val includedTags: StateFlow<List<TagDTO>> get() = _includedTags
@@ -176,67 +170,49 @@ class MediaControllerManager @Inject constructor(
             false
         )
 
-        _repeatMode.value = repeatMode
         _mediaController.value?.repeatMode = repeatMode
-        _shuffleModeEnabled.value = shuffleMode
         _mediaController.value?.shuffleModeEnabled = shuffleMode
-        _isPlaying.value = _mediaController.value?.isPlaying!!
     }
 
     private fun observeMediaControllerState(controller: MediaController) {
-        controller.addListener(object : Player.Listener {
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                _isPlaying.value = isPlaying
-
-                _mediaController.value?.currentMediaItem?.let {
+        _mediaController.value?.addListener(
+            playerStateManager.createListener(
+                onRepeatModeChangedCallback = { mode ->
                     sharedPreferenceManager.savePreference(
-                        SharedPreferenceKey.LastSongPlayed,
-                        it.mediaId
+                        SharedPreferenceKey.PlayerRepeatMode,
+                        mode
                     )
+                },
+                onShuffleModeChangedCallback = { enabled ->
                     sharedPreferenceManager.savePreference(
-                        SharedPreferenceKey.LastSongPosition,
-                        _playbackPosition.value
+                        SharedPreferenceKey.PlayerShuffleMode,
+                        enabled
                     )
+                },
+                onPlaybackStateChangeCallback = {
+                    // Save current song + position
+                    _mediaController.value?.currentMediaItem?.let {
+                        sharedPreferenceManager.savePreference(
+                            SharedPreferenceKey.LastSongPlayed,
+                            it.mediaId
+                        )
+                        sharedPreferenceManager.savePreference(
+                            SharedPreferenceKey.LastSongPosition,
+                            playerStateManager.playbackPosition.value
+                        )
+                    }
                 }
-            }
-
-            override fun onRepeatModeChanged(repeatMode: Int) {
-                _repeatMode.value = repeatMode
-                sharedPreferenceManager.savePreference(
-                    SharedPreferenceKey.PlayerRepeatMode,
-                    repeatMode
-                )
-            }
-
-            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-                _shuffleModeEnabled.value = shuffleModeEnabled
-                sharedPreferenceManager.savePreference(
-                    SharedPreferenceKey.PlayerShuffleMode,
-                    shuffleModeEnabled
-                )
-            }
-
-
-            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                super.onMediaItemTransition(mediaItem, reason)
-                _mediaController.value?.currentMediaItem?.let {
-                    sharedPreferenceManager.savePreference(
-                        SharedPreferenceKey.LastSongPlayed,
-                        it.mediaId
-                    )
-                    sharedPreferenceManager.savePreference(
-                        SharedPreferenceKey.LastSongPosition,
-                        _playbackPosition.value
-                    )
-                }
-            }
-        })
+            )
+        )
 
         //get the duration and position of the current song every second
         repositoryScope.launch {
             while (true) {
-                _playbackPosition.value = _mediaController.value?.currentPosition!!
-                _playbackDuration.value = _mediaController.value?.duration!!
+                val controller = _mediaController.value ?: continue
+                playerStateManager.updatePosition(
+                    controller.currentPosition,
+                    controller.duration
+                )
                 delay(1000)
             }
         }
@@ -246,7 +222,6 @@ class MediaControllerManager @Inject constructor(
         includeTags: List<TagDTO> = listOf(),
         excludeTags: List<TagDTO> = listOf()
     ): List<Song> {
-
         val jsonIncluded: List<Long> = includeTags.map { it.id }
         val jsonExcluded: List<Long> = excludeTags.map { it.id }
         sharedPreferenceManager.savePreference(SharedPreferenceKey.IncludedTags, jsonIncluded)
@@ -273,12 +248,10 @@ class MediaControllerManager @Inject constructor(
     }
 
     fun togglePlayback() {
-        mediaController.apply {
-            if (_isPlaying.value) {
-                _mediaController.value?.pause()
-            } else {
-                _mediaController.value?.play()
-            }
+        if (playerStateManager.isPlaying.value) {
+            _mediaController.value?.pause()
+        } else {
+            _mediaController.value?.play()
         }
     }
 
@@ -291,11 +264,8 @@ class MediaControllerManager @Inject constructor(
         }
     }
 
-    fun setPlaybackPosition(position: Number, finished: Boolean = false) {
-        _playbackPosition.value = position.toLong()
-        if (finished) {
-            _mediaController.value?.seekTo(_playbackPosition.value)
-        }
+    fun setPlaybackPosition(position: Number) {
+        _mediaController.value?.seekTo(position.toLong())
     }
 
     fun addIncludedTag(tag: TagDTO) {

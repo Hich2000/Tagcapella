@@ -3,6 +3,7 @@ package com.hich2000.tagcapella.music
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.session.MediaController
+import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
 import com.hich2000.tagcapella.tags.TagDTO
@@ -58,8 +59,8 @@ class MusicPlayerViewModel @Inject constructor(
         return songRepository.filterSongList(includeTags, excludeTags)
     }
 
-    fun setPlaybackPosition(position: Number, finished: Boolean = false) {
-        mediaControllerManager.setPlaybackPosition(position, finished)
+    fun setPlaybackPosition(position: Number) {
+        mediaControllerManager.setPlaybackPosition(position)
     }
 
     fun addIncludedTag(tag: TagDTO) {

@@ -186,10 +186,7 @@ fun MusicControls(
                         },
                         onValueChangeFinished = {
                             isUserInteracting = false
-                            musicPlayerViewModel.setPlaybackPosition(
-                                sliderPosition.toLong(),
-                                true
-                            )
+                            musicPlayerViewModel.setPlaybackPosition(sliderPosition.toLong())
                         }
                     )
                 }
