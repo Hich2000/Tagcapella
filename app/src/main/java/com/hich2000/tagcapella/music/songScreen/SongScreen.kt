@@ -29,28 +29,29 @@ fun SongScreen(
     val coroutineScope = rememberCoroutineScope()
 
 
-
     val songListInitialized by songScreenViewModel.songRepoInitialized.collectAsState()
     val showTagDialog by songScreenViewModel.showTagDialog.collectAsState()
     val songList by songScreenViewModel.songs.collectAsState()
-    val songToTag by songScreenViewModel.songToTag.collectAsState()
+    val songTags by songScreenViewModel.songTags.collectAsState()
     val includedTags by songScreenViewModel.includedTags.collectAsState()
     val excludedTags by songScreenViewModel.excludedTags.collectAsState()
 
 
     val onTagClick = { tag: TagDTO ->
         //todo does not work, always goes to else
-        if (songToTag !== null) {
-            if (songToTag!!.songTagList.value.contains(tag)) {
-                songScreenViewModel.deleteSongTag(tag)
-            } else {
-                songScreenViewModel.addSongTag(tag)
-            }
+        if (songTags.find { songTag: TagDTO ->
+                tag.id == songTag.id
+            } !== null) {
+            songScreenViewModel.deleteSongTag(tag)
+        } else {
+            songScreenViewModel.addSongTag(tag)
         }
     }
 
     val tagCardComposable = @Composable { tag: TagDTO ->
-        val isTagged = songToTag?.songTagList?.value?.contains(tag) ?: false
+        val isTagged = songTags.find { songTag: TagDTO ->
+            tag.id == songTag.id
+        } !== null
 
         TagCard(
             tag = tag,

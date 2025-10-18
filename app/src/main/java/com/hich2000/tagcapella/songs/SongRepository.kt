@@ -127,4 +127,12 @@ class SongRepository @Inject constructor(
 
         return filteredSongList
     }
+
+    fun getSongTags(song: Song): List<TagDTO> {
+        val tags = db.songQueries.selectSongTags(song.path) { id, tag, category ->
+            TagDTO(id, tag, category)
+        }.executeAsList()
+
+        return tags.toList()
+    }
 }
