@@ -19,6 +19,7 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,18 +35,26 @@ import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 @Composable
 fun TagForm(
     tag: TagDTO? = null,
+    onSaveAction: () -> Unit,
     tagFormViewModel: TagFormViewModel = hiltViewModel()
 ) {
+
+    DisposableEffect(Unit) {
+        //this resets the state of te viewmodel if this composable is removed from composition tree
+        //otherwise the text state and dropdown state remain if you dismiss the dialog without updating/inserting
+        onDispose {
+            tagFormViewModel.resetState()
+        }
+    }
+
     val textState by tagFormViewModel.textState.collectAsState()
     val dropdownState by tagFormViewModel.dropdownState.collectAsState()
     val categories by tagFormViewModel.categories.collectAsState()
     val dropdownExpanded by tagFormViewModel.dropdownExpanded.collectAsState()
 
     if (tag !== null) {
-        tagFormViewModel.setTextState(tag.tag)
-        tagFormViewModel.setDropdownState(tag.categoryId)
+        tagFormViewModel.setUpdateState(tag)
     }
-
 
     Column(
         modifier = Modifier.Companion
@@ -143,7 +152,9 @@ fun TagForm(
 
         TextField(
             value = textState,
-            onValueChange = { tagFormViewModel.setTextState(it) },
+            onValueChange = {
+                tagFormViewModel.setTextState(it)
+            },
             label = { Text("Tag") },
             modifier = Modifier.Companion
                 .fillMaxWidth()
@@ -157,6 +168,7 @@ fun TagForm(
                 TagCapellaButton(
                     onClick = {
                         tagFormViewModel.insertTag()
+                        onSaveAction()
                     },
                     modifier = Modifier.Companion
                         .fillMaxWidth()
@@ -171,6 +183,7 @@ fun TagForm(
                 TagCapellaButton(
                     onClick = {
                         tagFormViewModel.updateTag(tag.id)
+                        onSaveAction()
                     },
                     modifier = Modifier.Companion
                         .fillMaxWidth()

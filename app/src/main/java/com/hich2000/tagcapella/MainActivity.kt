@@ -368,7 +368,9 @@ class MainActivity : ComponentActivity() {
                     showTagDialog.value = false
                 },
             ) {
-                TagForm()
+                TagForm(
+                    onSaveAction = { showTagDialog.value = false }
+                )
             }
         }
 

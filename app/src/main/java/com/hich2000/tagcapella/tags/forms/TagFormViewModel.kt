@@ -3,6 +3,7 @@ package com.hich2000.tagcapella.tags.forms
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hich2000.tagcapella.categories.CategoryRepository
+import com.hich2000.tagcapella.tags.TagDTO
 import com.hich2000.tagcapella.tags.TagRepository
 import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,9 @@ class TagFormViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository
 ) : ViewModel() {
 
+    private val _isUpdate: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isUpdate: StateFlow<Boolean> get() = _isUpdate
+
     private val _textState: MutableStateFlow<String> = MutableStateFlow("")
     val textState: StateFlow<String> get() = _textState
 
@@ -27,6 +31,14 @@ class TagFormViewModel @Inject constructor(
     val dropdownExpanded: StateFlow<Boolean> get() = _dropdownExpanded
 
     val categories get() = categoryRepository.categories
+
+    fun setUpdateState(tag: TagDTO) {
+        if (!isUpdate.value) {
+            setTextState(tag.tag)
+            setDropdownState(tag.categoryId)
+            _isUpdate.value = true
+        }
+    }
 
     fun insertTag() {
         viewModelScope.launch {
@@ -43,6 +55,7 @@ class TagFormViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 tagRepository.updateTag(tagId, textState.value, dropdownState.value)
+                resetState()
             } catch (_: Throwable) {
                 ToastEventBus.send("Tag already exists with name: ${textState.value}")
             }
@@ -52,6 +65,7 @@ class TagFormViewModel @Inject constructor(
     fun resetState() {
         _textState.value = ""
         _dropdownState.value = null
+        _isUpdate.value = false
         closeDropdown()
     }
 

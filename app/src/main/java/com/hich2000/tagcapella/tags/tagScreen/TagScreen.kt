@@ -38,7 +38,10 @@ fun TagScreen(
             },
         ) {
             TagForm(
-                tag = clickedTag
+                tag = clickedTag,
+                onSaveAction = {
+                    tagScreenViewModel.closeDialog()
+                }
             )
         }
     }
