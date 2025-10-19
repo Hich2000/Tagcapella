@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags.tagList
+package com.hich2000.tagcapella.tagsAndCategories.tags.tagList
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 
 @Composable
 fun TagCard(

@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.categories.categoryScreen
+package com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.categories.forms.CategoryForm
+import com.hich2000.tagcapella.tagsAndCategories.categories.forms.CategoryForm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

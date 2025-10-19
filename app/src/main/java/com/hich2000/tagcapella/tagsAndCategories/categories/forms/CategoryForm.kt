@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.categories.forms
+package com.hich2000.tagcapella.tagsAndCategories.categories.forms
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -22,8 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.categories.CategoryDTO
-import com.hich2000.tagcapella.categories.categoryScreen.CategoryScreenViewModel
+import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen.CategoryScreenViewModel
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable

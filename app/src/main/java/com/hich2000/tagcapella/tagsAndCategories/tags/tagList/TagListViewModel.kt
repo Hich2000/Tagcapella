@@ -1,9 +1,9 @@
-package com.hich2000.tagcapella.tags.tagList
+package com.hich2000.tagcapella.tagsAndCategories.tags.tagList
 
 import androidx.compose.foundation.ScrollState
 import androidx.lifecycle.ViewModel
-import com.hich2000.tagcapella.categories.CategoryDTO
-import com.hich2000.tagcapella.categories.CategoryRepository
+import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

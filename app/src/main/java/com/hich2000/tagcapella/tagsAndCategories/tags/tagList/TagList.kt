@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags.tagList
+package com.hich2000.tagcapella.tagsAndCategories.tags.tagList
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable

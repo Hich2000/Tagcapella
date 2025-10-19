@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags
+package com.hich2000.tagcapella.tagsAndCategories.tags
 
 import com.hich2000.tagcapella.songs.Song
 

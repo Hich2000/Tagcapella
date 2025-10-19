@@ -1,10 +1,10 @@
-package com.hich2000.tagcapella.tags.forms
+package com.hich2000.tagcapella.tagsAndCategories.tags.forms
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hich2000.tagcapella.categories.CategoryRepository
-import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.TagRepository
+import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryRepository
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

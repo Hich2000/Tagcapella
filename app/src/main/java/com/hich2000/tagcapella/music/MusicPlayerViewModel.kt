@@ -6,7 +6,7 @@ import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
-import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel

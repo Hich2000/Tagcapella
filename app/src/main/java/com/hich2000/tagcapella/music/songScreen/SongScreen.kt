@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music.MusicPlayerViewModel
-import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.dialogs.TagDialog
-import com.hich2000.tagcapella.tags.tagList.TagCard
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.dialogs.TagDialog
+import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,9 +1,9 @@
-package com.hich2000.tagcapella.categories.categoryScreen
+package com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hich2000.tagcapella.categories.CategoryDTO
-import com.hich2000.tagcapella.categories.CategoryRepository
+import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryRepository
 import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

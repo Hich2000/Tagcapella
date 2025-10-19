@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.categories.categoryScreen
+package com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -10,7 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.hich2000.tagcapella.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
 
 @Composable
 fun CategoryList(

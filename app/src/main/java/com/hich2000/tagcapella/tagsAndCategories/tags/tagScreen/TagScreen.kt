@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags.tagScreen
+package com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,9 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music.songScreen.SongCard
 import com.hich2000.tagcapella.music.songScreen.SongList
-import com.hich2000.tagcapella.tags.tagList.TagCard
-import com.hich2000.tagcapella.tags.forms.TagForm
-import com.hich2000.tagcapella.tags.tagList.TagList
+import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
+import com.hich2000.tagcapella.tagsAndCategories.tags.forms.TagForm
+import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

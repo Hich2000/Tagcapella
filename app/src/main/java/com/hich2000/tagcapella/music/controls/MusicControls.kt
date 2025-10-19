@@ -45,8 +45,8 @@ import androidx.media3.common.Player
 import com.hich2000.tagcapella.music.MusicPlayerViewModel
 import com.hich2000.tagcapella.music.songScreen.SongCard
 import com.hich2000.tagcapella.music.songScreen.SongList
-import com.hich2000.tagcapella.tags.dialogs.TagDialog
-import com.hich2000.tagcapella.tags.tagList.TagCard
+import com.hich2000.tagcapella.tagsAndCategories.tags.dialogs.TagDialog
+import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

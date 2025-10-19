@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.songs
 
 import android.content.Context
 import android.provider.MediaStore
-import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.utils.Database
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope

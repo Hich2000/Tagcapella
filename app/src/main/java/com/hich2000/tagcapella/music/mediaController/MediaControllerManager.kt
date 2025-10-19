@@ -18,8 +18,8 @@ import androidx.media3.session.SessionToken
 import com.hich2000.tagcapella.music.PlaybackService
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
-import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.TagRepository
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -151,7 +151,7 @@ class MediaControllerManager @Inject constructor(
 
             _mediaController.value?.setAudioAttributes(audioAttributes, true)
 
-            _mediaController.value?.let { observeMediaControllerState(it) }
+            _mediaController.value?.let { observeMediaControllerState() }
 
             true
         } catch (_: Throwable) {
@@ -174,7 +174,7 @@ class MediaControllerManager @Inject constructor(
         _mediaController.value?.shuffleModeEnabled = shuffleMode
     }
 
-    private fun observeMediaControllerState(controller: MediaController) {
+    private fun observeMediaControllerState() {
         _mediaController.value?.addListener(
             playerStateManager.createListener(
                 onRepeatModeChangedCallback = { mode ->

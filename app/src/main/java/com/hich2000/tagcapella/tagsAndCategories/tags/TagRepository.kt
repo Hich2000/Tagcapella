@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags
+package com.hich2000.tagcapella.tagsAndCategories.tags
 
 import androidx.compose.runtime.toMutableStateList
 import com.hich200.tagcapella.TagcapellaDb

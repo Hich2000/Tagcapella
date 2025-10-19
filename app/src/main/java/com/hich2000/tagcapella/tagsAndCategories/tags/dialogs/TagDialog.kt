@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.tags.dialogs
+package com.hich2000.tagcapella.tagsAndCategories.tags.dialogs
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.tagList.TagList
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagList
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable

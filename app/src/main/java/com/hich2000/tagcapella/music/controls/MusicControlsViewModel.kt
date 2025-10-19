@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
 import com.hich2000.tagcapella.songs.SongRepository
-import com.hich2000.tagcapella.tags.TagRepository
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

@@ -1,12 +1,11 @@
-package com.hich2000.tagcapella.tags.tagScreen
+package com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
-import com.hich2000.tagcapella.tags.TagDTO
-import com.hich2000.tagcapella.tags.TagRepository
-import com.hich2000.tagcapella.utils.ToastEventBus
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,26 +25,6 @@ class TagScreenViewModel @Inject constructor(
 
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> get() = _showDialog
-
-    fun insertTag(tag: String, category: Long?) {
-        viewModelScope.launch {
-            try {
-                tagRepository.insertTag(newTag = tag, category = category)
-            } catch (_: Throwable) {
-                ToastEventBus.send("Tag already exists with name: $tag")
-            }
-        }
-    }
-
-    fun updateTag(id: Long, tag: String, category: Long?) {
-        viewModelScope.launch {
-            try {
-                tagRepository.updateTag(id = id, tag = tag, category = category)
-            } catch (_: Throwable) {
-                ToastEventBus.send("Tag already exists with name: $tag")
-            }
-        }
-    }
 
     fun deleteTag(id: Long) {
         viewModelScope.launch {

@@ -3,7 +3,7 @@ package com.hich2000.tagcapella.songs
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.toMutableStateList
-import com.hich2000.tagcapella.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.utils.Database
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
