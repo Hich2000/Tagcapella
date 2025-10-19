@@ -5,3 +5,9 @@ filterSongList:
 SELECT s.id, s.song FROM song_tag s
 WHERE s.tag IN :includeTags
 GROUP BY s.song;
+
+addSongTag:
+INSERT INTO song_tag (song, tag) VALUES (?, ?);
+
+deleteSongTag:
+DELETE FROM song_tag WHERE tag = ? AND song = ?;

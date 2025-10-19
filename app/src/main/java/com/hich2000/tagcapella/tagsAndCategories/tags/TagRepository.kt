@@ -66,14 +66,14 @@ class TagRepository @Inject constructor(
 
     fun addSongTag(tag: TagDTO, song: Song) {
         if (!getTaggedSongs(tag).contains(song)) {
-            song.path.let { db.tagQueries.addSongTag(it, tag.id) }
+            song.path.let { db.songQueries.addSongTag(it, tag.id) }
             song.reloadTagList()
             initTagList()
         }
     }
 
     fun deleteSongTag(tag: TagDTO, song: Song) {
-        song.path.let { db.tagQueries.deleteSongTag(tag.id, it) }
+        song.path.let { db.songQueries.deleteSongTag(tag.id, it) }
         song.reloadTagList()
         initTagList()
     }
