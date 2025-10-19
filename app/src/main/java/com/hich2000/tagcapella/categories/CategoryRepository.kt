@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CategoryRepository @Inject constructor(
-    private val database: Database
+    database: Database
 ) {
 
     private val db: TagcapellaDb = database.db
@@ -26,14 +26,14 @@ class CategoryRepository @Inject constructor(
     }
 
     fun selectAllCategories(): List<CategoryDTO> {
-        return db.categoryQueries.selectAll { id, category -> CategoryDTO(id, category, database) }.executeAsList()
+        return db.categoryQueries.selectAll { id, category -> CategoryDTO(id, category) }.executeAsList()
             .toList()
     }
 
     fun insertCategory(newCategory: String): CategoryDTO {
         db.categoryQueries.insertCategory(newCategory)
         initCategoryList()
-        return db.categoryQueries.lastInsertedCategory { id, category -> CategoryDTO(id, category, database) }
+        return db.categoryQueries.lastInsertedCategory { id, category -> CategoryDTO(id, category) }
             .executeAsOne()
     }
 

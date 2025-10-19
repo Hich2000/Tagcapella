@@ -67,8 +67,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.hich2000.tagcapella.categories.CategoryForm
-import com.hich2000.tagcapella.categories.CategoryScreen
+import com.hich2000.tagcapella.categories.forms.CategoryForm
+import com.hich2000.tagcapella.categories.categoryScreen.CategoryScreen
 import com.hich2000.tagcapella.music.songScreen.SongScreen
 import com.hich2000.tagcapella.music.controls.MusicControls
 import com.hich2000.tagcapella.settings.SettingsScreen
