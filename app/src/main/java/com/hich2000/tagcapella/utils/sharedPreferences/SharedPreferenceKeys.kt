@@ -9,6 +9,7 @@ sealed class SharedPreferenceKey<T>(
     data object ExcludedTags : SharedPreferenceKey<List<Long>>("EXCLUDED_TAGS")
     data object LastSongPlayed : SharedPreferenceKey<String>("LAST_SONG_PLAYED")
     data object LastSongPosition : SharedPreferenceKey<Long>("LAST_SONG_POSITION")
+    data object LastSongDuration : SharedPreferenceKey<Long>("LAST_SONG_DURATION")
     data object PermissionsAlreadyRequested : SharedPreferenceKey<Boolean>("PERMISSIONS_ALREADY_REQUESTED")
     data object FoldersToScan : SharedPreferenceKey<List<String>>("FOLDERS_TO_SCAN")
 }
