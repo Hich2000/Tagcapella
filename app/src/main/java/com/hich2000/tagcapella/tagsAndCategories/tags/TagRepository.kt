@@ -41,9 +41,9 @@ class TagRepository @Inject constructor(
         _tags.value =  tagList
     }
 
-    fun insertTag(newTag: String, category: Long?): TagDTO {
+    fun insertTag(newTag: String, category: Long?) {
         db.tagQueries.insertTag(id = null, tag = newTag, category = category)
-        val newTag =  db.tagQueries.lastInsertedTag { id, tag, category ->
+        db.tagQueries.lastInsertedTag { id, tag, category ->
             TagDTO(
                 id,
                 tag,
@@ -51,7 +51,6 @@ class TagRepository @Inject constructor(
             )
         }.executeAsOne()
         initTagList()
-        return newTag
     }
 
     fun updateTag(id: Long, tag: String, category: Long?) {
