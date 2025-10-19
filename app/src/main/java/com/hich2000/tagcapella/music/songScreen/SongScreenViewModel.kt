@@ -5,6 +5,7 @@ import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
 import com.hich2000.tagcapella.newmusic.Song
 import com.hich2000.tagcapella.newmusic.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SongScreenViewModel @Inject constructor(
     private val songRepository: SongRepository,
+    private val tagRepository: TagRepository,
     private val mediaControllerManager: MediaControllerManager
 ) : ViewModel() {
     val songRepoInitialized: StateFlow<Boolean> get() = songRepository.isInitialized
@@ -30,12 +32,14 @@ class SongScreenViewModel @Inject constructor(
     fun addSongTag(tag: TagDTO) {
         songToTag.value?.let {
             songRepository.addSongTag(it, tag)
+            updateSongToTag()
         }
     }
 
     fun deleteSongTag(tag: TagDTO) {
         songToTag.value?.let {
             songRepository.deleteSongTag(it, tag)
+            updateSongToTag()
         }
     }
 
@@ -47,5 +51,13 @@ class SongScreenViewModel @Inject constructor(
     fun closeDialog() {
         _songToTag.value = null
         _showTagDialog.value = false
+    }
+
+    private fun updateSongToTag() {
+        _songToTag.value = songs.value.firstOrNull{ song: Song ->
+            song.path == _songToTag.value!!.path
+        }
+        //todo maybe make this better by not re-initializing the entire tag list.
+        tagRepository.initTagList()
     }
 }
