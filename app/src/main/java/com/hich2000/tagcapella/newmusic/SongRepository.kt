@@ -139,6 +139,17 @@ class SongRepository @Inject constructor(
         return filteredSongList
     }
 
+    fun addSongTag(song: Song, tag: TagDTO) {
+        if (song.songTagList.value.contains(tag)) {
+            return
+        }
+        db.songQueries.addSongTag(song.path, tag.id)
+    }
+
+    fun deleteSongTag(song: Song, tag: TagDTO) {
+        db.songQueries.deleteSongTag(song.path, tag.id)
+    }
+
     fun getSongTags(song: Song): List<TagDTO> {
         val tags = db.songQueries.selectSongTags(song.path) { id, tag, category ->
             TagDTO(id, tag, category)

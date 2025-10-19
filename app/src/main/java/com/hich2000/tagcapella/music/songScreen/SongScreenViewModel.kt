@@ -5,7 +5,6 @@ import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
 import com.hich2000.tagcapella.newmusic.Song
 import com.hich2000.tagcapella.newmusic.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +13,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SongScreenViewModel @Inject constructor(
     private val songRepository: SongRepository,
-    private val tagRepository: TagRepository,
     private val mediaControllerManager: MediaControllerManager
 ) : ViewModel() {
     val songRepoInitialized: StateFlow<Boolean> get() = songRepository.isInitialized
@@ -34,14 +32,14 @@ class SongScreenViewModel @Inject constructor(
 
     fun addSongTag(tag: TagDTO) {
         songToTag.value?.let {
-            tagRepository.addSongTag(tag, it)
+            songRepository.addSongTag(it, tag)
             _songTags.value = songRepository.getSongTags(songToTag.value!!)
         }
     }
 
     fun deleteSongTag(tag: TagDTO) {
         songToTag.value?.let {
-            tagRepository.deleteSongTag(tag, it)
+            songRepository.deleteSongTag(it, tag)
             _songTags.value = songRepository.getSongTags(songToTag.value!!)
         }
     }

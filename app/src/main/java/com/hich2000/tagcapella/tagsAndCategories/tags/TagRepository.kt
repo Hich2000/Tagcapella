@@ -64,20 +64,6 @@ class TagRepository @Inject constructor(
         initTagList()
     }
 
-    fun addSongTag(tag: TagDTO, song: Song) {
-        if (!getTaggedSongs(tag).contains(song)) {
-            song.path.let { db.songQueries.addSongTag(it, tag.id) }
-            song.reloadTagList()
-            initTagList()
-        }
-    }
-
-    fun deleteSongTag(tag: TagDTO, song: Song) {
-        song.path.let { db.songQueries.deleteSongTag(tag.id, it) }
-        song.reloadTagList()
-        initTagList()
-    }
-
     fun getTaggedSongs(tag: TagDTO): MutableList<Song>  {
         val songs = db.tagQueries.selectTaggedSongs(tag.id) { _, path  ->
             Song(path, database)

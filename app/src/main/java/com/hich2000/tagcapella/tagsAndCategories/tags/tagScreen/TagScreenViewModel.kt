@@ -34,11 +34,11 @@ class TagScreenViewModel @Inject constructor(
     }
 
     fun addSongTag(tag: TagDTO, song: Song) {
-        tagRepository.addSongTag(tag = tag, song = song)
+        songRepository.addSongTag(song = song, tag = tag)
     }
 
     fun deleteSongTag(tag: TagDTO, song: Song) {
-        tagRepository.deleteSongTag(tag = tag, song = song)
+        songRepository.deleteSongTag(song = song, tag = tag)
     }
 
     fun openDialog() {

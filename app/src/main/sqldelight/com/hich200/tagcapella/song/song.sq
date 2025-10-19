@@ -10,4 +10,4 @@ addSongTag:
 INSERT INTO song_tag (song, tag) VALUES (?, ?);
 
 deleteSongTag:
-DELETE FROM song_tag WHERE tag = ? AND song = ?;
+DELETE FROM song_tag WHERE song = ? AND tag = ?;
