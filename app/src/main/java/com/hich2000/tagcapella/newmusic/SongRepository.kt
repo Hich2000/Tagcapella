@@ -24,9 +24,6 @@ class SongRepository @Inject constructor(
     private val database: Database,
     @ApplicationContext val context: Context
 ) {
-
-    private val db = database.db
-
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -100,8 +97,8 @@ class SongRepository @Inject constructor(
                     val path = it.getString(pathColumn)
                     songList.add(
                         Song(
-                            path,
-                            database
+                            path = path,
+                            tags = getSongTags(it.getString(pathColumn))
                         )
                     )
                 }
@@ -123,38 +120,50 @@ class SongRepository @Inject constructor(
         if (includeTags.isEmpty()) {
             filteredSongList.addAll(_songList.value)
         } else {
-            filteredSongList.addAll(db.songQueries.filterSongList(includeIds) { _, path ->
+            filteredSongList.addAll(database.db.songQueries.filterSongList(includeIds) { _, path ->
                 Song(
                     path = path,
-                    database = database
+                    tags = getSongTags(path)
                 )
             }.executeAsList())
         }
 
         //now we remove the excluded tags and songs who's path does not exist anymore
         filteredSongList.removeAll { song ->
-            song.songTagList.value.any { it in excludeTags } or !File(song.path).exists()
+            song.tags.any { it in excludeTags } or !File(song.path).exists()
         }
 
         return filteredSongList
     }
 
     fun addSongTag(song: Song, tag: TagDTO) {
-        if (song.songTagList.value.contains(tag)) {
-            return
-        }
-        db.songQueries.addSongTag(song.path, tag.id)
+        if (song.tags.contains(tag)) return
+        database.db.songQueries.addSongTag(song.path, tag.id)
+        updateSongInList(song)
     }
 
     fun deleteSongTag(song: Song, tag: TagDTO) {
-        db.songQueries.deleteSongTag(song.path, tag.id)
+        database.db.songQueries.deleteSongTag(song.path, tag.id)
+        updateSongInList(song)
     }
 
-    fun getSongTags(song: Song): List<TagDTO> {
-        val tags = db.songQueries.selectSongTags(song.path) { id, tag, category ->
+    fun getSongTags(songPath: String): List<TagDTO> {
+        val tags = database.db.songQueries.selectSongTags(songPath) { id, tag, category ->
             TagDTO(id, tag, category)
         }.executeAsList()
 
         return tags.toList()
+    }
+
+    private fun updateSongInList(song: Song) {
+        val updatedTags = getSongTags(song.path)
+        val updatedList = _songList.value.map {
+            if (it.path == song.path) {
+                it.copy(tags = updatedTags)
+            } else {
+                it
+            }
+        }
+        _songList.value = updatedList
     }
 }

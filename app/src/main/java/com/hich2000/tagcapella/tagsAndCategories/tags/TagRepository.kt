@@ -66,7 +66,7 @@ class TagRepository @Inject constructor(
 
     fun getTaggedSongs(tag: TagDTO): MutableList<Song>  {
         val songs = db.tagQueries.selectTaggedSongs(tag.id) { _, path  ->
-            Song(path, database)
+            Song(path, emptyList())
         }.executeAsList()
         return songs.toMutableStateList()
     }

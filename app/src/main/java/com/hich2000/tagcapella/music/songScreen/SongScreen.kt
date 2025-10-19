@@ -30,14 +30,14 @@ fun SongScreen(
     val songListInitialized by songScreenViewModel.songRepoInitialized.collectAsState()
     val showTagDialog by songScreenViewModel.showTagDialog.collectAsState()
     val songList by songScreenViewModel.songs.collectAsState()
-    val songTags by songScreenViewModel.songTags.collectAsState()
+    val songToTag by songScreenViewModel.songToTag.collectAsState()
     val includedTags by songScreenViewModel.includedTags.collectAsState()
     val excludedTags by songScreenViewModel.excludedTags.collectAsState()
 
 
     val onTagClick = { tag: TagDTO ->
         //todo does not work, always goes to else
-        if (songTags.find { songTag: TagDTO ->
+        if (songToTag?.tags?.find { songTag: TagDTO ->
                 tag.id == songTag.id
             } !== null) {
             songScreenViewModel.deleteSongTag(tag)
@@ -47,7 +47,7 @@ fun SongScreen(
     }
 
     val tagCardComposable = @Composable { tag: TagDTO ->
-        val isTagged = songTags.find { songTag: TagDTO ->
+        val isTagged = songToTag?.tags?.find { songTag: TagDTO ->
             tag.id == songTag.id
         } !== null
 

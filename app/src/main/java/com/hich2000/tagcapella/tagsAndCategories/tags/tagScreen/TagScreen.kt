@@ -56,8 +56,7 @@ fun TagScreen(
             SongList(
                 songList = songList,
                 songCard = { song ->
-                    val songTags by song.songTagList.collectAsState()
-                    val isTagged: Boolean = songTags.any { songTag ->
+                    val isTagged: Boolean = song.tags.any { songTag ->
                         songTag.id == clickedTag?.id
                     }
 

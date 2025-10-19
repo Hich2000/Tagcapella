@@ -24,39 +24,28 @@ class SongScreenViewModel @Inject constructor(
     private val _songToTag: MutableStateFlow<Song?> = MutableStateFlow(null)
     val songToTag: StateFlow<Song?> get() = _songToTag
 
-    private val _songTags: MutableStateFlow<List<TagDTO>> = MutableStateFlow(emptyList())
-    val songTags: StateFlow<List<TagDTO>> get() = _songTags
-
     val includedTags: StateFlow<List<TagDTO>> get() = mediaControllerManager.includedTags
     val excludedTags: StateFlow<List<TagDTO>> get() = mediaControllerManager.excludedTags
 
     fun addSongTag(tag: TagDTO) {
         songToTag.value?.let {
             songRepository.addSongTag(it, tag)
-            _songTags.value = songRepository.getSongTags(songToTag.value!!)
         }
     }
 
     fun deleteSongTag(tag: TagDTO) {
         songToTag.value?.let {
             songRepository.deleteSongTag(it, tag)
-            _songTags.value = songRepository.getSongTags(songToTag.value!!)
         }
     }
 
     fun openDialog(song: Song?) {
         _songToTag.value = song
-        if (song !== null) {
-            _songTags.value = songRepository.getSongTags(song)
-        } else {
-            _songTags.value = emptyList()
-        }
         _showTagDialog.value = true
     }
 
     fun closeDialog() {
         _songToTag.value = null
-        _songTags.value = emptyList()
         _showTagDialog.value = false
     }
 }
