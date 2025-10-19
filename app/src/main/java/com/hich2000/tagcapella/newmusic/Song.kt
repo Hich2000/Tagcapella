@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.songs
+package com.hich2000.tagcapella.newmusic
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf

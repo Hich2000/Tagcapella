@@ -3,7 +3,7 @@ package com.hich2000.tagcapella.music.controls
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
-import com.hich2000.tagcapella.songs.SongRepository
+import com.hich2000.tagcapella.newmusic.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel

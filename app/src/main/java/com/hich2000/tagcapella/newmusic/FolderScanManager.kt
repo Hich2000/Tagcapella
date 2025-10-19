@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.songs
+package com.hich2000.tagcapella.newmusic
 
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager

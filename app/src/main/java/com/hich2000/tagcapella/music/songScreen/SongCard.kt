@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hich2000.tagcapella.songs.Song
+import com.hich2000.tagcapella.newmusic.Song
 import kotlin.io.path.Path
 import kotlin.io.path.nameWithoutExtension
 

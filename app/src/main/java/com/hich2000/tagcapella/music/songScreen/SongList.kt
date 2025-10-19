@@ -8,7 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.hich2000.tagcapella.songs.Song
+import com.hich2000.tagcapella.newmusic.Song
 
 @Composable
 fun SongList(

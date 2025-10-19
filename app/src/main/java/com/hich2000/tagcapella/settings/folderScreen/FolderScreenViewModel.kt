@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.settings.folderScreen
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.hich2000.tagcapella.songs.FolderScanManager
+import com.hich2000.tagcapella.newmusic.FolderScanManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject

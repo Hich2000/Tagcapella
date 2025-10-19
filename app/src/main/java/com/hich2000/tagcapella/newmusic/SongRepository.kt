@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.songs
+package com.hich2000.tagcapella.newmusic
 
 import android.content.Context
 import android.provider.MediaStore

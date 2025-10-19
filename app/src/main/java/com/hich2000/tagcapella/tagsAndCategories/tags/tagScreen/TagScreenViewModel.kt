@@ -2,8 +2,8 @@ package com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hich2000.tagcapella.songs.Song
-import com.hich2000.tagcapella.songs.SongRepository
+import com.hich2000.tagcapella.newmusic.Song
+import com.hich2000.tagcapella.newmusic.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

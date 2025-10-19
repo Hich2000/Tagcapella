@@ -73,7 +73,7 @@ import com.hich2000.tagcapella.music.songScreen.SongScreen
 import com.hich2000.tagcapella.music.controls.MusicControls
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
-import com.hich2000.tagcapella.songs.FolderScanManager
+import com.hich2000.tagcapella.newmusic.FolderScanManager
 import com.hich2000.tagcapella.tagsAndCategories.tags.forms.TagForm
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
