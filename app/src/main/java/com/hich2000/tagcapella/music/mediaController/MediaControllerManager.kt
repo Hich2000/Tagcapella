@@ -196,6 +196,10 @@ class MediaControllerManager @Inject constructor(
                             SharedPreferenceKey.LastSongPosition,
                             playerStateManager.playbackPosition.value
                         )
+                        sharedPreferenceManager.savePreference(
+                            SharedPreferenceKey.LastSongDuration,
+                            playerState.value.duration
+                        )
                     }
                 }
             )

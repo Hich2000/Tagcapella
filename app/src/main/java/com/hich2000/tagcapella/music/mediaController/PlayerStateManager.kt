@@ -89,10 +89,6 @@ class PlayerStateManager @Inject constructor(
                 )
                 onShuffleModeChangedCallback?.invoke(shuffleModeEnabled)
             }
-
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                onPlaybackStateChangeCallback?.invoke()
-            }
         }
     }
 
