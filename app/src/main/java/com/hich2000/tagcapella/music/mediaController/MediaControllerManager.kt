@@ -50,11 +50,7 @@ class MediaControllerManager @Inject constructor(
     val mediaController: StateFlow<MediaController?> get() = _mediaController
 
     // State management
-    val shuffleModeEnabled: StateFlow<Boolean> get() = playerStateManager.shuffleModeEnabled
-    val repeatMode: StateFlow<Int> get() = playerStateManager.repeatMode
-    val isPlaying: StateFlow<Boolean> get() = playerStateManager.isPlaying
-    val playbackPosition: StateFlow<Long> get() = playerStateManager.playbackPosition
-    val playbackDuration: StateFlow<Long> get() = playerStateManager.playbackDuration
+    val playerState: StateFlow<PlayerState> get() = playerStateManager.playerState
 
     private val _isMediaControllerInitialized = MutableStateFlow(false)
     val isMediaControllerInitialized: StateFlow<Boolean> get() = _isMediaControllerInitialized
@@ -248,7 +244,7 @@ class MediaControllerManager @Inject constructor(
     }
 
     fun togglePlayback() {
-        if (playerStateManager.isPlaying.value) {
+        if (playerState.value.isPlaying) {
             _mediaController.value?.pause()
         } else {
             _mediaController.value?.play()

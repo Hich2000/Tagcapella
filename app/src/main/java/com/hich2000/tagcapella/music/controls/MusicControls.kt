@@ -59,11 +59,7 @@ fun MusicControls(
 
     val coroutineScope = rememberCoroutineScope()
     val mediaController by musicPlayerViewModel.mediaController.collectAsState()
-    val playbackPosition by musicPlayerViewModel.playbackPosition.collectAsState()
-    val playbackDuration by musicPlayerViewModel.playbackDuration.collectAsState()
-    val isPlaying by musicPlayerViewModel.isPlaying.collectAsState()
-    val shuffleModeEnabled by musicPlayerViewModel.shuffleModeEnabled.collectAsState()
-    val repeatMode by musicPlayerViewModel.repeatMode.collectAsState()
+    val playerState by musicPlayerViewModel.playerState.collectAsState()
 
     //bottomsheet stuff
     val sheetState = rememberBottomSheetScaffoldState()
@@ -167,19 +163,19 @@ fun MusicControls(
                 ) {
 
                     // Temporary state for slider interaction
-                    var sliderPosition by remember { mutableFloatStateOf(playbackPosition.toFloat()) }
+                    var sliderPosition by remember { mutableFloatStateOf(playerState.position.toFloat()) }
                     var isUserInteracting by remember { mutableStateOf(false) }
 
                     // Sync sliderPosition with playbackPosition when not interacting
-                    LaunchedEffect(playbackPosition) {
+                    LaunchedEffect(playerState.position) {
                         if (!isUserInteracting) {
-                            sliderPosition = playbackPosition.toFloat()
+                            sliderPosition = playerState.position.toFloat()
                         }
                     }
 
                     PlaybackSlider(
                         playbackPosition = sliderPosition.toLong(),
-                        playbackDuration = playbackDuration,
+                        playbackDuration = playerState.duration,
                         onValueChange = { newPosition: Float ->
                             isUserInteracting = true
                             sliderPosition = newPosition
@@ -202,11 +198,11 @@ fun MusicControls(
                     //shuffle mode
                     IconButton(
                         onClick = {
-                            mediaController?.shuffleModeEnabled = !shuffleModeEnabled
+                            mediaController?.shuffleModeEnabled = !playerState.shuffleModeEnabled
                         }
                     ) {
                         val icon =
-                            if (shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
+                            if (playerState.shuffleModeEnabled) Icons.Default.ShuffleOn else Icons.Default.Shuffle
                         Icon(
                             icon,
                             contentDescription = "Shuffle button",
@@ -231,8 +227,8 @@ fun MusicControls(
                             musicPlayerViewModel.togglePlayback()
                         }
                     ) {
-                        val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
-                        val contentDescription = if (isPlaying) "Pause" else "Play"
+                        val icon = if (playerState.isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                        val contentDescription = if (playerState.isPlaying) "Pause" else "Play"
                         Icon(
                             icon,
                             contentDescription = contentDescription,
@@ -254,23 +250,31 @@ fun MusicControls(
                     //loop mode
                     IconButton(
                         onClick = {
-                            if (repeatMode == Player.REPEAT_MODE_OFF) {
-                                mediaController?.repeatMode = Player.REPEAT_MODE_ALL
-                            } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                                mediaController?.repeatMode = Player.REPEAT_MODE_ONE
-                            } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                                mediaController?.repeatMode = Player.REPEAT_MODE_OFF
+                            when (playerState.repeatMode) {
+                                Player.REPEAT_MODE_OFF -> {
+                                    mediaController?.repeatMode = Player.REPEAT_MODE_ALL
+                                }
+                                Player.REPEAT_MODE_ALL -> {
+                                    mediaController?.repeatMode = Player.REPEAT_MODE_ONE
+                                }
+                                Player.REPEAT_MODE_ONE -> {
+                                    mediaController?.repeatMode = Player.REPEAT_MODE_OFF
+                                }
                             }
                         }
                     ) {
                         var icon = Icons.Default.Repeat
 
-                        if (repeatMode == Player.REPEAT_MODE_OFF) {
-                            icon = Icons.AutoMirrored.Filled.ArrowRightAlt
-                        } else if (repeatMode == Player.REPEAT_MODE_ALL) {
-                            icon = Icons.Default.Repeat
-                        } else if (repeatMode == Player.REPEAT_MODE_ONE) {
-                            icon = Icons.Default.RepeatOne
+                        when (playerState.repeatMode) {
+                            Player.REPEAT_MODE_OFF -> {
+                                icon = Icons.AutoMirrored.Filled.ArrowRightAlt
+                            }
+                            Player.REPEAT_MODE_ALL -> {
+                                icon = Icons.Default.Repeat
+                            }
+                            Player.REPEAT_MODE_ONE -> {
+                                icon = Icons.Default.RepeatOne
+                            }
                         }
 
                         Icon(

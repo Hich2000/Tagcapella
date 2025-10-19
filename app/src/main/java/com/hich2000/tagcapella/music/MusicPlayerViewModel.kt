@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
+import com.hich2000.tagcapella.music.mediaController.PlayerState
 import com.hich2000.tagcapella.songs.Song
 import com.hich2000.tagcapella.songs.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
@@ -26,13 +27,10 @@ class MusicPlayerViewModel @Inject constructor(
     val mediaController: StateFlow<MediaController?> get() = mediaControllerManager.mediaController
 
     // State management
-    val shuffleModeEnabled: StateFlow<Boolean> get() = mediaControllerManager.shuffleModeEnabled
-    val repeatMode: StateFlow<Int> get() = mediaControllerManager.repeatMode
-    val isPlaying: StateFlow<Boolean> get() = mediaControllerManager.isPlaying
+    val playerState: StateFlow<PlayerState> get() = mediaControllerManager.playerState
+
     val isMediaControllerInitialized: StateFlow<Boolean> get() = mediaControllerManager.isMediaControllerInitialized
     val currentPlaylist: StateFlow<List<Song>> get() = mediaControllerManager.currentPlaylist
-    val playbackPosition: StateFlow<Long> get() = mediaControllerManager.playbackPosition
-    val playbackDuration: StateFlow<Long> get() = mediaControllerManager.playbackDuration
     val includedTags: StateFlow<List<TagDTO>> get() = mediaControllerManager.includedTags
     val excludedTags: StateFlow<List<TagDTO>> get() = mediaControllerManager.excludedTags
 
