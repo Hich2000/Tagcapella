@@ -16,11 +16,5 @@ SELECT * FROM tag ORDER BY id DESC LIMIT 1;
 selectTaggedSongs:
 SELECT id, song FROM song_tag WHERE tag = ?;
 
-addSongTag:
-INSERT INTO song_tag (song, tag) VALUES (?, ?);
-
-deleteSongTag:
-DELETE FROM song_tag WHERE tag = ? AND song = ?;
-
 selectTagById:
 SELECT id, tag, category FROM tag WHERE id = ?;

@@ -2,17 +2,21 @@ package com.hich2000.tagcapella
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,8 +39,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,44 +53,70 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.hich2000.tagcapella.categories.CategoryForm
-import com.hich2000.tagcapella.categories.CategoryScreen
-import com.hich2000.tagcapella.music_player.MusicControls
-import com.hich2000.tagcapella.music_player.SongScreen
-import com.hich2000.tagcapella.songs.SongViewModel
-import com.hich2000.tagcapella.tags.ExpandableFab
-import com.hich2000.tagcapella.tags.TagForm
-import com.hich2000.tagcapella.tags.TagScreen
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import com.hich2000.tagcapella.tagsAndCategories.categories.forms.CategoryForm
+import com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen.CategoryScreen
+import com.hich2000.tagcapella.music.songScreen.SongScreen
+import com.hich2000.tagcapella.music.controls.MusicControls
+import com.hich2000.tagcapella.settings.SettingsScreen
+import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
+import com.hich2000.tagcapella.newmusic.FolderScanManager
+import com.hich2000.tagcapella.tagsAndCategories.tags.forms.TagForm
+import com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
-import com.hich2000.tagcapella.utils.NavItems
-import com.hich2000.tagcapella.utils.TagCapellaButton
+import com.hich2000.tagcapella.utils.LifeCycleManager
 import com.hich2000.tagcapella.utils.ToastEventBus
+import com.hich2000.tagcapella.utils.composables.ExpandableFab
+import com.hich2000.tagcapella.utils.composables.TagCapellaButton
+import com.hich2000.tagcapella.utils.navigation.LocalNavController
+import com.hich2000.tagcapella.utils.navigation.NavItem
+import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
+import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
 @HiltAndroidApp
-class MyApp : Application()
+class MyApp : Application(), LifecycleObserver {
+
+    @Inject
+    lateinit var appLifeCycleManager: LifeCycleManager
+
+    override fun onCreate() {
+        super.onCreate()
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifeCycleManager)
+    }
+}
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private val mediaPermissionGranted = mutableIntStateOf(PackageManager.PERMISSION_DENIED)
 
-    private val _mediaPermissionGranted: MutableStateFlow<Int> =
-        MutableStateFlow(PackageManager.PERMISSION_DENIED)
-    private val mediaPermissionGranted: StateFlow<Int> get() = _mediaPermissionGranted
+    @Inject
+    lateinit var sharedPreferenceManager: SharedPreferenceManager
 
-    private val songViewModel: SongViewModel by viewModels()
+    @Inject
+    lateinit var folderScanManager: FolderScanManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        _mediaPermissionGranted.value = ContextCompat.checkSelfPermission(
+        mediaPermissionGranted.intValue = ContextCompat.checkSelfPermission(
             this,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 Manifest.permission.READ_MEDIA_AUDIO
@@ -93,7 +124,6 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             }
         )
-        requestPermissions()
 
         setContent {
             TagcapellaTheme {
@@ -101,7 +131,11 @@ class MainActivity : ComponentActivity() {
                     Surface(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        TagcapellaApp()
+                        if (mediaPermissionGranted.intValue == PackageManager.PERMISSION_GRANTED) {
+                            TagcapellaApp()
+                        } else {
+                            RequestPermissionScreen()
+                        }
                     }
                 }
             }
@@ -109,42 +143,110 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun ObservePermissionOnResume(
+        permission: String,
+        onPermissionChanged: (Boolean) -> Unit
+    ) {
+        val context = LocalContext.current
+        val lifecycleOwner = LocalLifecycleOwner.current
 
-    private fun requestPermissions() {
-        // Initialize the permission launcher
-        requestPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (!isGranted) {
-                Toast.makeText(this, "App required media permissions.", Toast.LENGTH_SHORT).show()
-            } else {
-                _mediaPermissionGranted.value = PackageManager.PERMISSION_GRANTED
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    val isGranted = ContextCompat.checkSelfPermission(
+                        context,
+                        permission
+                    ) == PackageManager.PERMISSION_GRANTED
+                    onPermissionChanged(isGranted)
+                }
             }
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Check if the permission is already granted
-            if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.READ_MEDIA_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
-            }
-        } else {
-            if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            lifecycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
             }
         }
     }
 
+    private fun updateMediaPermissionGranted(isGranted: Boolean) {
+        mediaPermissionGranted.intValue = if (isGranted) {
+            PackageManager.PERMISSION_GRANTED
+        } else {
+            PackageManager.PERMISSION_DENIED
+        }
+        folderScanManager.addScanFolder("Music/")
+    }
+
+    @Composable
+    fun RequestPermissionScreen() {
+        var permissionAlreadyRequested = remember {
+            sharedPreferenceManager.getPreference(
+                SharedPreferenceKey.PermissionsAlreadyRequested,
+                false
+            )
+        }
+
+        val context = LocalActivity.current as Activity
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_AUDIO
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+
+        // Initialize the permission launcher
+        val permissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            sharedPreferenceManager.savePreference(
+                SharedPreferenceKey.PermissionsAlreadyRequested,
+                true
+            )
+            permissionAlreadyRequested = true
+            updateMediaPermissionGranted(isGranted)
+        }
+
+        ObservePermissionOnResume(permission) { isGranted ->
+            updateMediaPermissionGranted(isGranted)
+        }
+
+        Scaffold(
+            modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                Text(
+                    "This app requires audio permissions to function",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+                TagCapellaButton(
+                    onClick = {
+                        if (!permissionAlreadyRequested) {
+                            permissionLauncher.launch(permission)
+                        } else {
+                            val intent =
+                                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                    data = Uri.fromParts("package", context.packageName, null)
+                                }
+                            context.startActivity(intent)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Grant audio permissions")
+                }
+            }
+        }
+    }
 
     @Composable
     fun TagcapellaApp() {
-        var selectedScreen by rememberSaveable { mutableStateOf(NavItems.Player) }
-        val mediaPermissionGranted by mediaPermissionGranted.collectAsState()
+        val navController = rememberNavController()
         val context = LocalContext.current
 
         LaunchedEffect(Unit) {
@@ -153,80 +255,98 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        if (mediaPermissionGranted == PackageManager.PERMISSION_GRANTED) {
-            Scaffold(
+
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize(),
+            bottomBar = { BottomNavBar(navController) }
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
-                bottomBar = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .border(2.dp, MaterialTheme.colorScheme.tertiary)
-                            .clickable(
-                                //clickable modifier to block passthrough clicks to the bottom sheet below.
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = {}
-                            ),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
+                    .fillMaxSize()
+            ) {
+                CompositionLocalProvider(LocalNavController provides navController) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = NavItem.Player.title,
                     ) {
-                        NavItems.entries.forEach {
-                            IconButton(
-                                onClick = { selectedScreen = it },
-                            ) {
-                                Icon(
-                                    imageVector = it.icon,
-                                    contentDescription = it.title,
-                                    tint = if (selectedScreen == it) {
-                                        MaterialTheme.colorScheme.secondary
-                                    } else {
-                                        MaterialTheme.colorScheme.secondary.copy(
-                                            alpha = 0.4f
-                                        )
-                                    }
-                                )
+                        composable(NavItem.Player.title) {
+                            MusicControls()
+                        }
+                        composable(NavItem.SongLibrary.title) {
+                            SongScreen()
+                        }
+                        composable(NavItem.Tags.title) {
+                            TagCategoryScreen()
+                        }
+                        navigation(
+                            startDestination = NavItem.Settings.Main.title,
+                            route = NavItem.Settings.title
+                        ) {
+                            composable(NavItem.Settings.Main.title) {
+                                SettingsScreen()
+                            }
+                            composable(NavItem.Settings.Folders.title) {
+                                FolderScreen()
                             }
                         }
                     }
                 }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(
-                            top = innerPadding.calculateTopPadding(),
-                            start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                            bottom = innerPadding.calculateBottomPadding()
-                        )
-                        .fillMaxSize()
-                ) {
-                    val songList by songViewModel.songList.collectAsState()
-                    when (selectedScreen) {
-                        NavItems.SongLibrary -> SongScreen(songList = songList)
-                        NavItems.Player -> MusicControls()
-                        NavItems.Tags -> TagCategoryScreen()
-                    }
-                }
             }
-        } else {
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text("Media permissions are necessary to use this application")
+        }
+    }
+
+    @Composable
+    fun BottomNavBar(navController: NavController) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(MaterialTheme.colorScheme.primary)
+                .border(2.dp, MaterialTheme.colorScheme.tertiary)
+                .clickable(
+                    //clickable modifier to block passthrough clicks to the bottom sheet below.
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {}
+                ),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavItem.navItems.forEach {
+                IconButton(
+                    onClick = {
+                        if (currentRoute != it.title) {
+                            navController.navigate(it.title) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
+                    },
+                ) {
+                    it.icon?.let { imageVector ->
+                        Icon(
+                            imageVector = imageVector,
+                            contentDescription = it.title,
+                            tint = if (currentRoute == it.title) {
+                                MaterialTheme.colorScheme.secondary
+                            } else {
+                                MaterialTheme.colorScheme.secondary.copy(
+                                    alpha = 0.4f
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -248,7 +368,9 @@ class MainActivity : ComponentActivity() {
                     showTagDialog.value = false
                 },
             ) {
-                TagForm()
+                TagForm(
+                    onSaveAction = { showTagDialog.value = false }
+                )
             }
         }
 
