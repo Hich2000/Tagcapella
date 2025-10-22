@@ -69,7 +69,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.hich2000.tagcapella.tagsAndCategories.categories.forms.CategoryForm
 import com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen.CategoryScreen
-import com.hich2000.tagcapella.music.songScreen.SongScreen
+import com.hich2000.tagcapella.newmusic.songScreen.SongScreen
 import com.hich2000.tagcapella.music.controls.MusicControls
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen

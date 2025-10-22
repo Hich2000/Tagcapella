@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.music.MusicPlayerViewModel
-import com.hich2000.tagcapella.music.songScreen.SongCard
-import com.hich2000.tagcapella.music.songScreen.SongList
+import com.hich2000.tagcapella.newmusic.songScreen.SongCard
+import com.hich2000.tagcapella.newmusic.songScreen.SongList
 import com.hich2000.tagcapella.tagsAndCategories.tags.dialogs.TagDialog
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music.songScreen
+package com.hich2000.tagcapella.newmusic.songScreen
 
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding

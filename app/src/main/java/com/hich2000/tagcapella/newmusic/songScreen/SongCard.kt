@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music.songScreen
+package com.hich2000.tagcapella.newmusic.songScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
