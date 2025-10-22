@@ -1,7 +1,6 @@
-package com.hich2000.tagcapella.music.mediaController
+package com.hich2000.tagcapella.newmusic.mediaController
 
 import androidx.media3.common.Player
-import com.hich2000.tagcapella.newmusic.mediaController.PlayerState
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
