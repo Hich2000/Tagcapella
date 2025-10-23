@@ -73,6 +73,10 @@ class MediaPlayerCoordinator @Inject constructor(
         }
     }
 
+    fun cleanup() {
+        mediaOutputChangeReceiver.cleanup()
+    }
+
     fun play() = mediaControllerManager.play()
     fun pause() = mediaControllerManager.pause()
     fun next() = mediaControllerManager.next()
