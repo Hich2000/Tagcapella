@@ -1,5 +1,6 @@
 package com.hich2000.tagcapella.newmusic.mediaController
 
+import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.newmusic.Song
 import com.hich2000.tagcapella.utils.applicationScope.ApplicationScope
@@ -34,15 +35,15 @@ class MediaPlayerCoordinator @Inject constructor(
             mediaControllerInit.first()
             mediaController.value?.addListener(
                 playerStateManager.createListener(
-                onPlaybackStateReady = {
-                    mediaController.value?.duration?.let {
-                        playerStateManager.updateTimeline(
-                            playerState.value.position,
-                            it
-                        )
+                    onPlaybackStateReady = {
+                        mediaController.value?.duration?.let {
+                            playerStateManager.updateTimeline(
+                                playerState.value.position,
+                                it
+                            )
+                        }
                     }
-                }
-            ))
+                ))
             mediaController.value?.let { mediaOutputChangeReceiver.setGettingNoisyReceiver(it) }
 
             withContext(Dispatchers.Main) {
@@ -52,10 +53,15 @@ class MediaPlayerCoordinator @Inject constructor(
                 //get the duration and position of the current song every second
                 while (true) {
                     val controller = mediaController.value ?: continue
+                    if (controller.playbackState != Player.STATE_READY) {
+                        delay(1000)
+                        continue
+                    }
                     playerStateManager.updateTimeline(
                         controller.currentPosition,
                         controller.duration
                     )
+
                     delay(1000)
                 }
             }
