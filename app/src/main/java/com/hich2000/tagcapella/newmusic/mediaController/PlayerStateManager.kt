@@ -47,14 +47,14 @@ class PlayerStateManager @Inject constructor(
     }
 
     // Expose a listener you can plug into the MediaController
+    // I only made these arguments because they cause some visual bugs if we rely on raw mediaController data
     fun createListener(
+        onIsPlayingChanged: () -> Unit = {},
         onPlaybackStateReady: () -> Unit = {}
     ): Player.Listener {
         return object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                _playerState.value = _playerState.value.copy(
-                    isPlaying = isPlaying
-                )
+                onIsPlayingChanged()
                 savePlayerState()
             }
 
@@ -80,6 +80,10 @@ class PlayerStateManager @Inject constructor(
             }
 
         }
+    }
+
+    fun setIsPlaying(isPlaying: Boolean) {
+        _playerState.value = _playerState.value.copy(isPlaying = isPlaying)
     }
 
     fun updateTimeline(position: Long, duration: Long) {
