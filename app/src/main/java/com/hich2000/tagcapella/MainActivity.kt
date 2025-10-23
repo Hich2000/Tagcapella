@@ -70,10 +70,10 @@ import androidx.navigation.navigation
 import com.hich2000.tagcapella.tagsAndCategories.categories.forms.CategoryForm
 import com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen.CategoryScreen
 import com.hich2000.tagcapella.newmusic.songScreen.SongScreen
-import com.hich2000.tagcapella.music.controls.MusicControls
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
 import com.hich2000.tagcapella.newmusic.FolderScanManager
+import com.hich2000.tagcapella.newmusic.playerScreen.PlayerScreen
 import com.hich2000.tagcapella.tagsAndCategories.tags.forms.TagForm
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen.TagScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
@@ -276,7 +276,8 @@ class MainActivity : ComponentActivity() {
                         startDestination = NavItem.Player.title,
                     ) {
                         composable(NavItem.Player.title) {
-                            MusicControls()
+//                            MusicControls()
+                            PlayerScreen()
                         }
                         composable(NavItem.SongLibrary.title) {
                             SongScreen()

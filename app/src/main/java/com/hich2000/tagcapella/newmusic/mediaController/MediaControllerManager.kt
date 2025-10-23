@@ -1,0 +1,116 @@
+package com.hich2000.tagcapella.newmusic.mediaController
+
+import android.app.Application
+import android.content.ComponentName
+import androidx.concurrent.futures.await
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.hich2000.tagcapella.newmusic.Song
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class MediaControllerManager @Inject constructor(
+    private val application: Application,
+) {
+
+    private val _isMediaControllerInitialized = MutableStateFlow(false)
+    val isMediaControllerInitialized: StateFlow<Boolean> get() = _isMediaControllerInitialized
+
+    private val _mediaController: MutableStateFlow<MediaController?> =
+        MutableStateFlow(null)
+    val mediaController: StateFlow<MediaController?> get() = _mediaController
+
+    suspend fun initialize() {
+        initMediaController()
+    }
+
+    private suspend fun initMediaController() {
+        // Reuse existing MediaController if it's already connected
+        if (_mediaController.value != null) {
+            _isMediaControllerInitialized.value = true
+            return
+        }
+
+        _isMediaControllerInitialized.value = try {
+            val sessionToken =
+                SessionToken(application, ComponentName(application, PlaybackService::class.java))
+            val controllerFuture = MediaController.Builder(application, sessionToken).buildAsync()
+            _mediaController.value = controllerFuture.await()
+
+            val audioAttributes: AudioAttributes = AudioAttributes.Builder()
+                .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                .setUsage(C.USAGE_MEDIA)
+                .build()
+            _mediaController.value?.setAudioAttributes(audioAttributes, true)
+
+            true
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
+    fun setPlayerState(playerState: PlayerState) {
+        _mediaController.value?.shuffleModeEnabled = playerState.shuffleModeEnabled
+        _mediaController.value?.repeatMode = playerState.repeatMode
+
+        _mediaController.value?.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    _mediaController.value?.seekTo(playerState.position)
+                    _mediaController.value?.removeListener(this)
+                }
+            }
+        })
+    }
+
+    fun setQueue(queue: List<Song>) {
+        val mediaItems = queue.map {
+            MediaItem.Builder()
+                .setMediaId(it.path)
+                .setUri(it.path)
+                .setMediaMetadata(
+                    MediaMetadata.Builder().setTitle(File(it.path).nameWithoutExtension).build()
+                )
+                .build()
+        }
+        _mediaController.value?.clearMediaItems()
+        _mediaController.value?.addMediaItems(mediaItems)
+        _mediaController.value?.prepare()
+    }
+
+    fun play() = _mediaController.value?.play()
+    fun pause() = _mediaController.value?.pause()
+    fun next() = _mediaController.value?.seekToNext()
+    fun previous() = _mediaController.value?.seekToPrevious()
+    fun seek(position: Long) = _mediaController.value?.seekTo(position)
+    fun shuffleMode() {
+        _mediaController.value?.shuffleModeEnabled?.let {
+            _mediaController.value?.shuffleModeEnabled = !it
+        }
+    }
+
+    fun loopMode() {
+        when (_mediaController.value?.repeatMode) {
+            Player.REPEAT_MODE_OFF -> {
+                _mediaController.value?.repeatMode = Player.REPEAT_MODE_ALL
+            }
+
+            Player.REPEAT_MODE_ALL -> {
+                _mediaController.value?.repeatMode = Player.REPEAT_MODE_ONE
+            }
+
+            Player.REPEAT_MODE_ONE -> {
+                _mediaController.value?.repeatMode = Player.REPEAT_MODE_OFF
+            }
+        }
+    }
+}

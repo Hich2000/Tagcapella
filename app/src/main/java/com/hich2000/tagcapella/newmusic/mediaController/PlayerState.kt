@@ -4,7 +4,7 @@ data class PlayerState(
     val isPlaying: Boolean,
     val shuffleModeEnabled: Boolean,
     val repeatMode: Int,
-    val position: Long,
+    var position: Long,
     val duration: Long,
 ) {
 

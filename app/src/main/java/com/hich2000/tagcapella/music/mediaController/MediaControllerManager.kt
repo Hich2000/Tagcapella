@@ -175,35 +175,35 @@ class MediaControllerManager @Inject constructor(
     private fun observeMediaControllerState() {
         _mediaController.value?.addListener(
             playerStateManager.createListener(
-                onRepeatModeChangedCallback = { mode ->
-                    sharedPreferenceManager.savePreference(
-                        SharedPreferenceKey.PlayerRepeatMode,
-                        mode
-                    )
-                },
-                onShuffleModeChangedCallback = { enabled ->
-                    sharedPreferenceManager.savePreference(
-                        SharedPreferenceKey.PlayerShuffleMode,
-                        enabled
-                    )
-                },
-                onPlaybackStateChangeCallback = {
-                    // Save current song + position
-                    _mediaController.value?.currentMediaItem?.let {
-                        sharedPreferenceManager.savePreference(
-                            SharedPreferenceKey.LastSongPlayed,
-                            it.mediaId
-                        )
-                        sharedPreferenceManager.savePreference(
-                            SharedPreferenceKey.LastSongPosition,
-                            playerStateManager.playbackPosition.value
-                        )
-                        sharedPreferenceManager.savePreference(
-                            SharedPreferenceKey.LastSongDuration,
-                            playerState.value.duration
-                        )
-                    }
-                }
+//                onRepeatModeChangedCallback = { mode ->
+//                    sharedPreferenceManager.savePreference(
+//                        SharedPreferenceKey.PlayerRepeatMode,
+//                        mode
+//                    )
+//                },
+//                onShuffleModeChangedCallback = { enabled ->
+//                    sharedPreferenceManager.savePreference(
+//                        SharedPreferenceKey.PlayerShuffleMode,
+//                        enabled
+//                    )
+//                },
+//                onPlaybackStateChangeCallback = {
+//                    // Save current song + position
+//                    _mediaController.value?.currentMediaItem?.let {
+//                        sharedPreferenceManager.savePreference(
+//                            SharedPreferenceKey.LastSongPlayed,
+//                            it.mediaId
+//                        )
+//                        sharedPreferenceManager.savePreference(
+//                            SharedPreferenceKey.LastSongPosition,
+//                            playerStateManager.playbackPosition.value
+//                        )
+//                        sharedPreferenceManager.savePreference(
+//                            SharedPreferenceKey.LastSongDuration,
+//                            playerState.value.duration
+//                        )
+//                    }
+//                }
             )
         )
 
@@ -211,7 +211,7 @@ class MediaControllerManager @Inject constructor(
         repositoryScope.launch {
             while (true) {
                 val controller = _mediaController.value ?: continue
-                playerStateManager.updatePosition(
+                playerStateManager.updateTimeline(
                     controller.currentPosition,
                     controller.duration
                 )
