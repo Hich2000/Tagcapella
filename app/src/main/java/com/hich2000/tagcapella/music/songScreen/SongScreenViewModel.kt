@@ -1,8 +1,8 @@
-package com.hich2000.tagcapella.newmusic.songScreen
+package com.hich2000.tagcapella.music.songScreen
 
 import androidx.lifecycle.ViewModel
-import com.hich2000.tagcapella.newmusic.Song
-import com.hich2000.tagcapella.newmusic.SongRepository
+import com.hich2000.tagcapella.music.Song
+import com.hich2000.tagcapella.music.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

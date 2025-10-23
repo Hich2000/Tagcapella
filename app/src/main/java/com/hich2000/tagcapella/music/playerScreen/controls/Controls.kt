@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.playerScreen.controls
+package com.hich2000.tagcapella.music.playerScreen.controls
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import com.hich2000.tagcapella.newmusic.playerState.PlayerState
+import com.hich2000.tagcapella.music.playerState.PlayerState
 
 @Composable
 fun Controls(

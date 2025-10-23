@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.playerScreen
+package com.hich2000.tagcapella.music.playerScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,8 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.newmusic.playerScreen.controls.Controls
-import com.hich2000.tagcapella.newmusic.playerScreen.controls.ProgressSlider
+import com.hich2000.tagcapella.music.playerScreen.controls.Controls
+import com.hich2000.tagcapella.music.playerScreen.controls.ProgressSlider
 
 @Composable
 fun PlayerScreen(

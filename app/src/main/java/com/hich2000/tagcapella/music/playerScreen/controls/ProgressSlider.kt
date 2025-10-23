@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.playerScreen.controls
+package com.hich2000.tagcapella.music.playerScreen.controls
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

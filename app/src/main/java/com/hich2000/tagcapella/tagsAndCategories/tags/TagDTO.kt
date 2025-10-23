@@ -1,6 +1,6 @@
 package com.hich2000.tagcapella.tagsAndCategories.tags
 
-import com.hich2000.tagcapella.newmusic.Song
+import com.hich2000.tagcapella.music.Song
 
 data class TagDTO(
     val id: Long,

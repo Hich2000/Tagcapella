@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.playerState
+package com.hich2000.tagcapella.music.playerState
 
 import androidx.media3.common.Player
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey

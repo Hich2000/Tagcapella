@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.songScreen
+package com.hich2000.tagcapella.music.songScreen
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator

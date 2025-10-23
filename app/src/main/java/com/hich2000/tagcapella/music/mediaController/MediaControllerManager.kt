@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.mediaController
+package com.hich2000.tagcapella.music.mediaController
 
 import android.app.Application
 import android.content.ComponentName
@@ -10,8 +10,8 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.hich2000.tagcapella.newmusic.Song
-import com.hich2000.tagcapella.newmusic.playerState.PlayerState
+import com.hich2000.tagcapella.music.Song
+import com.hich2000.tagcapella.music.playerState.PlayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File

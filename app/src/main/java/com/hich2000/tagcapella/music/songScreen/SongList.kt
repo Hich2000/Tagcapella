@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.songScreen
+package com.hich2000.tagcapella.music.songScreen
 
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
@@ -8,7 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.hich2000.tagcapella.newmusic.Song
+import com.hich2000.tagcapella.music.Song
 
 @Composable
 fun SongList(

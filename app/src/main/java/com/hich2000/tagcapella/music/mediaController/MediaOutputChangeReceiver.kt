@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.mediaController
+package com.hich2000.tagcapella.music.mediaController
 
 import android.app.Application
 import android.content.BroadcastReceiver

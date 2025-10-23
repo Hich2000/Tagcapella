@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic
+package com.hich2000.tagcapella.music
 
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 
