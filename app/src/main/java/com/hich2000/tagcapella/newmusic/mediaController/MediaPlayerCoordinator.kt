@@ -3,6 +3,9 @@ package com.hich2000.tagcapella.newmusic.mediaController
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.newmusic.Song
+import com.hich2000.tagcapella.newmusic.playerState.PlayerState
+import com.hich2000.tagcapella.newmusic.playerState.PlayerStateManager
+import com.hich2000.tagcapella.newmusic.queueManager.QueueManager
 import com.hich2000.tagcapella.utils.applicationScope.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

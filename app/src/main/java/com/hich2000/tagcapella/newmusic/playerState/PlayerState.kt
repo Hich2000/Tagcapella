@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.mediaController
+package com.hich2000.tagcapella.newmusic.playerState
 
 data class PlayerState(
     val isPlaying: Boolean,

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.music.mediaController.MediaControllerManager
-import com.hich2000.tagcapella.newmusic.mediaController.PlayerState
+import com.hich2000.tagcapella.newmusic.playerState.PlayerState
 import com.hich2000.tagcapella.newmusic.Song
 import com.hich2000.tagcapella.newmusic.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO

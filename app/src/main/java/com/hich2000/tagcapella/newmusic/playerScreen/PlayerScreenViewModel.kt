@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.newmusic.playerScreen
 
 import androidx.lifecycle.ViewModel
 import com.hich2000.tagcapella.newmusic.mediaController.MediaPlayerCoordinator
-import com.hich2000.tagcapella.newmusic.mediaController.PlayerState
+import com.hich2000.tagcapella.newmusic.playerState.PlayerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject

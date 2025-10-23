@@ -18,8 +18,8 @@ import androidx.media3.session.SessionToken
 import com.hich2000.tagcapella.newmusic.mediaController.PlaybackService
 import com.hich2000.tagcapella.newmusic.Song
 import com.hich2000.tagcapella.newmusic.SongRepository
-import com.hich2000.tagcapella.newmusic.mediaController.PlayerState
-import com.hich2000.tagcapella.newmusic.mediaController.PlayerStateManager
+import com.hich2000.tagcapella.newmusic.playerState.PlayerState
+import com.hich2000.tagcapella.newmusic.playerState.PlayerStateManager
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey

@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.newmusic.mediaController
+package com.hich2000.tagcapella.newmusic.queueManager
 
 import com.hich2000.tagcapella.newmusic.Song
 import com.hich2000.tagcapella.newmusic.SongRepository

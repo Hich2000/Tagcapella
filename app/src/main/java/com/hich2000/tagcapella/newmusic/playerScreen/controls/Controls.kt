@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import com.hich2000.tagcapella.newmusic.mediaController.PlayerState
+import com.hich2000.tagcapella.newmusic.playerState.PlayerState
 
 @Composable
 fun Controls(
