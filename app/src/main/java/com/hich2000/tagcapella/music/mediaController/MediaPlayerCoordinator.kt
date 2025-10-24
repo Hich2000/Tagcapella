@@ -92,5 +92,8 @@ class MediaPlayerCoordinator @Inject constructor(
     fun seek(position: Long) = mediaControllerManager.seek(position)
     fun seek(queueIndex: Int) = mediaControllerManager.seek(queueIndex)
     fun toggleTagInFilter(tag: TagDTO) = queueManager.toggleTagInFilter(tag)
-    fun updateQueue() = queueManager.updateQueue()
+    fun updateQueue() {
+        queueManager.updateQueue()
+        mediaControllerManager.setQueue(currentQueue.value)
+    }
 }
