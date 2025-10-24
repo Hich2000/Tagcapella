@@ -23,11 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.Category
 
 @Composable
 fun CategoryCard(
-    category: CategoryDTO,
+    category: Category,
     editCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background

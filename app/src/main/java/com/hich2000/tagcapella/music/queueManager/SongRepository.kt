@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.music.queueManager
 
 import android.content.Context
 import android.provider.MediaStore
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.utils.Database
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -110,8 +110,8 @@ class SongRepository @Inject constructor(
     }
 
     fun filterSongList(
-        includeTags: List<TagDTO> = listOf(),
-        excludeTags: List<TagDTO> = listOf()
+        includeTags: List<Tag> = listOf(),
+        excludeTags: List<Tag> = listOf()
     ): List<Song> {
         val filteredSongList = mutableListOf<Song>()
         val includeIds: List<Long> = includeTags.map { it.id }
@@ -138,20 +138,20 @@ class SongRepository @Inject constructor(
         return filteredSongList
     }
 
-    fun addSongTag(song: Song, tag: TagDTO) {
+    fun addSongTag(song: Song, tag: Tag) {
         if (song.tags.contains(tag)) return
         database.db.songQueries.addSongTag(song.path, tag.id)
         updateSongInList(song)
     }
 
-    fun deleteSongTag(song: Song, tag: TagDTO) {
+    fun deleteSongTag(song: Song, tag: Tag) {
         database.db.songQueries.deleteSongTag(song.path, tag.id)
         updateSongInList(song)
     }
 
-    fun getSongTags(songPath: String): List<TagDTO> {
+    fun getSongTags(songPath: String): List<Tag> {
         val tags = database.db.songQueries.selectSongTags(songPath) { id, tag, category ->
-            TagDTO(id, tag, category)
+            Tag(id, tag, category)
         }.executeAsList()
 
         return tags.toList()

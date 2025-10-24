@@ -24,15 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 
 @Composable
 fun TagCard(
-    tag: TagDTO,
+    tag: Tag,
     editCallback: (() -> Unit)? = null,
     songCallback: (() -> Unit)? = null,
     deleteCallback: (() -> Unit)? = null,
-    onClick: (tag: TagDTO) -> Unit = {},
+    onClick: (tag: Tag) -> Unit = {},
     backgroundColor: Color = MaterialTheme.colorScheme.background,
 ) {
     Card(

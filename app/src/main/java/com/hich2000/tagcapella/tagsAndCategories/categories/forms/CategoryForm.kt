@@ -22,16 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.Category
 import com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen.CategoryScreenViewModel
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable
 fun CategoryForm(
-    category: CategoryDTO? = null,
+    category: Category? = null,
     categoryScreenViewModel: CategoryScreenViewModel = hiltViewModel()
 ) {
-    var textState by remember { mutableStateOf(if (category is CategoryDTO) category.category else "") }
+    var textState by remember { mutableStateOf(if (category is Category) category.category else "") }
 
     Surface(
         modifier = Modifier.Companion

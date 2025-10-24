@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.tagsAndCategories.tags.tagList
 
 import androidx.compose.foundation.ScrollState
 import androidx.lifecycle.ViewModel
-import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.Category
 import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +23,7 @@ class TagListViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow<Long?>(null)
     val selectedCategory: StateFlow<Long?> get() = _selectedCategory
 
-    val categories: StateFlow<List<CategoryDTO>> get() = categoryRepository.categories
+    val categories: StateFlow<List<Category>> get() = categoryRepository.categories
 
     fun setSelectedCategory(category: Long?) {
         _selectedCategory.value = category

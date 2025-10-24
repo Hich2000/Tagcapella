@@ -3,7 +3,7 @@ package com.hich2000.tagcapella.music.songScreen
 import androidx.lifecycle.ViewModel
 import com.hich2000.tagcapella.music.queueManager.Song
 import com.hich2000.tagcapella.music.queueManager.SongRepository
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,14 +24,14 @@ class SongScreenViewModel @Inject constructor(
     private val _songToTag: MutableStateFlow<Song?> = MutableStateFlow(null)
     val songToTag: StateFlow<Song?> get() = _songToTag
 
-    fun addSongTag(tag: TagDTO) {
+    fun addSongTag(tag: Tag) {
         songToTag.value?.let {
             songRepository.addSongTag(it, tag)
             updateSongToTag()
         }
     }
 
-    fun deleteSongTag(tag: TagDTO) {
+    fun deleteSongTag(tag: Tag) {
         songToTag.value?.let {
             songRepository.deleteSongTag(it, tag)
             updateSongToTag()

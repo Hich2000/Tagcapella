@@ -6,7 +6,7 @@ import com.hich2000.tagcapella.music.queueManager.Song
 import com.hich2000.tagcapella.music.playerState.PlayerState
 import com.hich2000.tagcapella.music.playerState.PlayerStateManager
 import com.hich2000.tagcapella.music.queueManager.QueueManager
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.utils.applicationScope.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,8 +31,8 @@ class MediaPlayerCoordinator @Inject constructor(
     val mediaController: StateFlow<MediaController?> get() = mediaControllerManager.mediaController
     val currentQueue: StateFlow<List<Song>> get() = queueManager.currentQueue
     val playerState: StateFlow<PlayerState> get() = playerStateManager.playerState
-    val includedTags: StateFlow<List<TagDTO>> get() = queueManager.includedTags
-    val excludedTags: StateFlow<List<TagDTO>> get() = queueManager.excludedTags
+    val includedTags: StateFlow<List<Tag>> get() = queueManager.includedTags
+    val excludedTags: StateFlow<List<Tag>> get() = queueManager.excludedTags
 
     init {
         applicationScope.launch {
@@ -91,7 +91,7 @@ class MediaPlayerCoordinator @Inject constructor(
     fun loopMode() = mediaControllerManager.loopMode()
     fun seek(position: Long) = mediaControllerManager.seek(position)
     fun seek(queueIndex: Int) = mediaControllerManager.seek(queueIndex)
-    fun toggleTagInFilter(tag: TagDTO) = queueManager.toggleTagInFilter(tag)
+    fun toggleTagInFilter(tag: Tag) = queueManager.toggleTagInFilter(tag)
     fun updateQueue() {
         queueManager.updateQueue()
         mediaControllerManager.setQueue(currentQueue.value)

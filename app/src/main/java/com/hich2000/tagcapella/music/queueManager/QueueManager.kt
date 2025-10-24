@@ -1,6 +1,6 @@
 package com.hich2000.tagcapella.music.queueManager
 
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
@@ -24,11 +24,11 @@ class QueueManager @Inject constructor(
     private val _currentQueue: MutableStateFlow<List<Song>> = MutableStateFlow(emptyList())
     val currentQueue: StateFlow<List<Song>> get() = _currentQueue
 
-    private var _includedTags = MutableStateFlow<List<TagDTO>>(emptyList())
-    val includedTags: StateFlow<List<TagDTO>> get() = _includedTags
+    private var _includedTags = MutableStateFlow<List<Tag>>(emptyList())
+    val includedTags: StateFlow<List<Tag>> get() = _includedTags
 
-    private val _excludedTags = MutableStateFlow<List<TagDTO>>(emptyList())
-    val excludedTags: StateFlow<List<TagDTO>> get() = _excludedTags
+    private val _excludedTags = MutableStateFlow<List<Tag>>(emptyList())
+    val excludedTags: StateFlow<List<Tag>> get() = _excludedTags
 
     fun updateQueue() {
         val newQueue = songRepository.filterSongList(_includedTags.value, _excludedTags.value)
@@ -52,7 +52,7 @@ class QueueManager @Inject constructor(
         updateQueue()
     }
 
-    fun toggleTagInFilter(tag: TagDTO) {
+    fun toggleTagInFilter(tag: Tag) {
         if (_includedTags.value.any { it.id == tag.id }) {
             removeIncludedTag(tag)
             addExcludedTag(tag)
@@ -63,22 +63,22 @@ class QueueManager @Inject constructor(
         }
     }
 
-    fun addIncludedTag(tag: TagDTO) {
+    fun addIncludedTag(tag: Tag) {
         _includedTags.value = _includedTags.value + tag
         saveTagsFilters()
     }
 
-    fun removeIncludedTag(tag: TagDTO) {
+    fun removeIncludedTag(tag: Tag) {
         _includedTags.value = _includedTags.value.filter { it.id != tag.id }
         saveTagsFilters()
     }
 
-    fun addExcludedTag(tag: TagDTO) {
+    fun addExcludedTag(tag: Tag) {
         _excludedTags.value = _excludedTags.value + tag
         saveTagsFilters()
     }
 
-    fun removeExcludedTag(tag: TagDTO) {
+    fun removeExcludedTag(tag: Tag) {
         _excludedTags.value = _excludedTags.value.filter { it.id != tag.id }
         saveTagsFilters()
     }

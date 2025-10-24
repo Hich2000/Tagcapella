@@ -1,3 +1,3 @@
 package com.hich2000.tagcapella.tagsAndCategories.categories
 
-class CategoryDTO(val id: Long, val category: String)
+data class Category(val id: Long, val category: String)

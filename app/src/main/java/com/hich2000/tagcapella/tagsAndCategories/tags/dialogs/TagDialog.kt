@@ -18,14 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagList
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable
 fun TagDialog(
     onButtonPress: () -> Unit = {},
-    tagCardComposable: @Composable (tag: TagDTO) -> Unit,
+    tagCardComposable: @Composable (tag: Tag) -> Unit,
     onDismissRequest: () -> Unit = {},
     tagDialogViewModel: TagDialogViewModel = hiltViewModel(),
 ) {

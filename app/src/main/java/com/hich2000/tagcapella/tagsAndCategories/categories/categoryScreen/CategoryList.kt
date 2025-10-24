@@ -10,12 +10,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryDTO
+import com.hich2000.tagcapella.tagsAndCategories.categories.Category
 
 @Composable
 fun CategoryList(
-    categoryList: List<CategoryDTO>,
-    categoryCard: @Composable (category: CategoryDTO) -> Unit,
+    categoryList: List<Category>,
+    categoryCard: @Composable (category: Category) -> Unit,
 ) {
     val columnScroll = rememberScrollState()
 

@@ -23,8 +23,8 @@ class TagRepository @Inject constructor(
     // Define a CoroutineScope for the repository
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private var _tags = MutableStateFlow<List<TagDTO>>(emptyList())
-    val tags: StateFlow<List<TagDTO>> get() = _tags
+    private var _tags = MutableStateFlow<List<Tag>>(emptyList())
+    val tags: StateFlow<List<Tag>> get() = _tags
 
     init {
         repositoryScope.launch {
@@ -33,7 +33,7 @@ class TagRepository @Inject constructor(
     }
 
     fun initTagList() {
-        val tagList = db.tagQueries.selectAll { id, tag, category -> TagDTO(id, tag, category) }
+        val tagList = db.tagQueries.selectAll { id, tag, category -> Tag(id, tag, category) }
             .executeAsList()
         tagList.forEach { tag ->
             tag.taggedSongs = getTaggedSongs(tag)
@@ -44,7 +44,7 @@ class TagRepository @Inject constructor(
     fun insertTag(newTag: String, category: Long?) {
         db.tagQueries.insertTag(id = null, tag = newTag, category = category)
         db.tagQueries.lastInsertedTag { id, tag, category ->
-            TagDTO(
+            Tag(
                 id,
                 tag,
                 category
@@ -63,17 +63,17 @@ class TagRepository @Inject constructor(
         initTagList()
     }
 
-    fun getTaggedSongs(tag: TagDTO): MutableList<Song>  {
+    fun getTaggedSongs(tag: Tag): MutableList<Song>  {
         val songs = db.tagQueries.selectTaggedSongs(tag.id) { _, path  ->
             Song(path, emptyList())
         }.executeAsList()
         return songs.toMutableStateList()
     }
 
-    fun getTagById(tagId: Long): TagDTO? {
+    fun getTagById(tagId: Long): Tag? {
         val db = database.db
         val tagResult = db.tagQueries.selectTagById(tagId) { id, tag, category ->
-            TagDTO(id, tag, category)
+            Tag(id, tag, category)
         }.executeAsOneOrNull()
 
         return tagResult

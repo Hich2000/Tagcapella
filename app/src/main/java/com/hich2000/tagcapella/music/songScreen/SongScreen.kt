@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.dialogs.TagDialog
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
 
@@ -24,8 +24,8 @@ fun SongScreen(
     val songList by songScreenViewModel.songs.collectAsState()
     val songToTag by songScreenViewModel.songToTag.collectAsState()
 
-    val onTagClick = { tag: TagDTO ->
-        if (songToTag?.tags?.find { songTag: TagDTO ->
+    val onTagClick = { tag: Tag ->
+        if (songToTag?.tags?.find { songTag: Tag ->
                 tag.id == songTag.id
             } !== null) {
             songScreenViewModel.deleteSongTag(tag)
@@ -34,8 +34,8 @@ fun SongScreen(
         }
     }
 
-    val tagCardComposable = @Composable { tag: TagDTO ->
-        val isTagged = songToTag?.tags?.find { songTag: TagDTO ->
+    val tagCardComposable = @Composable { tag: Tag ->
+        val isTagged = songToTag?.tags?.find { songTag: Tag ->
             tag.id == songTag.id
         } !== null
 

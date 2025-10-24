@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hich2000.tagcapella.music.queueManager.Song
 import com.hich2000.tagcapella.music.queueManager.SongRepository
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +17,11 @@ class TagScreenViewModel @Inject constructor(
     private val tagRepository: TagRepository,
     private val songRepository: SongRepository
 ) : ViewModel() {
-    val tags: StateFlow<List<TagDTO>> get() = tagRepository.tags
+    val tags: StateFlow<List<Tag>> get() = tagRepository.tags
     val songs: StateFlow<List<Song>> get() = songRepository.songList
 
-    private val _clickedTag = MutableStateFlow<TagDTO?>(null)
-    val clickedTag: StateFlow<TagDTO?> get() = _clickedTag
+    private val _clickedTag = MutableStateFlow<Tag?>(null)
+    val clickedTag: StateFlow<Tag?> get() = _clickedTag
 
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> get() = _showDialog
@@ -33,12 +33,12 @@ class TagScreenViewModel @Inject constructor(
         }
     }
 
-    fun addSongTag(tag: TagDTO, song: Song) {
+    fun addSongTag(tag: Tag, song: Song) {
         songRepository.addSongTag(song = song, tag = tag)
         tagRepository.initTagList()
     }
 
-    fun deleteSongTag(tag: TagDTO, song: Song) {
+    fun deleteSongTag(tag: Tag, song: Song) {
         songRepository.deleteSongTag(song = song, tag = tag)
         tagRepository.initTagList()
     }
@@ -51,7 +51,7 @@ class TagScreenViewModel @Inject constructor(
         _showDialog.value = false
     }
 
-    fun setClickedTag(tag: TagDTO?) {
+    fun setClickedTag(tag: Tag?) {
         _clickedTag.value = tag
     }
 }
