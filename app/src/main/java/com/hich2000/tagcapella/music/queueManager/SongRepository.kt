@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music
+package com.hich2000.tagcapella.music.queueManager
 
 import android.content.Context
 import android.provider.MediaStore

@@ -48,7 +48,7 @@ import androidx.navigation.navigation
 import com.hich2000.tagcapella.music.songScreen.SongScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
-import com.hich2000.tagcapella.music.FolderScanManager
+import com.hich2000.tagcapella.music.queueManager.FolderScanManager
 import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme

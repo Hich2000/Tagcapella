@@ -1,7 +1,5 @@
 package com.hich2000.tagcapella.music.queueManager
 
-import com.hich2000.tagcapella.music.Song
-import com.hich2000.tagcapella.music.SongRepository
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
@@ -18,6 +16,11 @@ class QueueManager @Inject constructor(
     private val sharedPreferenceManager: SharedPreferenceManager
 ) {
 
+    /*
+    todo rework the queue system. only load in like 5 or so songs at once.
+        Maybe make a separate data class to keep the queue in.
+        Save the loaded queue in sharedpreferences or database to preserve it after shutdown.
+     */
     private val _currentQueue: MutableStateFlow<List<Song>> = MutableStateFlow(emptyList())
     val currentQueue: StateFlow<List<Song>> get() = _currentQueue
 
@@ -27,12 +30,12 @@ class QueueManager @Inject constructor(
     private val _excludedTags = MutableStateFlow<List<TagDTO>>(emptyList())
     val excludedTags: StateFlow<List<TagDTO>> get() = _excludedTags
 
-    suspend fun updateQueue() {
+    fun updateQueue() {
         val newQueue = songRepository.filterSongList(_includedTags.value, _excludedTags.value)
         _currentQueue.value = newQueue
     }
 
-    suspend fun initFilters() {
+    fun initFilters() {
         //get included and excluded tag ids
         val includedTagIds: List<Long> = sharedPreferenceManager.getPreference(
             SharedPreferenceKey.IncludedTags,
@@ -50,25 +53,25 @@ class QueueManager @Inject constructor(
         updateQueue()
     }
 
-    suspend fun addIncludedTag(tag: TagDTO) {
+    fun addIncludedTag(tag: TagDTO) {
         _includedTags.value = _includedTags.value + tag
         saveTagsFilters()
         updateQueue()
     }
 
-    suspend fun removeIncludedTag(tag: TagDTO) {
+    fun removeIncludedTag(tag: TagDTO) {
         _includedTags.value = _includedTags.value - tag
         saveTagsFilters()
         updateQueue()
     }
 
-    suspend fun addExcludedTag(tag: TagDTO) {
+    fun addExcludedTag(tag: TagDTO) {
         _excludedTags.value = _excludedTags.value + tag
         saveTagsFilters()
         updateQueue()
     }
 
-    suspend fun removeExcludedTag(tag: TagDTO) {
+    fun removeExcludedTag(tag: TagDTO) {
         _excludedTags.value = _excludedTags.value - tag
         saveTagsFilters()
         updateQueue()

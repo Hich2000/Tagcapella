@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.music.mediaController
 
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
-import com.hich2000.tagcapella.music.Song
+import com.hich2000.tagcapella.music.queueManager.Song
 import com.hich2000.tagcapella.music.playerState.PlayerState
 import com.hich2000.tagcapella.music.playerState.PlayerStateManager
 import com.hich2000.tagcapella.music.queueManager.QueueManager

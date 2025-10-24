@@ -2,7 +2,7 @@ package com.hich2000.tagcapella.tagsAndCategories.tags
 
 import androidx.compose.runtime.toMutableStateList
 import com.hich200.tagcapella.TagcapellaDb
-import com.hich2000.tagcapella.music.Song
+import com.hich2000.tagcapella.music.queueManager.Song
 import com.hich2000.tagcapella.utils.Database
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music
+package com.hich2000.tagcapella.music.queueManager
 
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
