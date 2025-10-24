@@ -49,15 +49,14 @@ class QueueManager @Inject constructor(
         //use the list of ids to make a list of DTOs
         _includedTags.value = includedTagIds.map { tagRepository.getTagById(it)!! }
         _excludedTags.value = excludedTagIds.map { tagRepository.getTagById(it)!! }
-
         updateQueue()
     }
 
     fun toggleTagInFilter(tag: TagDTO) {
-        if (_includedTags.value.contains(tag)) {
+        if (_includedTags.value.any { it.id == tag.id }) {
             removeIncludedTag(tag)
             addExcludedTag(tag)
-        } else if (_excludedTags.value.contains(tag)) {
+        } else if (_excludedTags.value.any { it.id == tag.id }) {
             removeExcludedTag(tag)
         } else {
             addIncludedTag(tag)

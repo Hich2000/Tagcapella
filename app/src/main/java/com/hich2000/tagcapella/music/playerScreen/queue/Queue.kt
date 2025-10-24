@@ -41,9 +41,9 @@ fun Queue(
                 TagCard(
                     tag = tag,
                     onClick = { queueViewModel.toggleTagFilter(tag) },
-                    backgroundColor = if (includedTags.contains(tag)) {
+                    backgroundColor = if (includedTags.any { it.id == tag.id }) {
                         Color.Green
-                    } else if (excludedTags.contains(tag)) {
+                    } else if (excludedTags.any { it.id == tag.id }) {
                         Color.Red
                     } else {
                         MaterialTheme.colorScheme.background
