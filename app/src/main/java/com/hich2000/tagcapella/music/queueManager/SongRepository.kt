@@ -123,7 +123,7 @@ class SongRepository @Inject constructor(
             filteredSongList.addAll(database.db.songQueries.filterSongList(includeIds) { _, path ->
                 Song(
                     path = path,
-                    tags = getSongTags(path)
+                    tags = emptyList()
                 )
             }.executeAsList())
         }
