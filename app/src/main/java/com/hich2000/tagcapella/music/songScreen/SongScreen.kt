@@ -72,6 +72,7 @@ fun SongScreen(
         songCard = { song ->
             SongCard(
                 song = song,
+                showTagCount = true,
                 onClick = { songScreenViewModel.openDialog(song) }
             )
         }

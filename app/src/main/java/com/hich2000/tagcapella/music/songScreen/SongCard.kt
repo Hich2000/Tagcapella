@@ -30,6 +30,7 @@ import kotlin.io.path.nameWithoutExtension
 @Composable
 fun SongCard(
     song: Song,
+    showTagCount: Boolean = false,
     onClick: () -> Unit = {},
     backgroundColor: Color = MaterialTheme.colorScheme.primary
 ) {
@@ -68,24 +69,27 @@ fun SongCard(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            Row(
-                verticalAlignment = Alignment.Companion.CenterVertically,
-                modifier = Modifier.Companion
-                    .weight(0.2f)
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.Label,
-                    contentDescription = "Add tags",
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.Companion.padding(horizontal = 0.dp)
-                )
-                Text(
-                    "(${song.tagCount})",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.Companion.padding(horizontal = 0.dp)
-                )
+            //this is an incredibly lazy fix for a visual bug regarding the queue system,
+            // but tbh I don't think its necessary to see tag count on the queue screen.
+            if (showTagCount) {
+                Row(
+                    verticalAlignment = Alignment.Companion.CenterVertically,
+                    modifier = Modifier.Companion
+                        .weight(0.2f)
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.Label,
+                        contentDescription = "Add tags",
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.Companion.padding(horizontal = 0.dp)
+                    )
+                    Text(
+                        "(${song.tagCount})",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.Companion.padding(horizontal = 0.dp)
+                    )
+                }
             }
-
         }
     }
 }
