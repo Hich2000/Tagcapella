@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella.music.playerScreen.queue
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Queue
@@ -69,11 +70,12 @@ fun Queue(
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
-        }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { innerPadding ->
         SongList(
-            modifier = Modifier.padding(innerPadding),
-            songList = queue
+            songList = queue,
+            modifier = Modifier.padding(innerPadding)
         ) { song ->
             SongCard(
                 song = song,
