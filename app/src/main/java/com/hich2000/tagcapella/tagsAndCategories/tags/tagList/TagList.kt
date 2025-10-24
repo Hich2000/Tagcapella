@@ -38,6 +38,9 @@ fun TagList(
     val categories by tagListViewModel.categories.collectAsState()
     val selectedCategory by tagListViewModel.selectedCategory.collectAsState()
 
+    //funny little bug prevention method :^ )
+    tagListViewModel.verifySelectedCategory()
+
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier.Companion

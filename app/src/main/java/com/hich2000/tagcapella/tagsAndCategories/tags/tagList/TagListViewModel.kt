@@ -28,4 +28,15 @@ class TagListViewModel @Inject constructor(
     fun setSelectedCategory(category: Long?) {
         _selectedCategory.value = category
     }
+
+    //If there is only 1 category, and then you filter on it on top and then delete the category it causes a funny bug.
+    // This basically prevents user from having to restart the app in this case by reverting to all filter
+    // when the selected category no longer exists.
+    fun verifySelectedCategory() {
+        selectedCategory.value.let { selectedCategory ->
+            if (!categories.value.any{ it.id == selectedCategory }) {
+                _selectedCategory.value = null
+            }
+        }
+    }
 }
