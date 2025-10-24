@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hich2000.tagcapella.music.playerScreen.controls.Controls
 import com.hich2000.tagcapella.music.playerScreen.controls.ProgressSlider
+import com.hich2000.tagcapella.music.playerScreen.queue.Queue
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(
     playerScreenViewModel: PlayerScreenViewModel = hiltViewModel()
@@ -25,7 +28,9 @@ fun PlayerScreen(
     var isUserInteracting by remember { mutableStateOf(false) }
     var tempSliderPosition by remember { mutableFloatStateOf(0F) }
 
-    Scaffold { innerPadding ->
+    BottomSheetScaffold(
+        sheetContent = { Queue() },
+    ) { innerPadding ->
         Column(
             modifier = Modifier.Companion
                 .fillMaxSize()

@@ -87,4 +87,5 @@ class MediaPlayerCoordinator @Inject constructor(
     fun shuffleMode() = mediaControllerManager.shuffleMode()
     fun loopMode() = mediaControllerManager.loopMode()
     fun seek(position: Long) = mediaControllerManager.seek(position)
+    fun seek(queueIndex: Int) = mediaControllerManager.seek(queueIndex)
 }

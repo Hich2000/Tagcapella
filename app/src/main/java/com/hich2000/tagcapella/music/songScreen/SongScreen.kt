@@ -72,10 +72,8 @@ fun SongScreen(
         songCard = { song ->
             SongCard(
                 song = song,
-                tagCallBack = { songScreenViewModel.openDialog(song) },
                 onClick = { songScreenViewModel.openDialog(song) }
             )
-        },
-        floatingActionButton = {}
+        }
     )
 }

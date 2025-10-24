@@ -93,6 +93,8 @@ class MediaControllerManager @Inject constructor(
     fun next() = _mediaController.value?.seekToNext()
     fun previous() = _mediaController.value?.seekToPrevious()
     fun seek(position: Long) = _mediaController.value?.seekTo(position)
+    fun seek(queueIndex: Int) = _mediaController.value?.seekTo(queueIndex, 0L)
+
     fun shuffleMode() {
         _mediaController.value?.shuffleModeEnabled?.let {
             _mediaController.value?.shuffleModeEnabled = !it
