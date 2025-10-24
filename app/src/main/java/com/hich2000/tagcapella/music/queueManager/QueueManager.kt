@@ -53,28 +53,35 @@ class QueueManager @Inject constructor(
         updateQueue()
     }
 
+    fun toggleTagInFilter(tag: TagDTO) {
+        if (_includedTags.value.contains(tag)) {
+            removeIncludedTag(tag)
+            addExcludedTag(tag)
+        } else if (_excludedTags.value.contains(tag)) {
+            removeExcludedTag(tag)
+        } else {
+            addIncludedTag(tag)
+        }
+    }
+
     fun addIncludedTag(tag: TagDTO) {
         _includedTags.value = _includedTags.value + tag
         saveTagsFilters()
-        updateQueue()
     }
 
     fun removeIncludedTag(tag: TagDTO) {
-        _includedTags.value = _includedTags.value - tag
+        _includedTags.value = _includedTags.value.filter { it.id != tag.id }
         saveTagsFilters()
-        updateQueue()
     }
 
     fun addExcludedTag(tag: TagDTO) {
         _excludedTags.value = _excludedTags.value + tag
         saveTagsFilters()
-        updateQueue()
     }
 
     fun removeExcludedTag(tag: TagDTO) {
-        _excludedTags.value = _excludedTags.value - tag
+        _excludedTags.value = _excludedTags.value.filter { it.id != tag.id }
         saveTagsFilters()
-        updateQueue()
     }
 
     private fun saveTagsFilters() {
