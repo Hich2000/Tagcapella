@@ -38,7 +38,13 @@ class PlayerStateManager @Inject constructor(
             0L
         )
 
+        val lastSongPlayed: String = sharedPreferenceManager.getPreference(
+            SharedPreferenceKey.LastSongPlayed,
+            ""
+        )
+
         _playerState.value = PlayerState(
+            currentSong = lastSongPlayed,
             isPlaying = false,
             shuffleModeEnabled = shuffleMode,
             repeatMode = repeatMode,
@@ -50,11 +56,16 @@ class PlayerStateManager @Inject constructor(
     fun attachListener(
         mediaController: MediaController?
     ) {
-        mediaController?.addListener(object: Player.Listener {
+        mediaController?.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 val controller = mediaController
                 if (controller.playbackState != Player.STATE_READY) return
-                setIsPlaying(controller.isPlaying)
+                _playerState.value = _playerState.value.copy(
+                    currentSong = mediaController.currentMediaItem?.mediaId ?: "",
+                    position = mediaController.currentPosition,
+                    duration = mediaController.duration,
+                    isPlaying = isPlaying
+                )
                 savePlayerState()
             }
 
@@ -75,8 +86,8 @@ class PlayerStateManager @Inject constructor(
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
                     updateTimeline(
-                        playerState.value.position,
-                        mediaController.duration
+                        position = playerState.value.position,
+                        duration = mediaController.duration
                     )
                 }
                 savePlayerState()
@@ -84,15 +95,18 @@ class PlayerStateManager @Inject constructor(
         })
     }
 
-    fun setIsPlaying(isPlaying: Boolean) {
-        _playerState.value = _playerState.value.copy(isPlaying = isPlaying)
-    }
-
     fun updateTimeline(position: Long, duration: Long) {
-        _playerState.value = _playerState.value.copy(position = position, duration = duration)
+        _playerState.value = _playerState.value.copy(
+            position = position,
+            duration = duration
+        )
     }
 
-    private fun savePlayerState() {
+    fun savePlayerState() {
+        sharedPreferenceManager.savePreference(
+            SharedPreferenceKey.LastSongPlayed,
+            _playerState.value.currentSong
+        )
         sharedPreferenceManager.savePreference(
             SharedPreferenceKey.PlayerRepeatMode,
             _playerState.value.repeatMode

@@ -39,6 +39,7 @@ class MediaPlayerCoordinator @Inject constructor(
             playerStateManager.initPlayerState()
             mediaControllerManager.initialize()
             mediaControllerInit.first()
+            //todo improve the listener stuff, right now it works but I feel it can be improved a lot
             playerStateManager.attachListener(mediaController.value)
             mediaController.value?.let { mediaOutputChangeReceiver.setGettingNoisyReceiver(it) }
 
@@ -46,7 +47,10 @@ class MediaPlayerCoordinator @Inject constructor(
                 queueManager.initFilters()
                 mediaControllerManager.setQueue(currentQueue.value)
                 mediaControllerManager.setPlayerState(playerState.value)
+                mediaControllerManager.prepare()
                 //get the duration and position of the current song every second
+                //todo this is hella scuffed, should improve this with proper listener usage to poll position
+                var x = 0
                 while (true) {
                     val controller = mediaController.value ?: continue
                     if (controller.playbackState != Player.STATE_READY) {
@@ -54,10 +58,16 @@ class MediaPlayerCoordinator @Inject constructor(
                         continue
                     }
                     playerStateManager.updateTimeline(
-                        controller.currentPosition,
-                        controller.duration
+                        position = controller.currentPosition,
+                        duration = controller.duration
                     )
 
+                    if (x%2000 == 0) {
+                        playerStateManager.savePlayerState()
+                        x = 0
+                    }
+
+                    x++
                     delay(1000)
                 }
             }

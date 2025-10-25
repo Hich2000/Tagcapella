@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella.music.playerState
 
 data class PlayerState(
+    val currentSong: String,
     val isPlaying: Boolean,
     val shuffleModeEnabled: Boolean,
     val repeatMode: Int,
@@ -11,6 +12,7 @@ data class PlayerState(
     companion object {
         fun emptyPlayerState(): PlayerState {
             return PlayerState(
+                currentSong = "",
                 isPlaying = false,
                 shuffleModeEnabled = false,
                 repeatMode = 1,

@@ -65,12 +65,30 @@ class MediaControllerManager @Inject constructor(
 
         _mediaController.value?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY) {
+                val lastPlayedSongIndex = findMediaItemIndexById(playerState.currentSong)
+                if (playerState.currentSong.isNotEmpty() && lastPlayedSongIndex != -1) {
+                    _mediaController.value?.seekTo(lastPlayedSongIndex, playerState.position)
+                } else {
                     _mediaController.value?.seekTo(playerState.position)
-                    _mediaController.value?.removeListener(this)
                 }
+
+                _mediaController.value?.removeListener(this)
             }
         })
+    }
+
+    fun findMediaItemIndexById(mediaId: String): Int {
+        if (_mediaController.value == null) {
+            return -1
+        }
+
+        for (i: Int in 0 until _mediaController.value!!.mediaItemCount) {
+            if (_mediaController.value!!.getMediaItemAt(i).mediaId == mediaId) {
+                return i
+            }
+        }
+
+        return -1
     }
 
     fun setQueue(queue: List<Song>) {
@@ -85,9 +103,9 @@ class MediaControllerManager @Inject constructor(
         }
         _mediaController.value?.clearMediaItems()
         _mediaController.value?.addMediaItems(mediaItems)
-        _mediaController.value?.prepare()
     }
 
+    fun prepare() = _mediaController.value?.prepare()
     fun play() = _mediaController.value?.play()
     fun pause() = _mediaController.value?.pause()
     fun next() = _mediaController.value?.seekToNext()
