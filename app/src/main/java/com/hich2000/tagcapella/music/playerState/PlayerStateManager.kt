@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella.music.playerState
 
 import androidx.media3.common.Player
+import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,15 +47,14 @@ class PlayerStateManager @Inject constructor(
         )
     }
 
-    // Expose a listener you can plug into the MediaController
-    // I only made these arguments because they cause some visual bugs if we rely on raw mediaController data
-    fun createListener(
-        onIsPlayingChanged: () -> Unit = {},
-        onPlaybackStateReady: () -> Unit = {}
-    ): Player.Listener {
-        return object : Player.Listener {
+    fun attachListener(
+        mediaController: MediaController?
+    ) {
+        mediaController?.addListener(object: Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                onIsPlayingChanged()
+                val controller = mediaController
+                if (controller.playbackState != Player.STATE_READY) return
+                setIsPlaying(controller.isPlaying)
                 savePlayerState()
             }
 
@@ -74,12 +74,14 @@ class PlayerStateManager @Inject constructor(
 
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
-                    onPlaybackStateReady()
+                    updateTimeline(
+                        playerState.value.position,
+                        mediaController.duration
+                    )
                 }
                 savePlayerState()
             }
-
-        }
+        })
     }
 
     fun setIsPlaying(isPlaying: Boolean) {

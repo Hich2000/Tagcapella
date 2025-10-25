@@ -39,22 +39,7 @@ class MediaPlayerCoordinator @Inject constructor(
             playerStateManager.initPlayerState()
             mediaControllerManager.initialize()
             mediaControllerInit.first()
-            mediaController.value?.addListener(
-                playerStateManager.createListener(
-                    onIsPlayingChanged = {
-                        val controller = mediaController.value ?: return@createListener
-                        if (controller.playbackState != Player.STATE_READY) return@createListener
-                        playerStateManager.setIsPlaying(controller.isPlaying)
-                    },
-                    onPlaybackStateReady = {
-                        mediaController.value?.duration?.let {
-                            playerStateManager.updateTimeline(
-                                playerState.value.position,
-                                it
-                            )
-                        }
-                    }
-                ))
+            playerStateManager.attachListener(mediaController.value)
             mediaController.value?.let { mediaOutputChangeReceiver.setGettingNoisyReceiver(it) }
 
             withContext(Dispatchers.Main) {
