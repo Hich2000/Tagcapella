@@ -17,9 +17,10 @@ class QueueManager @Inject constructor(
 ) {
 
     /*
-    todo rework the queue system. only load in like 5 or so songs at once.
+    todo maybe in the future rework the queue system. only load in like 5 or so songs at once.
         Maybe make a separate data class to keep the queue in.
         Save the loaded queue in sharedpreferences or database to preserve it after shutdown.
+        not at all necessary, but mostly a for fun thing later
      */
     private val _currentQueue: MutableStateFlow<List<Song>> = MutableStateFlow(emptyList())
     val currentQueue: StateFlow<List<Song>> get() = _currentQueue

@@ -39,7 +39,6 @@ class MediaPlayerCoordinator @Inject constructor(
             playerStateManager.initPlayerState()
             mediaControllerManager.initialize()
             mediaControllerInit.first()
-            //todo improve the listener stuff, right now it works but I feel it can be improved a lot
             playerStateManager.attachListener(mediaController.value)
             mediaController.value?.let { mediaOutputChangeReceiver.setGettingNoisyReceiver(it) }
 
