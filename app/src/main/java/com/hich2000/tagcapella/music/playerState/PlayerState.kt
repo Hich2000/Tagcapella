@@ -1,16 +1,18 @@
-package com.hich2000.tagcapella.music.mediaController
+package com.hich2000.tagcapella.music.playerState
 
 data class PlayerState(
+    val currentSong: String,
     val isPlaying: Boolean,
     val shuffleModeEnabled: Boolean,
     val repeatMode: Int,
-    val position: Long,
+    var position: Long,
     val duration: Long,
 ) {
 
     companion object {
         fun emptyPlayerState(): PlayerState {
             return PlayerState(
+                currentSong = "",
                 isPlaying = false,
                 shuffleModeEnabled = false,
                 repeatMode = 1,

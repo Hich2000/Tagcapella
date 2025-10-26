@@ -1,0 +1,42 @@
+package com.hich2000.tagcapella.music.mediaController
+
+import android.app.Application
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.media.AudioManager
+import androidx.media3.session.MediaController
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class MediaOutputChangeReceiver @Inject constructor(
+    private val application: Application
+) {
+
+    private lateinit var audioOutputChangeReceiver: BroadcastReceiver
+    var receiverInitialized: Boolean = false
+
+    fun setGettingNoisyReceiver(mediaController: MediaController) {
+        // Register the receiver to detect changes in audio output
+        audioOutputChangeReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.action == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+                    mediaController.pause()
+                }
+            }
+        }
+        // Register the receiver
+        val filter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+        application.registerReceiver(audioOutputChangeReceiver, filter)
+        receiverInitialized = true
+    }
+
+    fun cleanup() {
+        if (receiverInitialized) {
+            application.unregisterReceiver(audioOutputChangeReceiver)
+        }
+    }
+
+}

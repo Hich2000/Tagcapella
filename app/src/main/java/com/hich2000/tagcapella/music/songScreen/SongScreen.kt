@@ -7,33 +7,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.music.MusicPlayerViewModel
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.dialogs.TagDialog
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongScreen(
-    mediaPlayerViewModel: MusicPlayerViewModel = hiltViewModel(),
     songScreenViewModel: SongScreenViewModel = hiltViewModel()
 ) {
-
-    val coroutineScope = rememberCoroutineScope()
     val songListInitialized by songScreenViewModel.songRepoInitialized.collectAsState()
     val showTagDialog by songScreenViewModel.showTagDialog.collectAsState()
     val songList by songScreenViewModel.songs.collectAsState()
     val songToTag by songScreenViewModel.songToTag.collectAsState()
-    val includedTags by songScreenViewModel.includedTags.collectAsState()
-    val excludedTags by songScreenViewModel.excludedTags.collectAsState()
 
-    val onTagClick = { tag: TagDTO ->
-        if (songToTag?.tags?.find { songTag: TagDTO ->
+    val onTagClick = { tag: Tag ->
+        if (songToTag?.tags?.find { songTag: Tag ->
                 tag.id == songTag.id
             } !== null) {
             songScreenViewModel.deleteSongTag(tag)
@@ -42,8 +34,8 @@ fun SongScreen(
         }
     }
 
-    val tagCardComposable = @Composable { tag: TagDTO ->
-        val isTagged = songToTag?.tags?.find { songTag: TagDTO ->
+    val tagCardComposable = @Composable { tag: Tag ->
+        val isTagged = songToTag?.tags?.find { songTag: Tag ->
             tag.id == songTag.id
         } !== null
 
@@ -62,14 +54,7 @@ fun SongScreen(
     if (showTagDialog) {
         TagDialog(
             onButtonPress = {
-                coroutineScope.launch {
-                    val filteredSongList = mediaPlayerViewModel.getFilteredPlaylist(
-                        includedTags,
-                        excludedTags
-                    )
-                    mediaPlayerViewModel.preparePlaylist(filteredSongList)
-                    songScreenViewModel.closeDialog()
-                }
+                songScreenViewModel.closeDialog()
             },
             tagCardComposable = tagCardComposable
         )
@@ -87,10 +72,9 @@ fun SongScreen(
         songCard = { song ->
             SongCard(
                 song = song,
-                tagCallBack = { songScreenViewModel.openDialog(song) },
+                showTagCount = true,
                 onClick = { songScreenViewModel.openDialog(song) }
             )
-        },
-        floatingActionButton = {}
+        }
     )
 }

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,14 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hich2000.tagcapella.newmusic.Song
+import com.hich2000.tagcapella.music.queueManager.Song
 import kotlin.io.path.Path
 import kotlin.io.path.nameWithoutExtension
 
 @Composable
 fun SongCard(
     song: Song,
-    tagCallBack: (() -> Unit)? = null,
+    showTagCount: Boolean = false,
     onClick: () -> Unit = {},
     backgroundColor: Color = MaterialTheme.colorScheme.primary
 ) {
@@ -63,31 +62,27 @@ fun SongCard(
             )
             Text(
                 songPath.nameWithoutExtension,
-                textAlign = TextAlign.Companion.Center,
+                textAlign = TextAlign.Companion.Start,
                 modifier = Modifier.Companion
                     .horizontalScroll(scroll)
                     .weight(1f),
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            if (tagCallBack != null) {
+            //this is an incredibly lazy fix for a visual bug regarding the queue system,
+            // but tbh I don't think its necessary to see tag count on the queue screen.
+            if (showTagCount) {
                 Row(
                     verticalAlignment = Alignment.Companion.CenterVertically,
                     modifier = Modifier.Companion
-                        .weight(0.4f)
-                        .padding(0.dp)
+                        .weight(0.2f)
                 ) {
-                    IconButton(
-                        onClick = tagCallBack,
+                    Icon(
+                        Icons.AutoMirrored.Filled.Label,
+                        contentDescription = "Add tags",
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.Companion.padding(horizontal = 0.dp)
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.Label,
-                            contentDescription = "Add tags",
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.Companion.padding(horizontal = 0.dp)
-                        )
-                    }
+                    )
                     Text(
                         "(${song.tagCount})",
                         color = MaterialTheme.colorScheme.onBackground,

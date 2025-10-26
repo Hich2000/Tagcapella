@@ -14,8 +14,8 @@ class CategoryRepository @Inject constructor(
 
     private val db: TagcapellaDb = database.db
 
-    private var _categories = MutableStateFlow<List<CategoryDTO>>(emptyList())
-    val categories: StateFlow<List<CategoryDTO>> get() = _categories
+    private var _categories = MutableStateFlow<List<Category>>(emptyList())
+    val categories: StateFlow<List<Category>> get() = _categories
 
     init {
         initCategoryList()
@@ -25,15 +25,15 @@ class CategoryRepository @Inject constructor(
         _categories.value = selectAllCategories()
     }
 
-    fun selectAllCategories(): List<CategoryDTO> {
-        return db.categoryQueries.selectAll { id, category -> CategoryDTO(id, category) }.executeAsList()
+    fun selectAllCategories(): List<Category> {
+        return db.categoryQueries.selectAll { id, category -> Category(id, category) }.executeAsList()
             .toList()
     }
 
-    fun insertCategory(newCategory: String): CategoryDTO {
+    fun insertCategory(newCategory: String): Category {
         db.categoryQueries.insertCategory(newCategory)
         initCategoryList()
-        return db.categoryQueries.lastInsertedCategory { id, category -> CategoryDTO(id, category) }
+        return db.categoryQueries.lastInsertedCategory { id, category -> Category(id, category) }
             .executeAsOne()
     }
 

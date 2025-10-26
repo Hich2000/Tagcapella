@@ -1,7 +1,6 @@
 package com.hich2000.tagcapella
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
@@ -17,24 +16,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,45 +29,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.hich2000.tagcapella.tagsAndCategories.categories.forms.CategoryForm
-import com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen.CategoryScreen
 import com.hich2000.tagcapella.music.songScreen.SongScreen
-import com.hich2000.tagcapella.music.controls.MusicControls
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
-import com.hich2000.tagcapella.newmusic.FolderScanManager
-import com.hich2000.tagcapella.tagsAndCategories.tags.forms.TagForm
-import com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen.TagScreen
+import com.hich2000.tagcapella.music.queueManager.FolderScanManager
+import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
+import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.LifeCycleManager
 import com.hich2000.tagcapella.utils.ToastEventBus
-import com.hich2000.tagcapella.utils.composables.ExpandableFab
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
+import com.hich2000.tagcapella.utils.navigation.BottomNavBar
 import com.hich2000.tagcapella.utils.navigation.LocalNavController
 import com.hich2000.tagcapella.utils.navigation.NavItem
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
@@ -276,7 +251,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = NavItem.Player.title,
                     ) {
                         composable(NavItem.Player.title) {
-                            MusicControls()
+                            PlayerScreen()
                         }
                         composable(NavItem.SongLibrary.title) {
                             SongScreen()
@@ -295,175 +270,6 @@ class MainActivity : ComponentActivity() {
                                 FolderScreen()
                             }
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun BottomNavBar(navController: NavController) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .background(MaterialTheme.colorScheme.primary)
-                .border(2.dp, MaterialTheme.colorScheme.tertiary)
-                .clickable(
-                    //clickable modifier to block passthrough clicks to the bottom sheet below.
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = {}
-                ),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            NavItem.navItems.forEach {
-                IconButton(
-                    onClick = {
-                        if (currentRoute != it.title) {
-                            navController.navigate(it.title) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    },
-                ) {
-                    it.icon?.let { imageVector ->
-                        Icon(
-                            imageVector = imageVector,
-                            contentDescription = it.title,
-                            tint = if (currentRoute == it.title) {
-                                MaterialTheme.colorScheme.secondary
-                            } else {
-                                MaterialTheme.colorScheme.secondary.copy(
-                                    alpha = 0.4f
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    @Composable
-    fun TagCategoryScreen() {
-        val selectedScreen = rememberSaveable { mutableIntStateOf(0) }
-        val showTagDialog = remember { mutableStateOf(false) }
-        val showCategoryDialog = remember { mutableStateOf(false) }
-        var fabExpanded by remember { mutableStateOf(false) }
-
-        if (showTagDialog.value) {
-            BasicAlertDialog(
-                onDismissRequest = {
-                    showTagDialog.value = false
-                },
-            ) {
-                TagForm(
-                    onSaveAction = { showTagDialog.value = false }
-                )
-            }
-        }
-
-        if (showCategoryDialog.value) {
-            BasicAlertDialog(
-                onDismissRequest = {
-                    showCategoryDialog.value = false
-                },
-            ) {
-                CategoryForm()
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = {
-                        if (fabExpanded) {
-                            fabExpanded = false
-                        }
-                    }
-                ),
-        ) {
-            Column {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TagCapellaButton(
-                        onClick = {
-                            selectedScreen.intValue = 0
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
-                        shape = RectangleShape,
-                    ) {
-                        Text(
-                            "Tags"
-                        )
-                    }
-                    TagCapellaButton(
-                        onClick = {
-                            selectedScreen.intValue = 1
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
-                        shape = RectangleShape,
-                    ) {
-                        Text(
-                            "Categories"
-                        )
-                    }
-                }
-
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    floatingActionButton = {
-                        ExpandableFab(
-                            buttons = listOf {
-                                TagCapellaButton(
-                                    onClick = {
-                                        showTagDialog.value = true
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
-                                ) {
-                                    Text("New Tag")
-                                }
-                                TagCapellaButton(
-                                    onClick = {
-                                        showCategoryDialog.value = true
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .border(2.dp, MaterialTheme.colorScheme.tertiary)
-                                ) {
-                                    Text("New Category")
-                                }
-                            },
-                            expanded = fabExpanded,
-                            onclick = { fabExpanded = true }
-                        )
-                    }
-                ) {
-                    if (selectedScreen.intValue == 0) {
-                        TagScreen()
-                    } else if (selectedScreen.intValue == 1) {
-                        CategoryScreen()
                     }
                 }
             }

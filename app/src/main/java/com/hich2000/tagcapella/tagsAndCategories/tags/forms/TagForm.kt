@@ -28,13 +28,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagForm(
-    tag: TagDTO? = null,
+    tag: Tag? = null,
     onSaveAction: () -> Unit,
     tagFormViewModel: TagFormViewModel = hiltViewModel()
 ) {

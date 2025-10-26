@@ -24,19 +24,22 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable
 fun TagList(
-    tagList: List<TagDTO> = emptyList(),
-    tagCard: @Composable (tag: TagDTO) -> Unit,
+    tagList: List<Tag> = emptyList(),
+    tagCard: @Composable (tag: Tag) -> Unit,
     tagListViewModel: TagListViewModel = hiltViewModel()
 ) {
     val columnScroll by tagListViewModel.columnScrollState.collectAsState()
     val scroll by tagListViewModel.scrollState.collectAsState()
     val categories by tagListViewModel.categories.collectAsState()
     val selectedCategory by tagListViewModel.selectedCategory.collectAsState()
+
+    //funny little bug prevention method :^ )
+    tagListViewModel.verifySelectedCategory()
 
     Scaffold { innerPadding ->
         Column(

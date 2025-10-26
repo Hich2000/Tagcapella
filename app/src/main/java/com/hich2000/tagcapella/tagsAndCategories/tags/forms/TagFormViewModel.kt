@@ -3,7 +3,7 @@ package com.hich2000.tagcapella.tagsAndCategories.tags.forms
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hich2000.tagcapella.tagsAndCategories.categories.CategoryRepository
-import com.hich2000.tagcapella.tagsAndCategories.tags.TagDTO
+import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.TagRepository
 import com.hich2000.tagcapella.utils.ToastEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +32,7 @@ class TagFormViewModel @Inject constructor(
 
     val categories get() = categoryRepository.categories
 
-    fun setUpdateState(tag: TagDTO) {
+    fun setUpdateState(tag: Tag) {
         if (!isUpdate.value) {
             setTextState(tag.tag)
             setDropdownState(tag.categoryId)
