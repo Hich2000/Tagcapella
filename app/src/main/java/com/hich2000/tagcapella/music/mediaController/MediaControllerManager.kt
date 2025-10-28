@@ -3,8 +3,6 @@ package com.hich2000.tagcapella.music.mediaController
 import android.app.Application
 import android.content.ComponentName
 import androidx.concurrent.futures.await
-import androidx.media3.common.AudioAttributes
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -46,12 +44,6 @@ class MediaControllerManager @Inject constructor(
                 SessionToken(application, ComponentName(application, PlaybackService::class.java))
             val controllerFuture = MediaController.Builder(application, sessionToken).buildAsync()
             _mediaController.value = controllerFuture.await()
-
-            val audioAttributes: AudioAttributes = AudioAttributes.Builder()
-                .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-                .setUsage(C.USAGE_MEDIA)
-                .build()
-            _mediaController.value?.setAudioAttributes(audioAttributes, true)
 
             true
         } catch (_: Throwable) {
