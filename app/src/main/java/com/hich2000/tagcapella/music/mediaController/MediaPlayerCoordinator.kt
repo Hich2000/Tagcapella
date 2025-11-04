@@ -61,7 +61,7 @@ class MediaPlayerCoordinator @Inject constructor(
                         duration = controller.duration
                     )
 
-                    if (x%2000 == 0) {
+                    if (x % 2000 == 0) {
                         playerStateManager.savePlayerState()
                         x = 0
                     }
@@ -79,15 +79,31 @@ class MediaPlayerCoordinator @Inject constructor(
 
     fun play() = mediaControllerManager.play()
     fun pause() = mediaControllerManager.pause()
-    fun next() = mediaControllerManager.next()
-    fun previous() = mediaControllerManager.previous()
     fun shuffleMode() = mediaControllerManager.shuffleMode()
     fun loopMode() = mediaControllerManager.loopMode()
     fun seek(position: Long) = mediaControllerManager.seek(position)
     fun seek(queueIndex: Int) = mediaControllerManager.seek(queueIndex)
     fun toggleTagInFilter(tag: Tag) = queueManager.toggleTagInFilter(tag)
+    fun next() {
+        mediaControllerManager.next()
+        updatePlayerTimeline()
+    }
+
+    fun previous() {
+        mediaControllerManager.previous()
+        updatePlayerTimeline()
+    }
+
     fun updateQueue() {
         queueManager.updateQueue()
         mediaControllerManager.setQueue(currentQueue.value)
+    }
+
+    //quick and dirty fix for visual annoyances.
+    private fun updatePlayerTimeline() {
+        playerStateManager.updateTimeline(
+            position = 0L,
+            duration = playerState.value.duration
+        )
     }
 }

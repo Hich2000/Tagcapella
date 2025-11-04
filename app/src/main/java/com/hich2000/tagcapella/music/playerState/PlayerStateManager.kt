@@ -1,5 +1,6 @@
 package com.hich2000.tagcapella.music.playerState
 
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
@@ -16,6 +17,7 @@ class PlayerStateManager @Inject constructor(
     private var _playerState: MutableStateFlow<PlayerState> =
         MutableStateFlow(PlayerState.emptyPlayerState())
     val playerState: StateFlow<PlayerState> get() = _playerState
+    var _initialStartup: Boolean = true
 
     fun initPlayerState() {
         val repeatMode: Int = sharedPreferenceManager.getPreference(
@@ -91,6 +93,20 @@ class PlayerStateManager @Inject constructor(
                     )
                 }
                 savePlayerState()
+            }
+
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                if (_initialStartup) {
+                    //prevent the app from overwriting the playing song on first startup.
+                    _initialStartup = false
+                    return
+                }
+                if (mediaItem != null) {
+                    _playerState.value = _playerState.value.copy(
+                        currentSong = mediaItem.mediaId
+                    )
+                    savePlayerState()
+                }
             }
         })
     }
