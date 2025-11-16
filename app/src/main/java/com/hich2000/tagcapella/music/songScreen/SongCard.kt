@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella.music.songScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,6 +62,9 @@ fun SongCard(
                 songPath.nameWithoutExtension,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
+                    .basicMarquee(
+                        iterations = 1
+                    )
                     .weight(1f),
                 color = MaterialTheme.colorScheme.onBackground
             )

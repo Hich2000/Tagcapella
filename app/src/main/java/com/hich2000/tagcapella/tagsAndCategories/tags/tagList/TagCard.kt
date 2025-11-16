@@ -1,6 +1,7 @@
 package com.hich2000.tagcapella.tagsAndCategories.tags.tagList
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -60,6 +61,9 @@ fun TagCard(
                 tag.tag,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
+                    .basicMarquee(
+                        iterations = 1
+                    )
                     .align(Alignment.CenterVertically)
                     .weight(1f),
                 color = MaterialTheme.colorScheme.onBackground
