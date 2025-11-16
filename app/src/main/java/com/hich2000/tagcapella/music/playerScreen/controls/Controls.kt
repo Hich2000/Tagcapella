@@ -35,8 +35,8 @@ fun Controls(
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Companion.CenterVertically,
-        modifier = Modifier.Companion
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
             .fillMaxWidth()
             .border(2.dp, MaterialTheme.colorScheme.tertiary)
     ) {

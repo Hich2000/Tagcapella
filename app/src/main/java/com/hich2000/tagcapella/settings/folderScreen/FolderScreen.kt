@@ -33,22 +33,22 @@ fun FolderScreen(
         }
 
     Column(
-        modifier = Modifier.Companion.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         folders.forEachIndexed { index, folder ->
             Row(
-                modifier = Modifier.Companion.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     folder,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .weight(0.9f)
                 )
                 IconButton(
                     onClick = {
                         folderScreenViewModel.removeScanFolder(index)
                     },
-                    modifier = Modifier.Companion.weight(0.1f)
+                    modifier = Modifier.weight(0.1f)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -62,7 +62,7 @@ fun FolderScreen(
             onClick = {
                 launcher.launch(null)
             },
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
         ) {
             Text("Add folder to scan")

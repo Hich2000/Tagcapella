@@ -45,7 +45,7 @@ fun PlayerScreen(
         sheetPeekHeight = 48.dp
     ) { innerPadding ->
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(
                     top = innerPadding.calculateTopPadding(),

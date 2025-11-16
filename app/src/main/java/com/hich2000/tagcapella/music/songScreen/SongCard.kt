@@ -2,13 +2,11 @@ package com.hich2000.tagcapella.music.songScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
@@ -34,11 +32,10 @@ fun SongCard(
     onClick: () -> Unit = {},
     backgroundColor: Color = MaterialTheme.colorScheme.primary
 ) {
-    val scroll = rememberScrollState(0)
     val songPath = Path(song.path)
 
     Card(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.tertiary)
@@ -46,8 +43,8 @@ fun SongCard(
         onClick = onClick
     ) {
         Row(
-            verticalAlignment = Alignment.Companion.CenterVertically,
-            modifier = Modifier.Companion
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
                 .fillMaxSize()
                 .background(backgroundColor)
                 .padding(horizontal = 8.dp)
@@ -56,15 +53,14 @@ fun SongCard(
                 Icons.Rounded.PlayArrow,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .weight(0.1f)
                     .padding(0.dp)
             )
             Text(
                 songPath.nameWithoutExtension,
-                textAlign = TextAlign.Companion.Start,
-                modifier = Modifier.Companion
-                    .horizontalScroll(scroll)
+                textAlign = TextAlign.Start,
+                modifier = Modifier
                     .weight(1f),
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -73,20 +69,20 @@ fun SongCard(
             // but tbh I don't think its necessary to see tag count on the queue screen.
             if (showTagCount) {
                 Row(
-                    verticalAlignment = Alignment.Companion.CenterVertically,
-                    modifier = Modifier.Companion
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
                         .weight(0.2f)
                 ) {
                     Icon(
                         Icons.AutoMirrored.Filled.Label,
                         contentDescription = "Add tags",
                         tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.Companion.padding(horizontal = 0.dp)
+                        modifier = Modifier.padding(horizontal = 0.dp)
                     )
                     Text(
                         "(${song.tagCount})",
                         color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.Companion.padding(horizontal = 0.dp)
+                        modifier = Modifier.padding(horizontal = 0.dp)
                     )
                 }
             }

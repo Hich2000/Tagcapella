@@ -43,7 +43,7 @@ fun TagList(
 
     Scaffold { innerPadding ->
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
                 )
@@ -52,8 +52,8 @@ fun TagList(
         ) {
             if (categories.isNotEmpty()) {
                 Row(
-                    verticalAlignment = Alignment.Companion.CenterVertically,
-                    modifier = Modifier.Companion
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(scroll)
                 ) {
@@ -61,7 +61,7 @@ fun TagList(
                         onClick = {
                             tagListViewModel.setSelectedCategory(null)
                         },
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
                             .padding(0.dp)
                             .width(120.dp),
@@ -69,15 +69,15 @@ fun TagList(
                     ) {
                         Text(
                             text = "All",
-                            textAlign = TextAlign.Companion.Center,
-                            modifier = Modifier.Companion
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp),
                         )
                     }
 
                     categories.forEach { category ->
-                        val buttonModifier = Modifier.Companion
+                        val buttonModifier = Modifier
                             .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape)
                             .padding(0.dp)
                         val finalModifier = if (category.category.length < 20) {
@@ -96,8 +96,8 @@ fun TagList(
                         ) {
                             Text(
                                 text = category.category,
-                                textAlign = TextAlign.Companion.Center,
-                                modifier = Modifier.Companion
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp),
                             )

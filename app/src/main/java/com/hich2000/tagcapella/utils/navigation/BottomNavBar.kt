@@ -26,7 +26,7 @@ fun BottomNavBar(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     Row(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
             .background(MaterialTheme.colorScheme.primary)
@@ -38,7 +38,7 @@ fun BottomNavBar(navController: NavController) {
                 onClick = {}
             ),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.Companion.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
         NavItem.navItems.forEach {
             IconButton(

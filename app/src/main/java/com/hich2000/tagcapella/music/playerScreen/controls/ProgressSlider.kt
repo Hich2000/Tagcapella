@@ -59,14 +59,14 @@ fun ProgressSlider(
     val sliderColors = SliderColors(
         thumbColor = MaterialTheme.colorScheme.secondary,
         activeTrackColor = MaterialTheme.colorScheme.secondary,
-        activeTickColor = Color.Companion.Red,
+        activeTickColor = Color.Red,
         inactiveTrackColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
-        inactiveTickColor = Color.Companion.Red,
-        disabledThumbColor = Color.Companion.Red,
-        disabledActiveTrackColor = Color.Companion.Red,
-        disabledActiveTickColor = Color.Companion.Red,
-        disabledInactiveTrackColor = Color.Companion.Red,
-        disabledInactiveTickColor = Color.Companion.Red,
+        inactiveTickColor = Color.Red,
+        disabledThumbColor = Color.Red,
+        disabledActiveTrackColor = Color.Red,
+        disabledActiveTickColor = Color.Red,
+        disabledInactiveTrackColor = Color.Red,
+        disabledInactiveTickColor = Color.Red,
     )
 
     Column(
@@ -75,7 +75,7 @@ fun ProgressSlider(
     ) {
 
         Row(
-            modifier = Modifier.Companion.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

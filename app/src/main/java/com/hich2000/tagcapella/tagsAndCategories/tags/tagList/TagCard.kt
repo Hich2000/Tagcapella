@@ -36,7 +36,7 @@ fun TagCard(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
 ) {
     Card(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.tertiary)
@@ -44,8 +44,8 @@ fun TagCard(
         onClick = { onClick(tag) }
     ) {
         Row(
-            verticalAlignment = Alignment.Companion.CenterVertically,
-            modifier = Modifier.Companion
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
                 .fillMaxSize()
                 .background(backgroundColor)
                 .padding(horizontal = 8.dp)
@@ -53,14 +53,14 @@ fun TagCard(
             Icon(
                 Icons.AutoMirrored.Filled.Label,
                 contentDescription = "Label",
-                modifier = Modifier.Companion.weight(0.15f),
+                modifier = Modifier.weight(0.15f),
                 tint = MaterialTheme.colorScheme.secondary
             )
             Text(
                 tag.tag,
-                textAlign = TextAlign.Companion.Center,
-                modifier = Modifier.Companion
-                    .align(Alignment.Companion.CenterVertically)
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
                     .weight(1f),
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -68,7 +68,7 @@ fun TagCard(
             if (deleteCallback != null) {
                 IconButton(
                     onClick = deleteCallback,
-                    modifier = Modifier.Companion.weight(0.2f)
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Delete,
@@ -80,7 +80,7 @@ fun TagCard(
             if (editCallback != null) {
                 IconButton(
                     onClick = editCallback,
-                    modifier = Modifier.Companion.weight(0.2f)
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Edit,
@@ -92,7 +92,7 @@ fun TagCard(
             if (songCallback != null) {
                 IconButton(
                     onClick = songCallback,
-                    modifier = Modifier.Companion.weight(0.2f)
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.MusicNote,
@@ -102,7 +102,7 @@ fun TagCard(
                 }
                 Text(
                     "(${tag.taggedSongs.count()})",
-                    modifier = Modifier.Companion.weight(0.3f),
+                    modifier = Modifier.weight(0.3f),
                     color = MaterialTheme.colorScheme.onBackground
                 )
             }

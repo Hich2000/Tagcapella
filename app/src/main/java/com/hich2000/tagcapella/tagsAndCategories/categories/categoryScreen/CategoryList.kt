@@ -21,7 +21,7 @@ fun CategoryList(
 
     Scaffold { innerPadding ->
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current)
                 )

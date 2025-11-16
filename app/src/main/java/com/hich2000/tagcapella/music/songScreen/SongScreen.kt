@@ -44,7 +44,7 @@ fun SongScreen(
             onClick = onTagClick,
             backgroundColor =
                 if (isTagged) {
-                    Color.Companion.hsl(112f, 0.5f, 0.3f)
+                    Color.hsl(112f, 0.5f, 0.3f)
                 } else {
                     MaterialTheme.colorScheme.background
                 },
@@ -62,7 +62,7 @@ fun SongScreen(
 
     if (!songListInitialized) {
         CircularProgressIndicator(
-            modifier = Modifier.Companion.fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         )
         return
     }

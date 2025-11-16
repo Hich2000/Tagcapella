@@ -36,14 +36,14 @@ fun TagDialog(
 
         Card(
             shape = CutCornerShape(0.dp),
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .padding(top = 16.dp, bottom = 16.dp)
                 .fillMaxSize()
                 .border(2.dp, MaterialTheme.colorScheme.tertiary)
         ) {
             Box(
-                contentAlignment = Alignment.Companion.Center,
-                modifier = Modifier.Companion
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
                     .fillMaxSize()
             ) {
                 TagList(
@@ -55,9 +55,9 @@ fun TagDialog(
                     onClick = {
                         onButtonPress()
                     },
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.Companion.BottomCenter)
+                        .align(Alignment.BottomCenter)
                         .height(36.dp)
                         .border(2.dp, MaterialTheme.colorScheme.tertiary)
                 ) {

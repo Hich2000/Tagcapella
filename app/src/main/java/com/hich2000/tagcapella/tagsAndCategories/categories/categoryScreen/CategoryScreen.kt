@@ -33,7 +33,7 @@ fun CategoryScreen(
     }
 
     Box(
-        modifier = Modifier.Companion.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         CategoryList(
             categoryList = categoryList,

@@ -34,20 +34,20 @@ fun CategoryCard(
 ) {
 
     Card(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .border(2.dp, MaterialTheme.colorScheme.tertiary, shape = RoundedCornerShape(8.dp))
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .height(50.dp),
     ) {
         Row(
-            verticalAlignment = Alignment.Companion.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxSize()
                 .border(
                     2.dp,
-                    Color.Companion.Red,
+                    Color.Red,
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                 )
                 .background(backgroundColor)
@@ -55,14 +55,14 @@ fun CategoryCard(
             Icon(
                 Icons.AutoMirrored.Filled.Label,
                 contentDescription = "Label",
-                modifier = Modifier.Companion.weight(0.15f),
+                modifier = Modifier.weight(0.15f),
                 tint = MaterialTheme.colorScheme.secondary
             )
             Text(
                 category.category,
-                textAlign = TextAlign.Companion.Center,
-                modifier = Modifier.Companion
-                    .align(Alignment.Companion.CenterVertically)
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
                     .weight(1f),
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -70,7 +70,7 @@ fun CategoryCard(
             if (deleteCallback != null) {
                 IconButton(
                     onClick = deleteCallback,
-                    modifier = Modifier.Companion.weight(0.2f)
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Delete,
@@ -82,7 +82,7 @@ fun CategoryCard(
             if (editCallback != null) {
                 IconButton(
                     onClick = editCallback,
-                    modifier = Modifier.Companion.weight(0.2f)
+                    modifier = Modifier.weight(0.2f)
                 ) {
                     Icon(
                         Icons.Default.Edit,

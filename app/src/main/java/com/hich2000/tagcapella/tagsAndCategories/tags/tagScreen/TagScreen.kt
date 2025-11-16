@@ -63,7 +63,7 @@ fun TagScreen(
                     SongCard(
                         song = song,
                         backgroundColor = if (isTagged) {
-                            Color.Companion.hsl(112f, 0.5f, 0.3f)
+                            Color.hsl(112f, 0.5f, 0.3f)
                         } else {
                             MaterialTheme.colorScheme.background
                         },
@@ -81,7 +81,7 @@ fun TagScreen(
     }
 
     Box(
-        modifier = Modifier.Companion.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         TagList(
             tagList = tagList,
