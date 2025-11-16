@@ -42,6 +42,7 @@ fun PlayerScreen(
 
     BottomSheetScaffold(
         sheetContent = { Queue() },
+        sheetPeekHeight = 48.dp
     ) { innerPadding ->
         Column(
             modifier = Modifier.Companion
