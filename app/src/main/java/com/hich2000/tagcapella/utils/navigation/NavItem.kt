@@ -15,9 +15,7 @@ sealed class NavItem(
 ) {
 
     init {
-        if (navBar) {
-            navItems += this
-        }
+        navItems += this
     }
 
     companion object {

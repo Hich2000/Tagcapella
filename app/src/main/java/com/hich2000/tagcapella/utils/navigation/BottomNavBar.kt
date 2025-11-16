@@ -23,7 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 @Composable
 fun BottomNavBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = navBackStackEntry?.destination?.route?.substringBefore('/')
 
     Row(
         modifier = Modifier
@@ -41,6 +41,10 @@ fun BottomNavBar(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         NavItem.navItems.forEach {
+            if (!it.navBar) {
+                return@forEach
+            }
+
             IconButton(
                 onClick = {
                     if (currentRoute != it.title) {
