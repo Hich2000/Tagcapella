@@ -16,6 +16,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -41,15 +43,16 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
+import com.hich2000.tagcapella.music.queueManager.FolderScanManager
 import com.hich2000.tagcapella.music.songScreen.SongScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
-import com.hich2000.tagcapella.music.queueManager.FolderScanManager
-import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.LifeCycleManager
@@ -223,13 +226,13 @@ class MainActivity : ComponentActivity() {
     fun TagcapellaApp() {
         val navController = rememberNavController()
         val context = LocalContext.current
+        val slideSpeed = 500
 
         LaunchedEffect(Unit) {
             ToastEventBus.toastFlow.collect { message ->
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         }
-
 
         Scaffold(
             modifier = Modifier
@@ -246,9 +249,46 @@ class MainActivity : ComponentActivity() {
                     .fillMaxSize()
             ) {
                 CompositionLocalProvider(LocalNavController provides navController) {
+                    fun getSlideDirection(
+                        initialState: NavBackStackEntry,
+                        targetState: NavBackStackEntry
+                    ): AnimatedContentTransitionScope.SlideDirection {
+                        val navItems = NavItem.navItems
+                        val targetIndex =
+                            navItems.indexOfFirst { it.title == targetState.destination.route }
+                        val initialIndex =
+                            navItems.indexOfFirst { it.title == initialState.destination.route }
+                        return if (targetIndex > initialIndex) AnimatedContentTransitionScope.SlideDirection.Start
+                        else AnimatedContentTransitionScope.SlideDirection.End
+                    }
+
                     NavHost(
                         navController = navController,
                         startDestination = NavItem.Player.title,
+                        enterTransition = {
+                            slideIntoContainer(
+                                getSlideDirection(initialState, targetState),
+                                tween(slideSpeed)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutOfContainer(
+                                getSlideDirection(initialState, targetState),
+                                tween(slideSpeed)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideIntoContainer(
+                                getSlideDirection(initialState, targetState),
+                                tween(slideSpeed)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutOfContainer(
+                                getSlideDirection(initialState, targetState),
+                                tween(slideSpeed)
+                            )
+                        }
                     ) {
                         composable(NavItem.Player.title) {
                             PlayerScreen()
@@ -261,7 +301,7 @@ class MainActivity : ComponentActivity() {
                         }
                         navigation(
                             startDestination = NavItem.Settings.Main.title,
-                            route = NavItem.Settings.title
+                            route = NavItem.Settings.title,
                         ) {
                             composable(NavItem.Settings.Main.title) {
                                 SettingsScreen()
