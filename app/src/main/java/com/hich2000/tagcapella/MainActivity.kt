@@ -226,7 +226,7 @@ class MainActivity : ComponentActivity() {
     fun TagcapellaApp() {
         val navController = rememberNavController()
         val context = LocalContext.current
-        val slideSpeed = 500
+        val slideSpeed = 250
 
         LaunchedEffect(Unit) {
             ToastEventBus.toastFlow.collect { message ->
