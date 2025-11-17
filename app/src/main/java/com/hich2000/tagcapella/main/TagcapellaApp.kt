@@ -3,17 +3,14 @@ package com.hich2000.tagcapella.main
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,13 +22,13 @@ import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 import com.hich2000.tagcapella.utils.ToastEventBus
-import com.hich2000.tagcapella.utils.navigation.BottomNavBar
 import com.hich2000.tagcapella.utils.navigation.LocalNavController
 import com.hich2000.tagcapella.utils.navigation.NavItem
 
 @Composable
 fun TagcapellaApp() {
     val navController = rememberNavController()
+    var showNavBar by remember{ mutableStateOf(true) }
     val context = LocalContext.current
     val slideSpeed = 250
 
@@ -41,81 +38,74 @@ fun TagcapellaApp() {
         }
     }
 
-    Scaffold(
-        modifier = Modifier.Companion
-            .fillMaxSize(),
-        bottomBar = { BottomNavBar(navController) }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier.Companion
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    bottom = innerPadding.calculateBottomPadding()
-                )
-                .fillMaxSize()
-        ) {
-            CompositionLocalProvider(LocalNavController provides navController) {
-                fun getSlideDirection(
-                    initialState: NavBackStackEntry,
-                    targetState: NavBackStackEntry
-                ): AnimatedContentTransitionScope.SlideDirection {
-                    val navItems = NavItem.Companion.navItems
-                    val targetIndex =
-                        navItems.indexOfFirst { it.title == targetState.destination.route }
-                    val initialIndex =
-                        navItems.indexOfFirst { it.title == initialState.destination.route }
-                    return if (targetIndex > initialIndex) AnimatedContentTransitionScope.SlideDirection.Start
-                    else AnimatedContentTransitionScope.SlideDirection.End
-                }
+    fun getSlideDirection(
+        initialState: NavBackStackEntry,
+        targetState: NavBackStackEntry
+    ): AnimatedContentTransitionScope.SlideDirection {
+        val navItems = NavItem.navItems
+        val targetIndex =
+            navItems.indexOfFirst { it.title == targetState.destination.route }
+        val initialIndex =
+            navItems.indexOfFirst { it.title == initialState.destination.route }
+        return if (targetIndex > initialIndex) AnimatedContentTransitionScope.SlideDirection.Start
+        else AnimatedContentTransitionScope.SlideDirection.End
+    }
 
-                NavHost(
-                    navController = navController,
-                    startDestination = NavItem.Player.title,
-                    enterTransition = {
-                        slideIntoContainer(
-                            getSlideDirection(initialState, targetState),
-                            tween(slideSpeed)
-                        )
-                    },
-                    exitTransition = {
-                        slideOutOfContainer(
-                            getSlideDirection(initialState, targetState),
-                            tween(slideSpeed)
-                        )
-                    },
-                    popEnterTransition = {
-                        slideIntoContainer(
-                            getSlideDirection(initialState, targetState),
-                            tween(slideSpeed)
-                        )
-                    },
-                    popExitTransition = {
-                        slideOutOfContainer(
-                            getSlideDirection(initialState, targetState),
-                            tween(slideSpeed)
-                        )
-                    }
+    NavScaffold(navController, showNavBar) {
+        CompositionLocalProvider(LocalNavController provides navController) {
+            NavHost(
+                navController = navController,
+                startDestination = NavItem.Player.title,
+                enterTransition = {
+                    slideIntoContainer(
+                        getSlideDirection(initialState, targetState),
+                        tween(slideSpeed)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        getSlideDirection(initialState, targetState),
+                        tween(slideSpeed)
+                    )
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        getSlideDirection(initialState, targetState),
+                        tween(slideSpeed)
+                    )
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        getSlideDirection(initialState, targetState),
+                        tween(slideSpeed)
+                    )
+                }
+            ) {
+                composable(NavItem.Player.title)
+                {
+                    //todo make this setup dynamic according to NavItem list.
+                    showNavBar = true
+                    PlayerScreen()
+                }
+                composable(NavItem.SongLibrary.title) {
+                    showNavBar = true
+                    SongScreen()
+                }
+                composable(NavItem.Tags.title) {
+                    showNavBar = true
+                    TagCategoryScreen()
+                }
+                navigation(
+                    startDestination = NavItem.Settings.Main.title,
+                    route = NavItem.Settings.title,
                 ) {
-                    composable(NavItem.Player.title) {
-                        PlayerScreen()
+                    composable(NavItem.Settings.Main.title) {
+                        showNavBar = true
+                        SettingsScreen()
                     }
-                    composable(NavItem.SongLibrary.title) {
-                        SongScreen()
-                    }
-                    composable(NavItem.Tags.title) {
-                        TagCategoryScreen()
-                    }
-                    navigation(
-                        startDestination = NavItem.Settings.Main.title,
-                        route = NavItem.Settings.title,
-                    ) {
-                        composable(NavItem.Settings.Main.title) {
-                            SettingsScreen()
-                        }
-                        composable(NavItem.Settings.Folders.title) {
-                            FolderScreen()
-                        }
+                    composable(NavItem.Settings.Folders.title) {
+                        showNavBar = false
+                        FolderScreen()
                     }
                 }
             }
