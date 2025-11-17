@@ -22,7 +22,7 @@ fun SettingsScreen() {
     ) {
         TagCapellaButton(
             onClick = {
-//                now I can use the navController like this
+                //now I can use the navController like this
                 navController.navigate(NavItem.Settings.Folders.title)
             },
             modifier = Modifier
