@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hich2000.tagcapella.music.songScreen.SongCard
 import com.hich2000.tagcapella.music.songScreen.SongList
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
