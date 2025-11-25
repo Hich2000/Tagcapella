@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hich2000.tagcapella.utils.navigation.BottomNavBar
 
@@ -27,9 +28,21 @@ fun NavScaffold(
         Box(
             modifier = Modifier
                 .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    bottom = innerPadding.calculateBottomPadding()
+                    top = if (showNavBar) {
+                        innerPadding.calculateTopPadding()
+                    } else {
+                        0.dp
+                    },
+                    start = if (showNavBar) {
+                        innerPadding.calculateStartPadding(LocalLayoutDirection.current)
+                    } else {
+                        0.dp
+                    },
+                    bottom = if (showNavBar) {
+                        innerPadding.calculateBottomPadding()
+                    } else {
+                        0.dp
+                    }
                 )
                 .fillMaxSize()
         ) {

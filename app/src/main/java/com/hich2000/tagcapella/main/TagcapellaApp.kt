@@ -15,19 +15,13 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
-import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
-import com.hich2000.tagcapella.music.songScreen.SongScreen
-import com.hich2000.tagcapella.settings.SettingsScreen
-import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
-import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 import com.hich2000.tagcapella.utils.ToastEventBus
 import com.hich2000.tagcapella.utils.navigation.LocalNavController
 import com.hich2000.tagcapella.utils.navigation.NavItem
 
 @Composable
 fun TagcapellaApp() {
-    val navController = rememberNavController()
+    val mainNavController = rememberNavController()
     var showNavBar by remember{ mutableStateOf(true) }
     val context = LocalContext.current
     val slideSpeed = 250
@@ -51,10 +45,10 @@ fun TagcapellaApp() {
         else AnimatedContentTransitionScope.SlideDirection.End
     }
 
-    NavScaffold(navController, showNavBar) {
-        CompositionLocalProvider(LocalNavController provides navController) {
+    NavScaffold(mainNavController, showNavBar) {
+        CompositionLocalProvider(LocalNavController provides mainNavController) {
             NavHost(
-                navController = navController,
+                navController = mainNavController,
                 startDestination = NavItem.Player.title,
                 enterTransition = {
                     slideIntoContainer(
@@ -81,33 +75,14 @@ fun TagcapellaApp() {
                     )
                 }
             ) {
-                composable(NavItem.Player.title)
-                {
-                    //todo make this setup dynamic according to NavItem list.
-                    showNavBar = true
-                    PlayerScreen()
-                }
-                composable(NavItem.SongLibrary.title) {
-                    showNavBar = true
-                    SongScreen()
-                }
-                composable(NavItem.Tags.title) {
-                    showNavBar = true
-                    TagCategoryScreen()
-                }
-                navigation(
-                    startDestination = NavItem.Settings.Main.title,
-                    route = NavItem.Settings.title,
-                ) {
-                    composable(NavItem.Settings.Main.title) {
-                        showNavBar = true
-                        SettingsScreen()
-                    }
-                    composable(NavItem.Settings.Folders.title) {
-                        showNavBar = false
-                        FolderScreen()
+
+                NavItem.navItems.forEach { navItem ->
+                    composable(navItem.title) {
+                        showNavBar = navItem.navBar
+                        navItem.screen()
                     }
                 }
+
             }
         }
     }

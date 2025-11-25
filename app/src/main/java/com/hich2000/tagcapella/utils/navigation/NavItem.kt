@@ -5,53 +5,68 @@ import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
+import com.hich2000.tagcapella.music.songScreen.SongScreen
+import com.hich2000.tagcapella.settings.SettingsScreen
+import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
+import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 
 // Bottom Navigation Screen Enum (To track selected screen)
 sealed class NavItem(
     val title: String,
     val icon: ImageVector? = null,
-    val navBar: Boolean = false
+    val navBar: Boolean = false,
+    val screen: @Composable () -> Unit = {}
 ) {
 
-    init {
-        navItems += this
-    }
-
     companion object {
-        var navItems = listOf<NavItem>()
-            private set
+        val navItems = listOf(
+            Player,
+            SongLibrary,
+            Tags,
+            Settings,
+            Settings.Main,
+            Settings.Folders
+        )
     }
 
     object Player : NavItem(
         title = "Player",
         icon = Icons.Default.MusicNote,
-        navBar = true
+        navBar = true,
+        screen = { PlayerScreen() }
     )
 
     object SongLibrary : NavItem(
         title = "Song Library",
         icon = Icons.Default.Folder,
-        navBar = true
+        navBar = true,
+        screen = { SongScreen() }
     )
 
     object Tags : NavItem(
         title = "Tags",
         icon = Icons.AutoMirrored.Filled.Label,
-        navBar = true
+        navBar = true,
+        screen = { TagCategoryScreen() }
     )
 
     object Settings : NavItem(
         title = "Settings",
         icon = Icons.Default.MoreVert,
-        navBar = true
+        navBar = true,
+        screen = { SettingsScreen() }
     ) {
         object Main : NavItem(
-            title = "${title}/Main"
+            title = "${title}/Main",
+            screen = { SettingsScreen() }
         )
 
         object Folders : NavItem(
-            title = "${title}/Folders"
+            title = "${title}/Folders",
+            screen = { FolderScreen() }
         )
     }
 }
