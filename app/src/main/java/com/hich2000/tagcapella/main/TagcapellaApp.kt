@@ -14,7 +14,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
+import com.hich2000.tagcapella.music.songScreen.SongScreen
+import com.hich2000.tagcapella.settings.SettingsScreen
+import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
+import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 import com.hich2000.tagcapella.utils.ToastEventBus
 import com.hich2000.tagcapella.utils.navigation.LocalNavController
 import com.hich2000.tagcapella.utils.navigation.NavItem
@@ -75,14 +81,31 @@ fun TagcapellaApp() {
                     )
                 }
             ) {
-
-                NavItem.navItems.forEach { navItem ->
-                    composable(navItem.title) {
-                        showNavBar = navItem.navBar
-                        navItem.screen()
+                composable(NavItem.Player.title) {
+                    showNavBar = true
+                    PlayerScreen()
+                }
+                composable(NavItem.SongLibrary.title) {
+                    showNavBar = true
+                    SongScreen()
+                }
+                composable(NavItem.Tags.title) {
+                    showNavBar = true
+                    TagCategoryScreen()
+                }
+                navigation(
+                    startDestination = NavItem.Settings.Main.title,
+                    route = NavItem.Settings.title
+                ) {
+                    composable(NavItem.Settings.Main.title) {
+                        showNavBar = true
+                        SettingsScreen()
+                    }
+                    composable(NavItem.Settings.Folders.title) {
+                        showNavBar = false
+                        FolderScreen()
                     }
                 }
-
             }
         }
     }
