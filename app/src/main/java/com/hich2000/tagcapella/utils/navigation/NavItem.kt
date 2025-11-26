@@ -15,10 +15,10 @@ import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 
 // Bottom Navigation Screen Enum (To track selected screen)
 sealed class NavItem(
-    val title: String,
+    val route: String,
     val icon: ImageVector? = null,
     val navBar: Boolean = false,
-    val screen: @Composable () -> Unit = {}
+    val content: @Composable () -> Unit = {}
 ) {
 
     companion object {
@@ -33,40 +33,40 @@ sealed class NavItem(
     }
 
     object Player : NavItem(
-        title = "Player",
+        route = "Player",
         icon = Icons.Default.MusicNote,
         navBar = true,
-        screen = { PlayerScreen() }
+        content = { PlayerScreen() }
     )
 
     object SongLibrary : NavItem(
-        title = "Song Library",
+        route = "Song Library",
         icon = Icons.Default.Folder,
         navBar = true,
-        screen = { SongScreen() }
+        content = { SongScreen() }
     )
 
     object Tags : NavItem(
-        title = "Tags",
+        route = "Tags",
         icon = Icons.AutoMirrored.Filled.Label,
         navBar = true,
-        screen = { TagCategoryScreen() }
+        content = { TagCategoryScreen() }
     )
 
     object Settings : NavItem(
-        title = "Settings",
+        route = "Settings",
         icon = Icons.Default.MoreVert,
         navBar = true,
-        screen = { SettingsScreen() }
+        content = { SettingsScreen() }
     ) {
         object Main : NavItem(
-            title = "${title}/Main",
-            screen = { SettingsScreen() }
+            route = "${route}/Main",
+            content = { SettingsScreen() }
         )
 
         object Folders : NavItem(
-            title = "${title}/Folders",
-            screen = { FolderScreen() }
+            route = "${route}/Folders",
+            content = { FolderScreen() }
         )
     }
 }

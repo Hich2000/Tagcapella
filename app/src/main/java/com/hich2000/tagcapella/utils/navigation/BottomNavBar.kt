@@ -47,8 +47,8 @@ fun BottomNavBar(navController: NavController) {
 
             IconButton(
                 onClick = {
-                    if (currentRoute != it.title) {
-                        navController.navigate(it.title) {
+                    if (currentRoute != it.route) {
+                        navController.navigate(it.route) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -61,8 +61,8 @@ fun BottomNavBar(navController: NavController) {
                 it.icon?.let { imageVector ->
                     Icon(
                         imageVector = imageVector,
-                        contentDescription = it.title,
-                        tint = if (currentRoute == it.title) {
+                        contentDescription = it.route,
+                        tint = if (currentRoute == it.route) {
                             MaterialTheme.colorScheme.secondary
                         } else {
                             MaterialTheme.colorScheme.secondary.copy(
