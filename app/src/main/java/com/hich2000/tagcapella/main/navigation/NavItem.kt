@@ -32,34 +32,34 @@ sealed class NavItem(
     }
 
     object Player : NavItem(
-        route = "Player",
+        route = Route.Player.route,
         icon = Icons.Default.MusicNote,
         navBar = true,
         content = { PlayerScreen() }
     )
 
     object SongLibrary : NavItem(
-        route = "Song Library",
+        route = Route.SongLibrary.route,
         icon = Icons.Default.Folder,
         navBar = true,
         content = { SongScreen() }
     )
 
     object Tags : NavItem(
-        route = "Tags",
+        route = Route.Tags.route,
         icon = Icons.AutoMirrored.Filled.Label,
         navBar = true,
         content = { TagCategoryScreen() }
     )
 
     object Settings : NavItem(
-        route = "Settings",
+        route = Route.Settings.route,
         icon = Icons.Default.MoreVert,
         navBar = true,
         content = { SettingsScreen() }
     ) {
         object Folders : NavItem(
-            route = "${route}/Folders",
+            route = Route.Settings.Folders.route,
             content = { FolderScreen() }
         )
     }
