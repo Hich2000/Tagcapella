@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.utils.navigation
+package com.hich2000.tagcapella.main.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

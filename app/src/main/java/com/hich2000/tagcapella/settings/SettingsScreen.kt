@@ -9,8 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hich2000.tagcapella.utils.navigation.LocalNavController
-import com.hich2000.tagcapella.utils.navigation.NavItem
+import com.hich2000.tagcapella.main.navigation.LocalNavController
+import com.hich2000.tagcapella.main.navigation.NavItem
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @Composable

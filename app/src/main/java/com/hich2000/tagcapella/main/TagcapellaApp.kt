@@ -16,8 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hich2000.tagcapella.utils.ToastEventBus
-import com.hich2000.tagcapella.utils.navigation.LocalNavController
-import com.hich2000.tagcapella.utils.navigation.NavItem
+import com.hich2000.tagcapella.main.navigation.LocalNavController
+import com.hich2000.tagcapella.main.navigation.NavItem
 
 @Composable
 fun TagcapellaApp() {

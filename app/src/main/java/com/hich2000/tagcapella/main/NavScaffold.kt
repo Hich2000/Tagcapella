@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.hich2000.tagcapella.utils.navigation.BottomNavBar
+import com.hich2000.tagcapella.main.navigation.BottomNavBar
 
 @Composable
 fun NavScaffold(
