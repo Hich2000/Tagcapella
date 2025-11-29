@@ -13,7 +13,12 @@ sealed class Route(
         }
     }
 
-    data object Tags : Route(route = "tags_categories")
+    data object Tags : Route(route = "tags_categories") {
+        data object Songs : Route(route = "${route}/tag_songs/{tagId}") {
+            fun createRoute(tagId: Long): String = route.replace("{tagId}", tagId.toString())
+        }
+    }
+
     data object Settings : Route(route = "settings") {
         data object Folders : Route(route = "${route}/folders")
     }

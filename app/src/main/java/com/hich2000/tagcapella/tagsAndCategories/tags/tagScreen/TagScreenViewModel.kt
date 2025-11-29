@@ -33,16 +33,6 @@ class TagScreenViewModel @Inject constructor(
         }
     }
 
-    fun addSongTag(tag: Tag, song: Song) {
-        songRepository.addSongTag(song = song, tag = tag)
-        tagRepository.initTagList()
-    }
-
-    fun deleteSongTag(tag: Tag, song: Song) {
-        songRepository.deleteSongTag(song = song, tag = tag)
-        tagRepository.initTagList()
-    }
-
     fun openDialog() {
         _showDialog.value = true
     }

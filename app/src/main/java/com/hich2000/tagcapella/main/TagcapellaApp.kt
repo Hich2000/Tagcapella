@@ -33,6 +33,7 @@ import com.hich2000.tagcapella.music.songScreen.songTagScreen.SongTagScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
+import com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen.TagSongScreen
 import com.hich2000.tagcapella.utils.ToastEventBus
 
 @Composable
@@ -125,6 +126,16 @@ fun TagcapellaApp() {
                         route = Route.Tags.route
                     ) {
                         TagCategoryScreen()
+                    }
+
+                    composable(
+                        route = Route.Tags.Songs.route,
+                        arguments = listOf(
+                            navArgument("tagId") { type = NavType.LongType }
+                        )
+                    ) { backStackEntry ->
+                        val tagId = backStackEntry.arguments?.getLong("tagId") ?: 0L
+                        TagSongScreen(tagId)
                     }
 
                     composable(
