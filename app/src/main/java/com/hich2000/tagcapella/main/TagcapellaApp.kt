@@ -29,7 +29,7 @@ import com.hich2000.tagcapella.main.navigation.NavBarItem
 import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
 import com.hich2000.tagcapella.music.songScreen.SongScreen
-import com.hich2000.tagcapella.music.songScreen.SongTagScreen
+import com.hich2000.tagcapella.music.songScreen.songTagScreen.SongTagScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen

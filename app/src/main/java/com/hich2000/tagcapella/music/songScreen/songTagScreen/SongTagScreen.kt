@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.music.songScreen
+package com.hich2000.tagcapella.music.songScreen.songTagScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
