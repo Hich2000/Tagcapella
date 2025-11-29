@@ -11,12 +11,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hich2000.tagcapella.main.navigation.BottomNavBar
 import com.hich2000.tagcapella.main.navigation.LocalNavController
@@ -32,6 +35,10 @@ import com.hich2000.tagcapella.utils.ToastEventBus
 @Composable
 fun TagcapellaApp() {
     val mainNavController = rememberNavController()
+    val currentNavBackStackEntry by mainNavController.currentBackStackEntryAsState()
+    val currentRoute = currentNavBackStackEntry?.destination?.route
+    val showNavBar =
+        currentRoute != null && NavBarItem.bottomNavItems.any { it.route.route == currentRoute }
     val context = LocalContext.current
     val slideSpeed = 250
 
@@ -41,38 +48,21 @@ fun TagcapellaApp() {
         }
     }
 
-    fun getSlideDirection(
-        initialState: NavBackStackEntry,
-        targetState: NavBackStackEntry
-    ): AnimatedContentTransitionScope.SlideDirection {
-        val navItems = NavBarItem.bottomNavItems
-        val targetIndex =
-            navItems.indexOfFirst { it.route.route == targetState.destination.route }
-        val initialIndex =
-            navItems.indexOfFirst { it.route.route == initialState.destination.route }
-
-        return if (targetIndex > initialIndex && initialIndex >= 0) {
-            AnimatedContentTransitionScope.SlideDirection.Start
-        } else if (targetIndex == -1) {
-            AnimatedContentTransitionScope.SlideDirection.Start
-        } else {
-            AnimatedContentTransitionScope.SlideDirection.End
-        }
-    }
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
-            BottomNavBar(mainNavController)
+            if (showNavBar) {
+                BottomNavBar(mainNavController)
+            }
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    bottom = innerPadding.calculateBottomPadding()
+                    top = if (showNavBar) innerPadding.calculateTopPadding() else 0.dp,
+                    start = if (showNavBar) innerPadding.calculateStartPadding(LocalLayoutDirection.current) else 0.dp,
+                    bottom = if (showNavBar) innerPadding.calculateBottomPadding() else 0.dp
                 )
                 .fillMaxSize()
         ) {
@@ -138,5 +128,24 @@ fun TagcapellaApp() {
                 }
             }
         }
+    }
+}
+
+fun getSlideDirection(
+    initialState: NavBackStackEntry,
+    targetState: NavBackStackEntry
+): AnimatedContentTransitionScope.SlideDirection {
+    val navItems = NavBarItem.bottomNavItems
+    val targetIndex =
+        navItems.indexOfFirst { it.route.route == targetState.destination.route }
+    val initialIndex =
+        navItems.indexOfFirst { it.route.route == initialState.destination.route }
+
+    return if (targetIndex > initialIndex && initialIndex >= 0) {
+        AnimatedContentTransitionScope.SlideDirection.Start
+    } else if (targetIndex == -1) {
+        AnimatedContentTransitionScope.SlideDirection.Start
+    } else {
+        AnimatedContentTransitionScope.SlideDirection.End
     }
 }
