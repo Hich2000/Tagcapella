@@ -15,7 +15,7 @@ data class NavBarItem(
     companion object {
         val bottomNavItems: List<NavBarItem> = listOf(
             NavBarItem(Route.Player, Icons.Default.MusicNote, "Player"),
-            NavBarItem(Route.SongLibrary, Icons.Default.Folder, "Library"),
+            NavBarItem(Route.Songs, Icons.Default.Folder, "Library"),
             NavBarItem(Route.Tags, Icons.AutoMirrored.Filled.Label, "Tags/Categories"),
             NavBarItem(Route.Settings, Icons.Default.MoreVert, "Settings"),
         )

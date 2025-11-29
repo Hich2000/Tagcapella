@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -17,10 +18,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.hich2000.tagcapella.main.navigation.BottomNavBar
 import com.hich2000.tagcapella.main.navigation.LocalNavController
 import com.hich2000.tagcapella.main.navigation.NavBarItem
@@ -103,9 +106,25 @@ fun TagcapellaApp() {
                     }
 
                     composable(
-                        route = Route.SongLibrary.route
+                        route = Route.Songs.route
                     ) {
                         SongScreen()
+                    }
+
+                    composable(
+                        route = Route.Songs.Tags.route,
+                        arguments = listOf(
+                            navArgument("songPath") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val songPath = backStackEntry.arguments?.getString("songPath") ?: ""
+                        Box(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                songPath,
+                            )
+                        }
                     }
 
                     composable(

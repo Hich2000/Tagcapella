@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.hich2000.tagcapella.main.navigation.LocalNavController
+import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.dialogs.TagDialog
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
@@ -19,6 +21,7 @@ import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
 fun SongScreen(
     songScreenViewModel: SongScreenViewModel = hiltViewModel()
 ) {
+    val navController = LocalNavController.current
     val songListInitialized by songScreenViewModel.songRepoInitialized.collectAsState()
     val showTagDialog by songScreenViewModel.showTagDialog.collectAsState()
     val songList by songScreenViewModel.songs.collectAsState()
@@ -73,7 +76,8 @@ fun SongScreen(
             SongCard(
                 song = song,
                 showTagCount = true,
-                onClick = { songScreenViewModel.openDialog(song) }
+//                onClick = { songScreenViewModel.openDialog(song) }
+                onClick = { navController.navigate(Route.Songs.Tags.createRoute(song.path)) }
             )
         }
     )
