@@ -27,7 +27,6 @@ sealed class NavItem(
             SongLibrary,
             Tags,
             Settings,
-            Settings.Main,
             Settings.Folders
         )
     }
@@ -59,11 +58,6 @@ sealed class NavItem(
         navBar = true,
         content = { SettingsScreen() }
     ) {
-        object Main : NavItem(
-            route = "${route}/Main",
-            content = { SettingsScreen() }
-        )
-
         object Folders : NavItem(
             route = "${route}/Folders",
             content = { FolderScreen() }
