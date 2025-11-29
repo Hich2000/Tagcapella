@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +29,7 @@ import com.hich2000.tagcapella.main.navigation.NavBarItem
 import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
 import com.hich2000.tagcapella.music.songScreen.SongScreen
+import com.hich2000.tagcapella.music.songScreen.SongTagScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
@@ -63,7 +63,7 @@ fun TagcapellaApp() {
         Box(
             modifier = Modifier
                 .padding(
-                    top = if (showNavBar) innerPadding.calculateTopPadding() else 0.dp,
+                    top = innerPadding.calculateTopPadding(),
                     start = if (showNavBar) innerPadding.calculateStartPadding(LocalLayoutDirection.current) else 0.dp,
                     bottom = if (showNavBar) innerPadding.calculateBottomPadding() else 0.dp
                 )
@@ -118,13 +118,7 @@ fun TagcapellaApp() {
                         )
                     ) { backStackEntry ->
                         val songPath = backStackEntry.arguments?.getString("songPath") ?: ""
-                        Box(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(
-                                songPath,
-                            )
-                        }
+                        SongTagScreen(songPath)
                     }
 
                     composable(
