@@ -40,37 +40,32 @@ fun BottomNavBar(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        NavItem.navItems.forEach {
-            if (!it.navBar) {
-                return@forEach
-            }
+        NavBarItem.bottomNavItems.forEach { navBarItem ->
+            val route = navBarItem.route.route
+            val icon = navBarItem.icon
 
             IconButton(
                 onClick = {
-                    if (currentRoute != it.route) {
-                        navController.navigate(it.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
             ) {
-                it.icon?.let { imageVector ->
-                    Icon(
-                        imageVector = imageVector,
-                        contentDescription = it.route,
-                        tint = if (currentRoute == it.route) {
-                            MaterialTheme.colorScheme.secondary
-                        } else {
-                            MaterialTheme.colorScheme.secondary.copy(
-                                alpha = 0.4f
-                            )
-                        }
-                    )
-                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = route,
+                    tint = if (currentRoute == route) {
+                        MaterialTheme.colorScheme.secondary
+                    } else {
+                        MaterialTheme.colorScheme.secondary.copy(
+                            alpha = 0.4f
+                        )
+                    }
+                )
             }
         }
     }
