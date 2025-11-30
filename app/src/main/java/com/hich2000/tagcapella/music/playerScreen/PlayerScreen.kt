@@ -4,11 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.hich2000.tagcapella.main.navigation.LocalNavController
+import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.playerScreen.controls.Controls
 import com.hich2000.tagcapella.music.playerScreen.controls.ProgressSlider
 import com.hich2000.tagcapella.music.playerScreen.queue.Queue
@@ -36,6 +40,7 @@ import com.hich2000.tagcapella.music.playerScreen.queue.Queue
 fun PlayerScreen(
     playerScreenViewModel: PlayerScreenViewModel = hiltViewModel()
 ) {
+    val navController = LocalNavController.current
     val playerState by playerScreenViewModel.playerState.collectAsState()
     var isUserInteracting by remember { mutableStateOf(false) }
     var tempSliderPosition by remember { mutableFloatStateOf(0F) }
@@ -101,6 +106,22 @@ fun PlayerScreen(
                 shuffleModeEnabled = { playerScreenViewModel.shuffleMode() },
                 repeatMode = { playerScreenViewModel.loopMode() }
             )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                IconButton(
+                    onClick = {
+                        navController.navigate(Route.Songs.Tags.createRoute(playerState.currentSong))
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Label,
+                        contentDescription = "Tags",
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
         }
     }
 }
