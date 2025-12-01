@@ -2,7 +2,11 @@ package com.hich2000.tagcapella.main
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -57,6 +64,10 @@ fun TagcapellaApp() {
         currentRoute != null && NavBarItem.bottomNavItems.any { it.route.route == currentRoute }
     val context = LocalContext.current
     val slideSpeed = 250
+    var firstComposition by remember { mutableStateOf(true) }
+
+    println("here")
+    println(firstComposition)
 
     LaunchedEffect(Unit) {
         ToastEventBus.toastFlow.collect { message ->
@@ -68,7 +79,18 @@ fun TagcapellaApp() {
         modifier = Modifier
             .fillMaxSize(),
         bottomBar = {
-            if (showNavBar) {
+            AnimatedVisibility(
+                visible = showNavBar,
+                enter = if (firstComposition) EnterTransition.None
+                else slideInHorizontally(
+                    animationSpec = tween(slideSpeed),
+                    initialOffsetX = { -it }
+                ),
+                exit = slideOutHorizontally(
+                    animationSpec = tween(slideSpeed),
+                    targetOffsetX = { -it }
+                )
+            ) {
                 BottomNavBar(mainNavController)
             }
         },
@@ -146,7 +168,8 @@ fun TagcapellaApp() {
                 ) {
                     //todo maybe I can make a base route composable that contains everything
                     // and then I can have some of the routes wrapped in the scaffold with the bottom bar and the others not?
-                    // Maybe then I don't need to do the check for the bottom bar anymore and can have cleaner transitions?
+                    // Maybe then I don't need to do the check for the bottom bar anymore and can have cleaner transitions
+                    // instead of transitioning the bottom bar manually?
                     composable(
                         route = Route.Player.route
                     ) {
@@ -206,6 +229,11 @@ fun TagcapellaApp() {
             }
         }
     }
+
+    LaunchedEffect(Unit) {
+        firstComposition = false
+    }
+
 }
 
 fun getSlideDirection(
