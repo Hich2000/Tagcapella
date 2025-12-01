@@ -52,7 +52,7 @@ fun TagScreen(
                     tagScreenViewModel.openDialog()
                 }
                 val songCallback = {
-                    navController.navigate(Route.SongTagging.createRoute(tag.id))
+                    navController.navigate(Route.Tags.Songs.createRoute(tag.id))
                 }
                 val deleteCallback = {
                     tagScreenViewModel.deleteTag(tag.id)

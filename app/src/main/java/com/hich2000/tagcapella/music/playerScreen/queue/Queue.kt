@@ -32,7 +32,7 @@ fun Queue(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Route.QueueBuilder.route)
+                    navController.navigate(Route.Player.QueueBuilder.route)
                 },
                 shape = RectangleShape,
                 containerColor = MaterialTheme.colorScheme.background,

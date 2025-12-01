@@ -147,12 +147,16 @@ fun TagcapellaApp() {
                     //todo maybe I can make a base route composable that contains everything
                     // and then I can have some of the routes wrapped in the scaffold with the bottom bar and the others not?
                     // Maybe then I don't need to do the check for the bottom bar anymore and can have cleaner transitions?
-
-
                     composable(
                         route = Route.Player.route
                     ) {
                         PlayerScreen()
+                    }
+
+                    composable(
+                        route = Route.Player.QueueBuilder.route
+                    ) {
+                        QueueBuilder()
                     }
 
                     composable(
@@ -162,28 +166,7 @@ fun TagcapellaApp() {
                     }
 
                     composable(
-                        route = Route.Tags.route
-                    ) {
-                        TagCategoryScreen()
-                    }
-
-                    composable(
-                        route = Route.Settings.route
-                    ) {
-                        SettingsScreen()
-                    }
-
-
-
-
-                    composable(
-                        route = Route.QueueBuilder.route
-                    ) {
-                        QueueBuilder()
-                    }
-
-                    composable(
-                        route = Route.TagsForSong.route,
+                        route = Route.Songs.Tags.route,
                         arguments = listOf(
                             navArgument("songPath") { type = NavType.StringType }
                         )
@@ -193,7 +176,13 @@ fun TagcapellaApp() {
                     }
 
                     composable(
-                        route = Route.SongTagging.route,
+                        route = Route.Tags.route
+                    ) {
+                        TagCategoryScreen()
+                    }
+
+                    composable(
+                        route = Route.Tags.Songs.route,
                         arguments = listOf(
                             navArgument("tagId") { type = NavType.LongType }
                         )
@@ -203,7 +192,13 @@ fun TagcapellaApp() {
                     }
 
                     composable(
-                        route = Route.Folders.route
+                        route = Route.Settings.route
+                    ) {
+                        SettingsScreen()
+                    }
+
+                    composable(
+                        route = Route.Settings.Folders.route
                     ) {
                         FolderScreen()
                     }
