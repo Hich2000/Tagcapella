@@ -37,9 +37,19 @@ class SongRepository @Inject constructor(
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized: StateFlow<Boolean> get() = _isInitialized
 
+    private var observerStarted = false
+
     init {
         repositoryScope.launch {
-            triggerScan()
+            ini()
+        }
+    }
+
+    suspend fun ini() {
+        _isInitialized.value = false
+        triggerScan()
+        if (!observerStarted) {
+            observerStarted = true
             observeFolderListChange()
         }
     }

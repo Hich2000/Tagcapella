@@ -35,6 +35,10 @@ class MediaPlayerCoordinator @Inject constructor(
     val excludedTags: StateFlow<List<Tag>> get() = queueManager.excludedTags
 
     init {
+        ini()
+    }
+
+    fun ini() {
         applicationScope.launch {
             playerStateManager.initPlayerState()
             mediaControllerManager.initialize()

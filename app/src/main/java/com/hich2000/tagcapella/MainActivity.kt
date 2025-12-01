@@ -36,7 +36,10 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.hich2000.tagcapella.main.TagcapellaApp
+import com.hich2000.tagcapella.music.mediaController.MediaPlayerCoordinator
 import com.hich2000.tagcapella.music.queueManager.FolderScanManager
+import com.hich2000.tagcapella.music.queueManager.QueueManager
+import com.hich2000.tagcapella.music.queueManager.SongRepository
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.LifeCycleManager
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
@@ -44,6 +47,9 @@ import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -62,12 +68,22 @@ class MyApp : Application(), LifecycleObserver {
 class MainActivity : ComponentActivity() {
 
     private val mediaPermissionGranted = mutableIntStateOf(PackageManager.PERMISSION_DENIED)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     @Inject
     lateinit var folderScanManager: FolderScanManager
+
+    @Inject
+    lateinit var songRepository: SongRepository
+
+    @Inject
+    lateinit var mediaPlayerCoordinator: MediaPlayerCoordinator
+
+    @Inject
+    lateinit var queueManager: QueueManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -133,7 +149,14 @@ class MainActivity : ComponentActivity() {
         } else {
             PackageManager.PERMISSION_DENIED
         }
-        folderScanManager.addScanFolder("Music/")
+        if (mediaPermissionGranted.intValue == PackageManager.PERMISSION_GRANTED) {
+            coroutineScope.launch {
+                folderScanManager.addScanFolder("Music/")
+                songRepository.ini()
+                queueManager.updateQueue()
+                mediaPlayerCoordinator.ini()
+            }
+        }
     }
 
     @Composable
