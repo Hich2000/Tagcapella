@@ -5,7 +5,10 @@ import android.net.Uri
 sealed class Route(
     val route: String
 ) {
-    data object Player : Route(route = "player")
+    data object Player : Route(route = "player") {
+        data object QueueBuilder : Route (route = "${route}/queue_builder")
+    }
+
     data object Songs : Route(route = "library") {
         data object Tags : Route(route = "${route}/song_tags/{songPath}") {
             fun createRoute(songPath: String): String =

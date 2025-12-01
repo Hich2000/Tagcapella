@@ -39,6 +39,7 @@ import com.hich2000.tagcapella.main.navigation.LocalNavController
 import com.hich2000.tagcapella.main.navigation.NavBarItem
 import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
+import com.hich2000.tagcapella.music.playerScreen.queue.QueueBuilder
 import com.hich2000.tagcapella.music.songScreen.SongScreen
 import com.hich2000.tagcapella.music.songScreen.songTagScreen.SongTagScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
@@ -143,11 +144,19 @@ fun TagcapellaApp() {
                         )
                     }
                 ) {
-
+                    //todo maybe I can make a base route composable that contains everything
+                    // and then I can have some of the routes wrapped in the scaffold with the bottom bar and the others not?
+                    // Maybe then I don't need to do the check for the bottom bar anymore and can have cleaner transitions?
                     composable(
                         route = Route.Player.route
                     ) {
                         PlayerScreen()
+                    }
+
+                    composable(
+                        route = Route.Player.QueueBuilder.route
+                    ) {
+                        QueueBuilder()
                     }
 
                     composable(

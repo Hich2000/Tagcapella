@@ -13,52 +13,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.hich2000.tagcapella.main.navigation.LocalNavController
+import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.songScreen.SongCard
 import com.hich2000.tagcapella.music.songScreen.SongList
-import com.hich2000.tagcapella.tagsAndCategories.tags.dialogs.TagDialog
-import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
 
 @Composable
 fun Queue(
     queueViewModel: QueueViewModel = hiltViewModel()
 ) {
+    val navController = LocalNavController.current
     val queue by queueViewModel.currentQueue.collectAsState()
-    val showDialog by queueViewModel.showDialog.collectAsState()
-    val includedTags by queueViewModel.includedTags.collectAsState()
-    val excludedTags by queueViewModel.excludedTags.collectAsState()
-
-    if (showDialog) {
-        TagDialog(
-            onButtonPress = {
-                queueViewModel.updateQueue()
-                queueViewModel.closeDialog()
-            },
-            onDismissRequest = { queueViewModel.closeDialog() },
-            tagCardComposable = { tag ->
-                TagCard(
-                    tag = tag,
-                    onClick = { queueViewModel.toggleTagFilter(tag) },
-                    backgroundColor = if (includedTags.any { it.id == tag.id }) {
-                        Color.Green
-                    } else if (excludedTags.any { it.id == tag.id }) {
-                        Color.Red
-                    } else {
-                        MaterialTheme.colorScheme.background
-                    }
-                )
-            }
-        )
-    }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    queueViewModel.openDialog()
+                    navController.navigate(Route.Player.QueueBuilder.route)
                 },
                 shape = RectangleShape,
                 containerColor = MaterialTheme.colorScheme.background,
