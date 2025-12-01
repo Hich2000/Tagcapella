@@ -33,7 +33,7 @@ fun SongScreen(
             SongCard(
                 song = song,
                 showTagCount = true,
-                onClick = { navController.navigate(Route.Songs.Tags.createRoute(song.path)) }
+                onClick = { navController.navigate(Route.TagsForSong.createRoute(song.path)) }
             )
         }
     )

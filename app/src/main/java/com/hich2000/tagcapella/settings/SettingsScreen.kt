@@ -23,7 +23,7 @@ fun SettingsScreen() {
         TagCapellaButton(
             onClick = {
                 //now I can use the navController like this
-                navController.navigate(Route.Settings.Folders.route)
+                navController.navigate(Route.Folders.route)
             },
             modifier = Modifier
                 .fillMaxWidth()

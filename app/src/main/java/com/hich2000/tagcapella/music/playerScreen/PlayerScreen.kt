@@ -112,7 +112,7 @@ fun PlayerScreen(
             ) {
                 IconButton(
                     onClick = {
-                        navController.navigate(Route.Songs.Tags.createRoute(playerState.currentSong))
+                        navController.navigate(Route.TagsForSong.createRoute(playerState.currentSong))
                     }
                 ) {
                     Icon(
