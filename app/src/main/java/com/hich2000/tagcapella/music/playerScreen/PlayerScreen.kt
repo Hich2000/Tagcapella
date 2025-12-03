@@ -1,5 +1,6 @@
 package com.hich2000.tagcapella.music.playerScreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
@@ -17,13 +18,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +38,7 @@ import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.playerScreen.controls.Controls
 import com.hich2000.tagcapella.music.playerScreen.controls.ProgressSlider
 import com.hich2000.tagcapella.music.playerScreen.queue.Queue
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,8 +49,17 @@ fun PlayerScreen(
     val playerState by playerScreenViewModel.playerState.collectAsState()
     var isUserInteracting by remember { mutableStateOf(false) }
     var tempSliderPosition by remember { mutableFloatStateOf(0F) }
+    val bottomSheetState = rememberBottomSheetScaffoldState()
+    val scope = rememberCoroutineScope()
+
+    BackHandler(enabled = bottomSheetState.bottomSheetState.currentValue == SheetValue.Expanded) {
+        scope.launch {
+            bottomSheetState.bottomSheetState.partialExpand()
+        }
+    }
 
     BottomSheetScaffold(
+        scaffoldState = bottomSheetState,
         sheetContent = { Queue() },
         sheetPeekHeight = 48.dp
     ) { innerPadding ->
