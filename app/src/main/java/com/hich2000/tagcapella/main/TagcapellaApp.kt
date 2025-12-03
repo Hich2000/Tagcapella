@@ -1,36 +1,28 @@
 package com.hich2000.tagcapella.main
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.hich2000.tagcapella.main.navigation.LocalNavController
-import com.hich2000.tagcapella.main.navigation.NavBarItem
 import com.hich2000.tagcapella.main.navigation.Route
-import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
 import com.hich2000.tagcapella.music.playerScreen.queue.QueueBuilder
-import com.hich2000.tagcapella.music.songScreen.SongScreen
 import com.hich2000.tagcapella.music.songScreen.songTagScreen.SongTagScreen
-import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
-import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen.TagSongScreen
 import com.hich2000.tagcapella.utils.ToastEventBus
 
 @Composable
 fun TagcapellaApp() {
+    val rootNavController = rememberNavController()
     val mainNavController = rememberNavController()
     val context = LocalContext.current
-    val slideSpeed = 250
 
     LaunchedEffect(Unit) {
         ToastEventBus.toastFlow.collect { message ->
@@ -39,116 +31,45 @@ fun TagcapellaApp() {
     }
 
     CompositionLocalProvider(LocalNavController provides mainNavController) {
-        MainScaffold(mainNavController) {
-            NavHost(
-                navController = mainNavController,
-                startDestination = Route.Player.route,
-                enterTransition = {
-                    slideIntoContainer(
-                        getSlideDirection(initialState, targetState),
-                        tween(slideSpeed)
-                    )
-                },
-                exitTransition = {
-                    slideOutOfContainer(
-                        getSlideDirection(initialState, targetState),
-                        tween(slideSpeed)
-                    )
-                },
-                popEnterTransition = {
-                    slideIntoContainer(
-                        getSlideDirection(initialState, targetState),
-                        tween(slideSpeed)
-                    )
-                },
-                popExitTransition = {
-                    slideOutOfContainer(
-                        getSlideDirection(initialState, targetState),
-                        tween(slideSpeed)
-                    )
-                }
+        NavHost(
+            navController = rootNavController,
+            route = Route.Root.route,
+            startDestination = Route.Main.route
+        ) {
+            composable(
+                route = Route.Main.route
             ) {
-                //todo maybe I can make a base route composable that contains everything
-                // and then I can have some of the routes wrapped in the scaffold with the bottom bar and the others not?
-                // Maybe then I don't need to do the check for the bottom bar anymore and can have cleaner transitions
-                // instead of transitioning the bottom bar manually?
+                MainScaffold(mainNavController)
+            }
 
-
-                composable(
-                    route = Route.Player.route
-                ) {
-                    PlayerScreen()
-                }
-
-                composable(
-                    route = Route.Player.QueueBuilder.route
-                ) {
-                    QueueBuilder()
-                }
-
-                composable(
-                    route = Route.Songs.route
-                ) {
-                    SongScreen()
-                }
-
-                composable(
-                    route = Route.Songs.Tags.route,
-                    arguments = listOf(
-                        navArgument("songPath") { type = NavType.StringType }
-                    )
-                ) { backStackEntry ->
-                    val songPath = backStackEntry.arguments?.getString("songPath") ?: ""
-                    SongTagScreen(songPath)
-                }
-
-                composable(
-                    route = Route.Tags.route
-                ) {
-                    TagCategoryScreen()
-                }
-
-                composable(
-                    route = Route.Tags.Songs.route,
-                    arguments = listOf(
-                        navArgument("tagId") { type = NavType.LongType }
-                    )
-                ) { backStackEntry ->
-                    val tagId = backStackEntry.arguments?.getLong("tagId") ?: 0L
-                    TagSongScreen(tagId)
-                }
-
-                composable(
-                    route = Route.Settings.route
-                ) {
-                    SettingsScreen()
-                }
-
-                composable(
-                    route = Route.Settings.Folders.route
-                ) {
-                    FolderScreen()
-                }
+            composable(
+                route = Route.Player.QueueBuilder.route
+            ) {
+                QueueBuilder()
+            }
+            composable(
+                route = Route.Songs.Tags.route,
+                arguments = listOf(
+                    navArgument("songPath") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val songPath = backStackEntry.arguments?.getString("songPath") ?: ""
+                SongTagScreen(songPath)
+            }
+            composable(
+                route = Route.Tags.Songs.route,
+                arguments = listOf(
+                    navArgument("tagId") { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val tagId = backStackEntry.arguments?.getLong("tagId") ?: 0L
+                TagSongScreen(tagId)
+            }
+            composable(
+                route = Route.Settings.Folders.route
+            ) {
+                FolderScreen()
             }
         }
-    }
-}
-
-fun getSlideDirection(
-    initialState: NavBackStackEntry,
-    targetState: NavBackStackEntry
-): AnimatedContentTransitionScope.SlideDirection {
-    val navItems = NavBarItem.bottomNavItems
-    val targetIndex =
-        navItems.indexOfFirst { it.route.route == targetState.destination.route }
-    val initialIndex =
-        navItems.indexOfFirst { it.route.route == initialState.destination.route }
-
-    return if (targetIndex > initialIndex && initialIndex >= 0) {
-        AnimatedContentTransitionScope.SlideDirection.Start
-    } else if (targetIndex == -1) {
-        AnimatedContentTransitionScope.SlideDirection.Start
-    } else {
-        AnimatedContentTransitionScope.SlideDirection.End
     }
 }
