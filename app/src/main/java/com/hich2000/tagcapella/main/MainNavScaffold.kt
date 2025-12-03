@@ -35,7 +35,7 @@ import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 
 @Composable
-fun MainScaffold() {
+fun MainNavScaffold() {
     val navController = rememberNavController()
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route

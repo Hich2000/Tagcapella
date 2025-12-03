@@ -66,7 +66,7 @@ fun TagcapellaApp() {
             composable(
                 route = Route.Main.route
             ) {
-                MainScaffold()
+                MainNavScaffold()
             }
 
             //sub screens without bottom nav bar
