@@ -1,6 +1,8 @@
 package com.hich2000.tagcapella.main
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -21,8 +23,8 @@ import com.hich2000.tagcapella.utils.ToastEventBus
 @Composable
 fun TagcapellaApp() {
     val rootNavController = rememberNavController()
-    val mainNavController = rememberNavController()
     val context = LocalContext.current
+    val slideSpeed = 250
 
     LaunchedEffect(Unit) {
         ToastEventBus.toastFlow.collect { message ->
@@ -30,18 +32,44 @@ fun TagcapellaApp() {
         }
     }
 
-    CompositionLocalProvider(LocalNavController provides mainNavController) {
+    CompositionLocalProvider(LocalNavController provides rootNavController) {
         NavHost(
             navController = rootNavController,
             route = Route.Root.route,
-            startDestination = Route.Main.route
+            startDestination = Route.Main.route,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    tween(slideSpeed)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    tween(slideSpeed)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down,
+                    tween(slideSpeed)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down,
+                    tween(slideSpeed)
+                )
+            }
         ) {
+            //main screen with bottom nav bar
             composable(
                 route = Route.Main.route
             ) {
-                MainScaffold(mainNavController)
+                MainScaffold()
             }
 
+            //sub screens without bottom nav bar
             composable(
                 route = Route.Player.QueueBuilder.route
             ) {

@@ -22,10 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.hich2000.tagcapella.main.navigation.BottomNavBar
 import com.hich2000.tagcapella.main.navigation.NavBarItem
 import com.hich2000.tagcapella.main.navigation.Route
@@ -35,7 +35,8 @@ import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
 
 @Composable
-fun MainScaffold(navController: NavHostController) {
+fun MainScaffold() {
+    val navController = rememberNavController()
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route
     val slideSpeed = 250
