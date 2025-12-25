@@ -20,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.hich2000.tagcapella.main.navigation.TopBar
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -45,69 +47,76 @@ fun FolderScreen(
             uri?.let { folderScreenViewModel.addScanFolder(uri) }
         }
 
-    Box(
-        contentAlignment = Alignment.Center,
+    Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
+            .fillMaxSize(),
+        topBar = { TopBar() }
+    ) { innerPadding ->
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 32.dp)
+                .padding(innerPadding)
         ) {
-
-            Box(
+            Column(
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .border(2.dp, MaterialTheme.colorScheme.secondary)
-                    .heightIn(max = 230.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 32.dp)
             ) {
-                LazyColumn {
-                    itemsIndexed(folders) { index, folder ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Text(
-                                text = folder,
-                                textAlign = TextAlign.Center,
+
+                Box(
+                    modifier = Modifier
+                        .border(2.dp, MaterialTheme.colorScheme.secondary)
+                        .heightIn(max = 230.dp)
+                ) {
+                    LazyColumn {
+                        itemsIndexed(folders) { index, folder ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .weight(0.9f)
-                            )
-                            IconButton(
-                                onClick = {
-                                    folderScreenViewModel.removeScanFolder(index)
-                                },
-                                modifier = Modifier.weight(0.1f)
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete scan folder",
-                                    tint = MaterialTheme.colorScheme.secondary
+                                Text(
+                                    text = folder,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .weight(0.9f)
                                 )
+                                IconButton(
+                                    onClick = {
+                                        folderScreenViewModel.removeScanFolder(index)
+                                    },
+                                    modifier = Modifier.weight(0.1f)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Delete scan folder",
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.background,
-                modifier = Modifier
-                    .padding(8.dp)
-            )
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.background,
+                    modifier = Modifier
+                        .padding(8.dp)
+                )
 
-            TagCapellaButton(
-                onClick = {
-                    launcher.launch(null)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
-            ) {
-                Text("Add folder to scan")
+                TagCapellaButton(
+                    onClick = {
+                        launcher.launch(null)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
+                ) {
+                    Text("Add folder to scan")
+                }
             }
         }
     }

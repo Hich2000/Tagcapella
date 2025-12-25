@@ -2,7 +2,9 @@ package com.hich2000.tagcapella.music.songScreen.songTagScreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -10,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.hich2000.tagcapella.main.navigation.TopBar
 import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagCard
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagList.TagList
@@ -48,15 +51,21 @@ fun SongTagScreen(
                 },
         )
     }
-
-    Box(
-        contentAlignment = Alignment.Center,
+    Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-    ) {
-        TagList(
-            tagList = tagList,
-            tagCard = tagCardComposable,
-        )
+            .fillMaxSize(),
+        topBar = { TopBar() }
+    ) { innerPadding ->
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            TagList(
+                tagList = tagList,
+                tagCard = tagCardComposable,
+            )
+        }
     }
 }

@@ -73,9 +73,7 @@ fun TagcapellaApp() {
             composable(
                 route = Route.Player.QueueBuilder.route
             ) {
-                SubScaffold {
-                    QueueBuilder()
-                }
+                QueueBuilder()
             }
             composable(
                 route = Route.Songs.Tags.route,
@@ -83,10 +81,8 @@ fun TagcapellaApp() {
                     navArgument("songPath") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                SubScaffold {
-                    val songPath = backStackEntry.arguments?.getString("songPath") ?: ""
-                    SongTagScreen(songPath)
-                }
+                val songPath = backStackEntry.arguments?.getString("songPath") ?: ""
+                SongTagScreen(songPath)
             }
             composable(
                 route = Route.Tags.Songs.route,
@@ -94,17 +90,13 @@ fun TagcapellaApp() {
                     navArgument("tagId") { type = NavType.LongType }
                 )
             ) { backStackEntry ->
-                SubScaffold {
-                    val tagId = backStackEntry.arguments?.getLong("tagId") ?: 0L
-                    TagSongScreen(tagId)
-                }
+                val tagId = backStackEntry.arguments?.getLong("tagId") ?: 0L
+                TagSongScreen(tagId)
             }
             composable(
                 route = Route.Settings.Folders.route
             ) {
-                SubScaffold {
-                    FolderScreen()
-                }
+                FolderScreen()
             }
         }
     }
