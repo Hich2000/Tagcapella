@@ -35,7 +35,7 @@ fun QueueBuilder(
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        topBar = { TopBar() }
+        topBar = { TopBar(topText = "Queue Builder") }
     ) { innerPadding ->
         Box(
             contentAlignment = Alignment.Center,

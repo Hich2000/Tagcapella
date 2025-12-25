@@ -27,7 +27,7 @@ fun TagSongScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        topBar = { TopBar() }
+        topBar = { TopBar(topText = "Songs") }
     ) { innerPadding ->
         Box(
             contentAlignment = Alignment.Center,

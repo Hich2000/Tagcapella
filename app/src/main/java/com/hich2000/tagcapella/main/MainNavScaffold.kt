@@ -22,6 +22,7 @@ import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
 import com.hich2000.tagcapella.music.songScreen.SongScreen
 import com.hich2000.tagcapella.settings.SettingsScreen
 import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
+import java.util.Locale
 
 @Composable
 fun MainNavScaffold() {
@@ -39,7 +40,9 @@ fun MainNavScaffold() {
         topBar = {
             TopBar(
                 navController = navController,
-                showBackButton = currentRoute != Route.Player.route
+                showBackButton = currentRoute != Route.Player.route,
+                topText = currentRoute.toString().replace("_", " ")
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale = Locale.ENGLISH) else it.toString() }
             )
         }
     ) { innerPadding ->

@@ -50,7 +50,7 @@ fun FolderScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        topBar = { TopBar() }
+        topBar = { TopBar(topText = "Settings/Folders") }
     ) { innerPadding ->
         Box(
             contentAlignment = Alignment.Center,
