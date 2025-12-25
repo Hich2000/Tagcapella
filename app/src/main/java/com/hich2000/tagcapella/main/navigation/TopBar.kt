@@ -14,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
-fun TopBar() {
-    val navController = LocalNavController.current
-
+fun TopBar(
+    navController: NavController = LocalNavController.current,
+    showBackButton: Boolean = true
+) {
     Column {
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -28,15 +30,18 @@ fun TopBar() {
         ) {
             IconButton(
                 onClick = {
-                    navController.popBackStack()
+                    if (showBackButton) {
+                        navController.popBackStack()
+                    }
                 }
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBackIosNew,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    contentDescription = "Back to settings"
-                )
-
+                if (showBackButton) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        tint = MaterialTheme.colorScheme.secondary,
+                        contentDescription = "Back to settings"
+                    )
+                }
             }
         }
         HorizontalDivider(
