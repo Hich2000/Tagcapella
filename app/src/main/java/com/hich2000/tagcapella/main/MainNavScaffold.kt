@@ -28,7 +28,7 @@ fun MainNavScaffold() {
     val navController = rememberNavController()
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route
-    val slideSpeed = 250
+    val slideSpeed = 200
 
     Scaffold(
         modifier = Modifier
