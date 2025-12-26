@@ -31,6 +31,17 @@ fun SettingsScreen() {
         ) {
             Text("Music folders")
         }
+        TagCapellaButton(
+            onClick = {
+                //now I can use the navController like this
+                navController.navigate(Route.Settings.Themes.route)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, MaterialTheme.colorScheme.tertiary)
+        ) {
+            Text("Themes")
+        }
     }
 }
 

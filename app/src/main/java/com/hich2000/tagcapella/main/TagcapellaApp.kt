@@ -17,6 +17,7 @@ import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.playerScreen.queue.QueueBuilder
 import com.hich2000.tagcapella.music.songScreen.songTagScreen.SongTagScreen
 import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
+import com.hich2000.tagcapella.settings.themesScreen.ThemesScreen
 import com.hich2000.tagcapella.tagsAndCategories.tags.tagScreen.TagSongScreen
 import com.hich2000.tagcapella.utils.ToastEventBus
 
@@ -97,6 +98,11 @@ fun TagcapellaApp() {
                 route = Route.Settings.Folders.route
             ) {
                 FolderScreen()
+            }
+            composable(
+                route = Route.Settings.Themes.route
+            ) {
+                ThemesScreen()
             }
         }
     }
