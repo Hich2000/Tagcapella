@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Label
 import androidx.compose.material.icons.filled.MusicNote
@@ -61,7 +62,14 @@ fun PlayerScreen(
     BottomSheetScaffold(
         scaffoldState = bottomSheetState,
         sheetContent = { Queue() },
-        sheetPeekHeight = 48.dp
+        sheetPeekHeight = 48.dp,
+        sheetContainerColor = MaterialTheme.colorScheme.tertiary,
+        sheetShape = CutCornerShape(
+            topStart = 16.dp,
+            topEnd = 16.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        )
     ) { innerPadding ->
         Column(
             modifier = Modifier
