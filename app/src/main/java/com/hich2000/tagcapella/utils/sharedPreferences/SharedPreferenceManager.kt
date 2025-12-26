@@ -40,6 +40,8 @@ class SharedPreferenceManager @Inject constructor(
                     val json = gson.toJson(value)
                     putString(key.key, json)
                 }
+                SharedPreferenceKey.SelectedTheme -> putString(key.key, value as String)
+                SharedPreferenceKey.UseSystemTheme -> putBoolean(key.key, value as Boolean)
             }
         }
     }
@@ -80,6 +82,8 @@ class SharedPreferenceManager @Inject constructor(
                     defaultValue
                 }
             }
+            SharedPreferenceKey.SelectedTheme -> sharedPreferences.getString(key.key, defaultValue as String) as T
+            SharedPreferenceKey.UseSystemTheme -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
 
         }
     }

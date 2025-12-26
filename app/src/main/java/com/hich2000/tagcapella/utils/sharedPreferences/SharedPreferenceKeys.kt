@@ -12,4 +12,6 @@ sealed class SharedPreferenceKey<T>(
     data object LastSongDuration : SharedPreferenceKey<Long>("LAST_SONG_DURATION")
     data object PermissionsAlreadyRequested : SharedPreferenceKey<Boolean>("PERMISSIONS_ALREADY_REQUESTED")
     data object FoldersToScan : SharedPreferenceKey<List<String>>("FOLDERS_TO_SCAN")
+    data object UseSystemTheme : SharedPreferenceKey<Boolean>("USE_SYSTEM_THEME")
+    data object SelectedTheme : SharedPreferenceKey<String>("SELECTED_THEME")
 }
