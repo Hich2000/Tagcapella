@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.hich2000.tagcapella.settings.themesScreen.SelectableThemes
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,7 +41,7 @@ class SharedPreferenceManager @Inject constructor(
                     val json = gson.toJson(value)
                     putString(key.key, json)
                 }
-                SharedPreferenceKey.SelectedTheme -> putString(key.key, value as String)
+                SharedPreferenceKey.SelectedTheme -> putString(key.key, value.toString())
                 SharedPreferenceKey.UseSystemTheme -> putBoolean(key.key, value as Boolean)
             }
         }
@@ -82,7 +83,8 @@ class SharedPreferenceManager @Inject constructor(
                     defaultValue
                 }
             }
-            SharedPreferenceKey.SelectedTheme -> sharedPreferences.getString(key.key, defaultValue as String) as T
+            SharedPreferenceKey.SelectedTheme -> SelectableThemes.valueOf(sharedPreferences.getString(key.key, defaultValue as String)
+                .toString()) as T
             SharedPreferenceKey.UseSystemTheme -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
 
         }

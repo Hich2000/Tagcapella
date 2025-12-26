@@ -1,5 +1,7 @@
 package com.hich2000.tagcapella.utils.sharedPreferences
 
+import com.hich2000.tagcapella.settings.themesScreen.SelectableThemes
+
 sealed class SharedPreferenceKey<T>(
     val key: String
 ) {
@@ -13,5 +15,5 @@ sealed class SharedPreferenceKey<T>(
     data object PermissionsAlreadyRequested : SharedPreferenceKey<Boolean>("PERMISSIONS_ALREADY_REQUESTED")
     data object FoldersToScan : SharedPreferenceKey<List<String>>("FOLDERS_TO_SCAN")
     data object UseSystemTheme : SharedPreferenceKey<Boolean>("USE_SYSTEM_THEME")
-    data object SelectedTheme : SharedPreferenceKey<String>("SELECTED_THEME")
+    data object SelectedTheme : SharedPreferenceKey<SelectableThemes>("SELECTED_THEME")
 }

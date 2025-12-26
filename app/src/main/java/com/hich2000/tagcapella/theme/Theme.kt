@@ -57,10 +57,10 @@ fun TagcapellaTheme(
     } else {
         val selectedTheme = sharedPreferenceManager.getPreference(
             SharedPreferenceKey.SelectedTheme,
-            SelectableThemes.DARKMODE.toString()
+            SelectableThemes.DARKMODE
         )
 
-        if (SelectableThemes.valueOf(selectedTheme) == SelectableThemes.DARKMODE) {
+        if (selectedTheme == SelectableThemes.DARKMODE) {
             DarkColorScheme
         } else {
             LightColorScheme
@@ -69,9 +69,9 @@ fun TagcapellaTheme(
 
     //save the current color scheme to shared preference
     if (colorScheme == DarkColorScheme) {
-        sharedPreferenceManager.savePreference(SharedPreferenceKey.SelectedTheme, SelectableThemes.DARKMODE.toString())
+        sharedPreferenceManager.savePreference(SharedPreferenceKey.SelectedTheme, SelectableThemes.DARKMODE)
     } else {
-        sharedPreferenceManager.savePreference(SharedPreferenceKey.SelectedTheme, SelectableThemes.LIGHTMODE.toString())
+        sharedPreferenceManager.savePreference(SharedPreferenceKey.SelectedTheme, SelectableThemes.LIGHTMODE)
     }
 
     MaterialTheme(
