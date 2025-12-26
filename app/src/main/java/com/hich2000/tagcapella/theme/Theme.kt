@@ -8,14 +8,15 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import com.hich2000.tagcapella.settings.themesScreen.SelectableThemes
-import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
-import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 val DarkColorScheme = darkColorScheme(
@@ -40,9 +41,7 @@ fun TagcapellaTheme(
     themeViewModel: ThemeViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
-    val sharedPreferenceManager = themeViewModel.sharedPreferenceManager
-    val useSystemTheme =
-        sharedPreferenceManager.getPreference(SharedPreferenceKey.UseSystemTheme, true)
+    val useSystemTheme by themeViewModel.useSystemTheme.collectAsState()
 
     val colorScheme = if (useSystemTheme) {
         when {
@@ -55,10 +54,7 @@ fun TagcapellaTheme(
             else -> LightColorScheme
         }
     } else {
-        val selectedTheme = sharedPreferenceManager.getPreference(
-            SharedPreferenceKey.SelectedTheme,
-            SelectableThemes.DARKMODE
-        )
+        val selectedTheme by themeViewModel.selectedTheme.collectAsState()
 
         if (selectedTheme == SelectableThemes.DARKMODE) {
             DarkColorScheme
@@ -69,9 +65,9 @@ fun TagcapellaTheme(
 
     //save the current color scheme to shared preference
     if (colorScheme == DarkColorScheme) {
-        sharedPreferenceManager.savePreference(SharedPreferenceKey.SelectedTheme, SelectableThemes.DARKMODE)
+        themeViewModel.setSelectedTheme(SelectableThemes.DARKMODE)
     } else {
-        sharedPreferenceManager.savePreference(SharedPreferenceKey.SelectedTheme, SelectableThemes.LIGHTMODE)
+        themeViewModel.setSelectedTheme(SelectableThemes.LIGHTMODE)
     }
 
     MaterialTheme(
@@ -83,6 +79,9 @@ fun TagcapellaTheme(
 
 @HiltViewModel
 class ThemeViewModel @Inject constructor(
-    val sharedPreferenceManager: SharedPreferenceManager
+    val themeState: ThemeState
 ) : ViewModel() {
+    val useSystemTheme: StateFlow<Boolean> get() = themeState.useSystemTheme
+    val selectedTheme: StateFlow<SelectableThemes> get() = themeState.selectedTheme
+    fun setSelectedTheme(theme: SelectableThemes) = themeState.setSelectedTheme(theme)
 }
