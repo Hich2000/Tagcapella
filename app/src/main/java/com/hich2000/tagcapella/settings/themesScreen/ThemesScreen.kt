@@ -20,6 +20,8 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +36,7 @@ fun ThemesScreen(
     themesScreenViewModel: ThemesScreenViewModel = hiltViewModel()
 ) {
     val cutCornerRadius = 8.dp
+    val useSystemTheme by themesScreenViewModel.useSystemTheme.collectAsState()
 
     Scaffold(
         modifier = Modifier
@@ -78,8 +81,10 @@ fun ThemesScreen(
                                 .padding(12.dp)
                         )
                         Checkbox(
-                            checked = true,
-                            onCheckedChange = {},
+                            checked = useSystemTheme,
+                            onCheckedChange = {
+                                themesScreenViewModel.handleUseSystemThemeCheckbox()
+                            },
                             colors = CheckboxColors(
                                 checkedCheckmarkColor = MaterialTheme.colorScheme.primary,
                                 uncheckedCheckmarkColor = MaterialTheme.colorScheme.primary,

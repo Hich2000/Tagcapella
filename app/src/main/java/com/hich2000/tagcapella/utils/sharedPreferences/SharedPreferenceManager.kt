@@ -83,8 +83,7 @@ class SharedPreferenceManager @Inject constructor(
                     defaultValue
                 }
             }
-            SharedPreferenceKey.SelectedTheme -> SelectableThemes.valueOf(sharedPreferences.getString(key.key, defaultValue as String)
-                .toString()) as T
+            SharedPreferenceKey.SelectedTheme -> SelectableThemes.valueOf(sharedPreferences.getString(key.key, defaultValue.toString()).toString()) as T
             SharedPreferenceKey.UseSystemTheme -> sharedPreferences.getBoolean(key.key, defaultValue as Boolean) as T
 
         }
