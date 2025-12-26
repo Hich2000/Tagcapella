@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hich2000.tagcapella.tagsAndCategories.tags.Tag
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
 
@@ -57,7 +57,7 @@ fun TagForm(
     }
 
     Column(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .padding(16.dp)
             .border(
                 width = 2.dp,
@@ -68,7 +68,7 @@ fun TagForm(
     ) {
 
         BoxWithConstraints(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 8.dp)
         ) {
@@ -77,14 +77,14 @@ fun TagForm(
             ExposedDropdownMenuBox(
                 expanded = dropdownExpanded,
                 onExpandedChange = { tagFormViewModel.toggleDropdown() },
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .fillMaxWidth()
             ) {
                 TextField(
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor(
-                            type = MenuAnchorType.Companion.PrimaryEditable,
+                            type = MenuAnchorType.PrimaryEditable,
                             enabled = true
                         ),
                     label = { Text("category") },
@@ -102,7 +102,7 @@ fun TagForm(
                     expanded = dropdownExpanded,
                     onDismissRequest = { tagFormViewModel.closeDropdown() },
                     shape = RectangleShape,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .width(dropdownWidth)
                         .border(
                             2.dp, MaterialTheme.colorScheme.tertiary, shape = RectangleShape
@@ -113,8 +113,8 @@ fun TagForm(
                         text = {
                             Text(
                                 text = "(no category)",
-                                textAlign = TextAlign.Companion.Center,
-                                modifier = Modifier.Companion.fillMaxSize(),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxSize(),
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         },
@@ -122,7 +122,7 @@ fun TagForm(
                             tagFormViewModel.setDropdownState(null)
                             tagFormViewModel.closeDropdown()
                         },
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .fillMaxSize()
                             .padding(0.dp)
                     )
@@ -132,8 +132,8 @@ fun TagForm(
                             text = {
                                 Text(
                                     text = it.category,
-                                    textAlign = TextAlign.Companion.Center,
-                                    modifier = Modifier.Companion.fillMaxSize(),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxSize(),
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                             },
@@ -141,7 +141,7 @@ fun TagForm(
                                 tagFormViewModel.setDropdownState(it.id)
                                 tagFormViewModel.closeDropdown()
                             },
-                            modifier = Modifier.Companion
+                            modifier = Modifier
                                 .fillMaxSize()
                                 .padding(0.dp)
                         )
@@ -156,13 +156,13 @@ fun TagForm(
                 tagFormViewModel.setTextState(it)
             },
             label = { Text("Tag") },
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(all = 8.dp)
         )
 
         Box(
-            modifier = Modifier.Companion.padding(0.dp)
+            modifier = Modifier.padding(0.dp)
         ) {
             if (tag === null) {
                 TagCapellaButton(
@@ -170,9 +170,9 @@ fun TagForm(
                         tagFormViewModel.insertTag()
                         onSaveAction()
                     },
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.Companion.BottomCenter)
+                        .align(Alignment.BottomCenter)
                         .height(36.dp)
                         .border(2.dp, MaterialTheme.colorScheme.tertiary)
                         .padding(0.dp)
@@ -185,9 +185,9 @@ fun TagForm(
                         tagFormViewModel.updateTag(tag.id)
                         onSaveAction()
                     },
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.Companion.BottomCenter)
+                        .align(Alignment.BottomCenter)
                         .height(36.dp)
                         .border(2.dp, MaterialTheme.colorScheme.tertiary)
                         .padding(0.dp)

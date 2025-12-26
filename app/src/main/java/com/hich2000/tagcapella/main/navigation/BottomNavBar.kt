@@ -1,4 +1,4 @@
-package com.hich2000.tagcapella.utils.navigation
+package com.hich2000.tagcapella.main.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,10 +23,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 @Composable
 fun BottomNavBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = navBackStackEntry?.destination?.route?.substringBefore('/')
 
     Row(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
             .background(MaterialTheme.colorScheme.primary)
@@ -38,35 +38,34 @@ fun BottomNavBar(navController: NavController) {
                 onClick = {}
             ),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.Companion.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        NavItem.navItems.forEach {
+        NavBarItem.bottomNavItems.forEach { navBarItem ->
+            val route = navBarItem.route.route
+            val icon = navBarItem.icon
+
             IconButton(
                 onClick = {
-                    if (currentRoute != it.title) {
-                        navController.navigate(it.title) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
             ) {
-                it.icon?.let { imageVector ->
-                    Icon(
-                        imageVector = imageVector,
-                        contentDescription = it.title,
-                        tint = if (currentRoute == it.title) {
-                            MaterialTheme.colorScheme.secondary
-                        } else {
-                            MaterialTheme.colorScheme.secondary.copy(
-                                alpha = 0.4f
-                            )
-                        }
-                    )
-                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = route,
+                    tint = if (currentRoute == route) {
+                        MaterialTheme.colorScheme.secondary
+                    } else {
+                        MaterialTheme.colorScheme.secondary.copy(
+                            alpha = 0.4f
+                        )
+                    }
+                )
             }
         }
     }

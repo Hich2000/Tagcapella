@@ -4,7 +4,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.Pause
@@ -36,10 +35,9 @@ fun Controls(
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Companion.CenterVertically,
-        modifier = Modifier.Companion
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .border(2.dp, MaterialTheme.colorScheme.tertiary)
     ) {
         //shuffle mode

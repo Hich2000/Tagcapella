@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hich2000.tagcapella.tagsAndCategories.categories.Category
 import com.hich2000.tagcapella.tagsAndCategories.categories.categoryScreen.CategoryScreenViewModel
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
@@ -34,14 +34,14 @@ fun CategoryForm(
     var textState by remember { mutableStateOf(if (category is Category) category.category else "") }
 
     Surface(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .wrapContentWidth()
             .wrapContentHeight(),
         shape = MaterialTheme.shapes.large,
         tonalElevation = AlertDialogDefaults.TonalElevation
     ) {
         Column(
-            modifier = Modifier.Companion
+            modifier = Modifier
                 .padding(16.dp)
                 .border(2.dp, MaterialTheme.colorScheme.tertiary)
         ) {
@@ -49,22 +49,22 @@ fun CategoryForm(
                 value = textState,
                 onValueChange = { textState = it },
                 label = { Text("Category") },
-                modifier = Modifier.Companion
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(all = 8.dp),
             )
 
             Box(
-                modifier = Modifier.Companion.padding(0.dp)
+                modifier = Modifier.padding(0.dp)
             ) {
                 if (category === null) {
                     TagCapellaButton(
                         onClick = {
                             categoryScreenViewModel.insertCategory(textState)
                         },
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.Companion.BottomCenter)
+                            .align(Alignment.BottomCenter)
                             .height(36.dp)
                             .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             .padding(0.dp)
@@ -79,9 +79,9 @@ fun CategoryForm(
                                 category = textState
                             )
                         },
-                        modifier = Modifier.Companion
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.Companion.BottomCenter)
+                            .align(Alignment.BottomCenter)
                             .height(36.dp)
                             .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             .padding(0.dp)

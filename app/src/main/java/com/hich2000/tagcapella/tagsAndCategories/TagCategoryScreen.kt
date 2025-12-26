@@ -62,7 +62,7 @@ fun TagCategoryScreen() {
     }
 
     Box(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .fillMaxSize()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -76,13 +76,13 @@ fun TagCategoryScreen() {
     ) {
         Column {
             Row(
-                verticalAlignment = Alignment.Companion.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 TagCapellaButton(
                     onClick = {
                         selectedScreen.intValue = 0
                     },
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .weight(1f)
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
                     shape = RectangleShape,
@@ -95,7 +95,7 @@ fun TagCategoryScreen() {
                     onClick = {
                         selectedScreen.intValue = 1
                     },
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .weight(1f)
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RectangleShape),
                     shape = RectangleShape,
@@ -107,7 +107,7 @@ fun TagCategoryScreen() {
             }
 
             Scaffold(
-                modifier = Modifier.Companion.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 floatingActionButton = {
                     ExpandableFab(
                         buttons = listOf {
@@ -115,7 +115,7 @@ fun TagCategoryScreen() {
                                 onClick = {
                                     showTagDialog.value = true
                                 },
-                                modifier = Modifier.Companion
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             ) {
@@ -125,7 +125,7 @@ fun TagCategoryScreen() {
                                 onClick = {
                                     showCategoryDialog.value = true
                                 },
-                                modifier = Modifier.Companion
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .border(2.dp, MaterialTheme.colorScheme.tertiary)
                             ) {

@@ -9,16 +9,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,14 +23,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -41,27 +35,21 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
-import com.hich2000.tagcapella.music.songScreen.SongScreen
-import com.hich2000.tagcapella.settings.SettingsScreen
-import com.hich2000.tagcapella.settings.folderScreen.FolderScreen
+import com.hich2000.tagcapella.main.TagcapellaApp
+import com.hich2000.tagcapella.music.mediaController.MediaPlayerCoordinator
 import com.hich2000.tagcapella.music.queueManager.FolderScanManager
-import com.hich2000.tagcapella.music.playerScreen.PlayerScreen
-import com.hich2000.tagcapella.tagsAndCategories.TagCategoryScreen
+import com.hich2000.tagcapella.music.queueManager.QueueManager
+import com.hich2000.tagcapella.music.queueManager.SongRepository
 import com.hich2000.tagcapella.theme.TagcapellaTheme
 import com.hich2000.tagcapella.utils.LifeCycleManager
-import com.hich2000.tagcapella.utils.ToastEventBus
 import com.hich2000.tagcapella.utils.composables.TagCapellaButton
-import com.hich2000.tagcapella.utils.navigation.BottomNavBar
-import com.hich2000.tagcapella.utils.navigation.LocalNavController
-import com.hich2000.tagcapella.utils.navigation.NavItem
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceKey
 import com.hich2000.tagcapella.utils.sharedPreferences.SharedPreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -80,12 +68,22 @@ class MyApp : Application(), LifecycleObserver {
 class MainActivity : ComponentActivity() {
 
     private val mediaPermissionGranted = mutableIntStateOf(PackageManager.PERMISSION_DENIED)
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     @Inject
     lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     @Inject
     lateinit var folderScanManager: FolderScanManager
+
+    @Inject
+    lateinit var songRepository: SongRepository
+
+    @Inject
+    lateinit var mediaPlayerCoordinator: MediaPlayerCoordinator
+
+    @Inject
+    lateinit var queueManager: QueueManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -151,7 +149,14 @@ class MainActivity : ComponentActivity() {
         } else {
             PackageManager.PERMISSION_DENIED
         }
-        folderScanManager.addScanFolder("Music/")
+        if (mediaPermissionGranted.intValue == PackageManager.PERMISSION_GRANTED) {
+            coroutineScope.launch {
+                folderScanManager.addScanFolder("Music/")
+                songRepository.ini()
+                queueManager.updateQueue()
+                mediaPlayerCoordinator.ini()
+            }
+        }
     }
 
     @Composable
@@ -219,60 +224,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun TagcapellaApp() {
-        val navController = rememberNavController()
-        val context = LocalContext.current
-
-        LaunchedEffect(Unit) {
-            ToastEventBus.toastFlow.collect { message ->
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            }
-        }
-
-
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            bottomBar = { BottomNavBar(navController) }
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .padding(
-                        top = innerPadding.calculateTopPadding(),
-                        start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                        bottom = innerPadding.calculateBottomPadding()
-                    )
-                    .fillMaxSize()
-            ) {
-                CompositionLocalProvider(LocalNavController provides navController) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = NavItem.Player.title,
-                    ) {
-                        composable(NavItem.Player.title) {
-                            PlayerScreen()
-                        }
-                        composable(NavItem.SongLibrary.title) {
-                            SongScreen()
-                        }
-                        composable(NavItem.Tags.title) {
-                            TagCategoryScreen()
-                        }
-                        navigation(
-                            startDestination = NavItem.Settings.Main.title,
-                            route = NavItem.Settings.title
-                        ) {
-                            composable(NavItem.Settings.Main.title) {
-                                SettingsScreen()
-                            }
-                            composable(NavItem.Settings.Folders.title) {
-                                FolderScreen()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

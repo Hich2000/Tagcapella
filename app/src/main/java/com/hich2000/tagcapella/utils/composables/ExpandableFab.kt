@@ -31,7 +31,7 @@ fun ExpandableFab(
     onclick: (() -> Unit)
 ) {
     Box(
-        contentAlignment = Alignment.Companion.BottomEnd
+        contentAlignment = Alignment.BottomEnd
     ) {
         AnimatedContent(
             targetState = expanded,
@@ -43,7 +43,7 @@ fun ExpandableFab(
         ) { expanded ->
             if (expanded) {
                 Column(
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .border(2.dp, MaterialTheme.colorScheme.tertiary)
                         .width(200.dp)
                         .background(MaterialTheme.colorScheme.background)
@@ -56,7 +56,7 @@ fun ExpandableFab(
                 FloatingActionButton(
                     onClick = onclick,
                     containerColor = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .padding(16.dp)
                         .border(2.dp, MaterialTheme.colorScheme.tertiary),
                     shape = RectangleShape
