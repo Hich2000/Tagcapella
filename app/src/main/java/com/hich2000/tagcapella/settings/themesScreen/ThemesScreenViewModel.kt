@@ -6,4 +6,5 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ThemesScreenViewModel @Inject constructor() : ViewModel() {
+
 }
