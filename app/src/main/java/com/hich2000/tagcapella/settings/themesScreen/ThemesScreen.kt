@@ -37,6 +37,7 @@ fun ThemesScreen(
 ) {
     val cutCornerRadius = 8.dp
     val useSystemTheme by themesScreenViewModel.useSystemTheme.collectAsState()
+    val selectedTheme by themesScreenViewModel.selectedTheme.collectAsState()
 
     Scaffold(
         modifier = Modifier
@@ -146,8 +147,11 @@ fun ThemesScreen(
                             )
                             Text("Light mode")
                             RadioButton(
-                                selected = false,
-                                onClick = {}
+                                selected = selectedTheme == SelectableThemes.LIGHTMODE,
+                                onClick = {
+                                    themesScreenViewModel.setSelectedTheme(SelectableThemes.LIGHTMODE)
+                                },
+                                enabled = !useSystemTheme
                             )
                         }
                     }
@@ -179,8 +183,11 @@ fun ThemesScreen(
                             )
                             Text("Dark mode")
                             RadioButton(
-                                selected = false,
-                                onClick = {}
+                                selected = selectedTheme == SelectableThemes.DARKMODE,
+                                onClick = {
+                                    themesScreenViewModel.setSelectedTheme(SelectableThemes.DARKMODE)
+                                },
+                                enabled = !useSystemTheme
                             )
                         }
                     }

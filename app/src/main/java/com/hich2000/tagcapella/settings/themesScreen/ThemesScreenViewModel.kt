@@ -17,9 +17,19 @@ class ThemesScreenViewModel @Inject constructor(
     )
     val useSystemTheme: StateFlow<Boolean> get() = _useSystemTheme
 
+    private val _selectedTheme: MutableStateFlow<SelectableThemes> = MutableStateFlow(
+        sharedPreferenceManager.getPreference(SharedPreferenceKey.SelectedTheme, SelectableThemes.LIGHTMODE)
+    )
+    val selectedTheme: StateFlow<SelectableThemes> get() = _selectedTheme
+
 
     fun handleUseSystemThemeCheckbox() {
         _useSystemTheme.value = !_useSystemTheme.value
         sharedPreferenceManager.savePreference(SharedPreferenceKey.UseSystemTheme, _useSystemTheme.value)
+    }
+
+    fun setSelectedTheme(theme: SelectableThemes) {
+        _selectedTheme.value = theme
+        sharedPreferenceManager.savePreference(SharedPreferenceKey.SelectedTheme, _selectedTheme.value)
     }
 }
