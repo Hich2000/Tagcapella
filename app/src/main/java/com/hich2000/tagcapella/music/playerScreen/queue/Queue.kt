@@ -1,5 +1,11 @@
 package com.hich2000.tagcapella.music.playerScreen.queue
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +25,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -28,6 +36,7 @@ import com.hich2000.tagcapella.main.navigation.LocalNavController
 import com.hich2000.tagcapella.main.navigation.Route
 import com.hich2000.tagcapella.music.songScreen.SongCard
 import com.hich2000.tagcapella.music.songScreen.SongList
+import kotlin.math.sin
 
 @Composable
 fun Queue(
@@ -78,6 +87,47 @@ fun Queue(
                             modifier = Modifier
                                 .padding(end = 8.dp)
                                 .background(MaterialTheme.colorScheme.primary)
+                        )
+                    }
+
+
+                    val waveColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+                    val infiniteTransition = rememberInfiniteTransition()
+                    val phase by infiniteTransition.animateFloat(
+                        initialValue = 0f,
+                        targetValue = (2 * Math.PI).toFloat(),
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(2000, easing = LinearEasing)
+                        )
+                    )
+
+                    Canvas(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        val wavePath = Path()
+                        val amplitude = 25f
+                        val baseline = size.height+150f
+                        val waveCenter = size.height+50f
+
+                        wavePath.moveTo(0f, baseline)
+                        for (x in 0..size.width.toInt()) {
+                            val radians = (x / size.width) * (2 * Math.PI) + phase
+                            val y = waveCenter + amplitude * sin(radians).toFloat()
+                            wavePath.lineTo(x.toFloat(), y)
+                        }
+
+                        wavePath.lineTo(size.width, baseline)
+                        wavePath.close()
+                        drawPath(
+                            path = wavePath,
+                            color = waveColor
+                        )
+
+                        drawPath(
+                            path = wavePath,
+                            color = waveColor,
+                            style = Stroke(4f)
                         )
                     }
                 }
