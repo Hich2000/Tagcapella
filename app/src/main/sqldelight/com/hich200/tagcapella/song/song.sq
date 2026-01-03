@@ -8,7 +8,7 @@ checkSongExists:
 SELECT song.id FROM song WHERE path = ?;
 
 insertSong:
-INSERT INTO song (path) VALUES (?);
+INSERT INTO song (path, last_modified) VALUES (?, ?);
 
 selectLastInsertId:
 SELECT last_insert_rowid();

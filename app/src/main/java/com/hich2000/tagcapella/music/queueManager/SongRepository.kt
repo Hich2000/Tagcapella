@@ -86,6 +86,7 @@ class SongRepository @Inject constructor(
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.RELATIVE_PATH,
                 MediaStore.Audio.Media.DATA,
+                MediaStore.Audio.Media.DATE_MODIFIED
             )
             val selection =
                 "${MediaStore.Audio.Media.IS_MUSIC} != 0 AND ${MediaStore.Audio.Media.RELATIVE_PATH} IN ($placeholders)"
@@ -100,6 +101,8 @@ class SongRepository @Inject constructor(
 
             cursor?.use {
                 val pathColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+                val lastModified =
+                    it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_MODIFIED).toLong()
                 while (it.moveToNext()) {
                     //todo refactor SongDTO to use content uri instead of this DATA column. Better in the long term
                     val path = it.getString(pathColumn)
@@ -118,7 +121,7 @@ class SongRepository @Inject constructor(
                             }.executeAsOne()
                         )
                     } else {
-                        database.db.songQueries.insertSong(path)
+                        database.db.songQueries.insertSong(path, lastModified)
                         val newId = database.db.songQueries.selectLastInsertId().executeAsOne()
                         songList.add(
                             Song(
