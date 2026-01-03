@@ -2,10 +2,16 @@ selectAll:
 SELECT song.id, song.path FROM song;
 
 selectSong:
-SELECT song.id, song.path FROM song WHERE path = ?;
+SELECT song.id, song.path FROM song WHERE id = ?;
+
+checkSongExists:
+SELECT song.id FROM song WHERE path = ?;
 
 insertSong:
 INSERT INTO song (path) VALUES (?);
+
+selectLastInsertId:
+SELECT last_insert_rowid();
 
 deleteSong:
 DELETE FROM song WHERE id = ?;
