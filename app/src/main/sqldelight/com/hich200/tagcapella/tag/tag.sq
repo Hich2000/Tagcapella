@@ -14,7 +14,7 @@ lastInsertedTag:
 SELECT * FROM tag ORDER BY id DESC LIMIT 1;
 
 selectTaggedSongs:
-SELECT song.id, song.title, song.path FROM song_tag JOIN song ON song_tag.song = song.id WHERE tag = ?;
+SELECT song.id, song.path FROM song_tag JOIN song ON song_tag.song = song.id WHERE tag = ?;
 
 selectTagById:
 SELECT id, tag, category FROM tag WHERE id = ?;
