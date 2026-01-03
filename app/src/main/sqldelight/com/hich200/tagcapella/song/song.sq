@@ -1,10 +1,23 @@
+selectAll:
+SELECT song.id, song.path, song.title FROM song;
+
+selectSong:
+SELECT song.id, song.path, song.title FROM song WHERE path = ?;
+
+insertSong:
+INSERT INTO song (path, title) VALUES (?, ?);
+
+deleteSong:
+DELETE FROM song WHERE id = ?;
+
 selectSongTags:
 SELECT tag.id, tag.tag, tag.category FROM song_tag JOIN tag ON song_tag.tag = tag.id WHERE song = ?;
 
 filterSongList:
-SELECT s.id, s.song FROM song_tag s
-WHERE s.tag IN :includeTags
-GROUP BY s.song;
+SELECT s.id, s.path, s.title FROM song s
+JOIN song_tag st ON s.id = st.song
+WHERE st.tag IN :includeTags
+GROUP BY st.song;
 
 addSongTag:
 INSERT INTO song_tag (song, tag) VALUES (?, ?);

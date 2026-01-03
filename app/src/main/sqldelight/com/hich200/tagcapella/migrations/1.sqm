@@ -1,9 +1,13 @@
+-- an explanation of this file:
+-- basically this is the file that will be used during the build process to generate the type safe code.
+-- if you make changes you do so by making a migration in the migrations folder and then changing the
+-- schema here as well so that sqldelight can then properly build.
+
 CREATE TABLE tag_category (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     category TEXT NOT NULL,
     UNIQUE (category) ON CONFLICT ABORT
 );
-
 CREATE INDEX tag_category_id ON tag_category (id);
 
 CREATE TABLE tag (
@@ -11,15 +15,21 @@ CREATE TABLE tag (
     tag TEXT NOT NULL UNIQUE,
     category INTEGER REFERENCES tag_category(id) ON DELETE SET NULL
 );
-
 CREATE INDEX tag_id ON tag (id);
+
+CREATE TABLE song (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    path TEXT NOT NULL UNIQUE,
+    title TEXT NOT NULL
+);
+CREATE INDEX song_id ON song (id);
 
 CREATE TABLE song_tag (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    song TEXT NOT NULL,
+    song INTEGER NOT NULL,
     tag INTEGER NOT NULL,
+    FOREIGN KEY (song) REFERENCES song(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (tag) REFERENCES tag(id) ON DELETE CASCADE,
     UNIQUE (song, tag) ON CONFLICT ABORT
 );
-
 CREATE INDEX song_tag_id ON song_tag (id);
