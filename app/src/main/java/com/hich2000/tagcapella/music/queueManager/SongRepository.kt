@@ -81,7 +81,6 @@ class SongRepository @Inject constructor(
             val songList = mutableListOf<Song>()
             val placeholders = foldersToScan.joinToString(", ") { "?" }
 
-
             val collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(
                 MediaStore.Audio.Media._ID,
@@ -98,7 +97,6 @@ class SongRepository @Inject constructor(
                 foldersToScan.toTypedArray(),
                 sortOrder
             )
-
 
             cursor?.use {
                 val pathColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
@@ -130,8 +128,6 @@ class SongRepository @Inject constructor(
                             )
                         )
                     }
-
-
                 }
             }
 
