@@ -23,7 +23,10 @@ fun SongTagScreen(
     songTagScreenViewModel: SongTagScreenViewModel = hiltViewModel()
 ) {
     val tagList by songTagScreenViewModel.tags.collectAsState()
-    val songToTag = songTagScreenViewModel.getSong(songPath)
+    val songList by songTagScreenViewModel.songs.collectAsState()
+    val songToTag = songList.first {
+        it.path == songPath
+    }
 
     val onTagClick = { tag: Tag ->
         if (songToTag.tags.find { songTag: Tag ->
@@ -54,7 +57,7 @@ fun SongTagScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        topBar = { TopBar( topText = "Tags") }
+        topBar = { TopBar(topText = "Tags") }
     ) { innerPadding ->
         Box(
             contentAlignment = Alignment.Center,

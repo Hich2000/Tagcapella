@@ -12,16 +12,11 @@ import javax.inject.Inject
 @HiltViewModel
 class SongTagScreenViewModel @Inject constructor(
     private val songRepository: SongRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
 ) : ViewModel() {
+
     val songs: StateFlow<List<Song>> get() = songRepository.songList
     val tags: StateFlow<List<Tag>> get() = tagRepository.tags
-
-    fun getSong(songPath: String) : Song {
-        return songs.value.first {
-            it.path == songPath
-        }
-    }
 
     fun addSongTag(song: Song, tag: Tag) {
         songRepository.addSongTag(song, tag)

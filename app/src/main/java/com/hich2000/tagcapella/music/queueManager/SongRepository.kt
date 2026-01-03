@@ -192,7 +192,7 @@ class SongRepository @Inject constructor(
     private fun updateSongInList(song: Song) {
         val updatedTags = getSongTags(song.id)
         val updatedList = _songList.value.map {
-            if (it.path == song.path) {
+            if (it.id == song.id) {
                 it.copy(tags = updatedTags)
             } else {
                 it
