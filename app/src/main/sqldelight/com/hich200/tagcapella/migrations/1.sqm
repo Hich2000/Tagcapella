@@ -19,8 +19,7 @@ CREATE INDEX tag_id ON tag (id);
 
 CREATE TABLE song (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    path TEXT NOT NULL UNIQUE,
-    title TEXT NOT NULL
+    path TEXT NOT NULL UNIQUE
 );
 CREATE INDEX song_id ON song (id);
 
