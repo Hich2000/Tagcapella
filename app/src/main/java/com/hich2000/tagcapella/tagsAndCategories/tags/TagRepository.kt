@@ -38,7 +38,7 @@ class TagRepository @Inject constructor(
         tagList.forEach { tag ->
             tag.taggedSongs = getTaggedSongs(tag)
         }
-        _tags.value =  tagList
+        _tags.value = tagList
     }
 
     fun insertTag(newTag: String, category: Long?) {
@@ -64,8 +64,8 @@ class TagRepository @Inject constructor(
     }
 
     fun getTaggedSongs(tag: Tag): MutableList<Song>  {
-        val songs = db.tagQueries.selectTaggedSongs(tag.id) { _, path  ->
-            Song(path, emptyList())
+        val songs = db.tagQueries.selectTaggedSongs(tag.id) { id, path  ->
+            Song(id, path, emptyList())
         }.executeAsList()
         return songs.toMutableStateList()
     }
